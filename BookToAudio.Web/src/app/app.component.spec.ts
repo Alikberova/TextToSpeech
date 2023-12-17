@@ -19,6 +19,7 @@ describe('AppComponent', () => {
   it(`should have as title 'BookToAudio.Web'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
+    //todo app title to const
     expect(app.title).toEqual('BookToAudio.Web');
   });
 

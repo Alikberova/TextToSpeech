@@ -1,1 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
+/* one more theme: https://codedthemes.com/item/guru-able-free-angular-admin-template/ 
+design:  https://www.figma.com/file/T5xhhhcgQ6puo7hoag51mi/My-Book-Shelf-(Community)?type=design&node-id=9-74&mode=design&t=oAYp755aaf166NQs-0*/
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';

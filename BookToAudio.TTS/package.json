@@ -1,0 +1,15 @@
+{
+  "name": "booktoaudio.tts",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Text to speech",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yevheniia Alikberova",
+  "license": "ISC",
+  "dependencies": {
+    "openai": "^4.22.1"
+  }
+}
