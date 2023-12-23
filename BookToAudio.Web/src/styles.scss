@@ -1,4 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
-/* one more theme: https://codedthemes.com/item/guru-able-free-angular-admin-template/ 
-design:  https://www.figma.com/file/T5xhhhcgQ6puo7hoag51mi/My-Book-Shelf-(Community)?type=design&node-id=9-74&mode=design&t=oAYp755aaf166NQs-0*/
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+:root {
+    --color-primary: #d600aa;
+    --color-secondary: #c904ae;
+    --color-tertiary: #b10cb6;
+    --color-quaternary: #ab0eb8;
+    --color-quinary: #8c18c1;
+    --color-senary: #861ac3;
+    --color-septenary: #6e21cb;
+    --color-octonary: #512bd4;
+    --color-background: #ffffff;
+
+    --color-11: #4b39e3;
+    --color-22: #09246b;
+    --color-33: #17123b;
+  }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.content {
+  margin-top: 64px; /* Adjust the margin based on the height of app-nav */
+}

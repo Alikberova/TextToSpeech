@@ -1,23 +1,21 @@
-import fs from "fs";
-import path from "path";
-import OpenAI from "openai";
-
-const openai = new OpenAI( {apiKey: '' });
-
-const speechFile = path.resolve("./speech.mp3");
-
-//todo increase pause after comma
+import { port, host } from './config.js'
+import fileServiceApp from './file-service.js';
+import openaiService from './openai-service.js';
+import express from 'express';
 
 async function main() {
-  const mp3 = await openai.audio.speech.create({
-    model: "tts-1",
-    voice: "alloy",
-    input: "",
+  const mainRouter = express.Router();
 
+  mainRouter.use(openaiService);
+  mainRouter.use(fileServiceApp);
+
+  const app = express();
+  
+  app.use(mainRouter);
+
+  app.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
   });
-  console.log(speechFile);
-  const buffer = Buffer.from(await mp3.arrayBuffer());
-  await fs.promises.writeFile(speechFile, buffer);
 }
 
 main();
