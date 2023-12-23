@@ -1,14 +1,15 @@
+<!-- login.component.html -->
 <div class="login-container">
   <div class="login-card">
     <h1>Login</h1>
     <form (ngSubmit)="onLogin()">
-      <div class="input-field">
-        <input type="text" placeholder="Username" [(ngModel)]="username" name="username" required>
-      </div>
-      <div class="input-field">
-        <input type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
-      </div>
-      <button class="button-primary" type="submit">Login</button>
+      <mat-form-field class="input-field">
+        <input matInput type="text" placeholder="Username" [(ngModel)]="username" name="username" required>
+      </mat-form-field>
+      <mat-form-field class="input-field">
+        <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required>
+      </mat-form-field>
+      <button mat-raised-button class="button-primary" type="submit">Login</button>
     </form>
   </div>
 </div>
