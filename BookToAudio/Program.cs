@@ -1,3 +1,10 @@
+using BookToAudio.Core.Repositories;
+using BookToAudio.Core.Services;
+using BookToAudio.Infa;
+using BookToAudio.Infra.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +13,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserService>();
+
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>();
 
 var app = builder.Build();
 

@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <span>Your Logo Here</span>
+  
+  <!-- Menu items -->
+  <span class="menu-items">
+    <button mat-button *ngFor="let item of menu">{{item}}</button>
+
+    <!-- Add profile dropdown menu -->
+    <button mat-button [matMenuTriggerFor]="profileMenu">My Profile</button>
+    <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item>Profile</button>
+      <button mat-menu-item>Settings</button>
+      <button mat-menu-item>Logout</button>
+    </mat-menu>
+  </span>
+</mat-toolbar>
