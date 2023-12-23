@@ -14,7 +14,5 @@ export class LoginComponent {
   password: string = '';
 
   onLogin() {
-    console.log('Username:', this.username);
-    console.log('Password:', this.password);
   }
 }

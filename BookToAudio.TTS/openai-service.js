@@ -2,19 +2,23 @@ import OpenAI from "openai";
 import { openaiApiKey } from './config.js'
 import express from 'express';
 import fs from "fs";
+import path from "path";
 
 const app = express();
 app.use(express.json()).post('/generate-speech', async (req, res) => {
   const { modelConfig } = req.body;
   
-  try {
-    validateRequiredParameters(modelConfig);
-    await generateSpeechFile(openaiApiKey, modelConfig)
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error('Error generating speech:', error);
-    res.status(500).json({ success: false, error: error });
-  }
+try {
+  validateRequiredParameters(modelConfig);
+  await generateSpeechFile(openaiApiKey, modelConfig)
+  res.status(200).json({ success: true });
+} catch (error) {
+  const errorObject = Object.fromEntries(
+    Object.getOwnPropertyNames(error).map(key => [key, error[key]])
+  );
+
+  res.status(500).json({ success: false, error: errorObject });
+}
 });
 
 async function generateSpeechFile(apiKey, modelConfig) {
@@ -35,8 +39,8 @@ function validateRequiredParameters(modelConfig) {
   if (!openaiApiKey) {
     error += 'OpenAI API key is missing\n';
   }
-  if (!modelConfig.outputPath) {
-    error += 'modelConfig.outputPath is missing\n';
+  if (!modelConfig.outputPath || !path.basename(modelConfig.outputPath).endsWith('.mp3')) {
+    error += 'modelConfig.outputPath must include .mp3 filename\n';
   }
   if (!modelConfig.model) {
     error += 'modelConfig.model is missing\n';
