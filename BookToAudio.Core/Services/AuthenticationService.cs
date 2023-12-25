@@ -30,8 +30,7 @@ public class AuthenticationService
 
         if (user is not null && await _userManager.CheckPasswordAsync(user, password))
         {
-            var token = GenerateToken(user);
-            return token;
+            return GenerateToken(user);
         }
 
         return string.Empty;

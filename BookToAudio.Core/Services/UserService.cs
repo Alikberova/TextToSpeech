@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BookToAudio.Core.Services;
 
-public class UserService(IUserRepository userRepository, UserManager<User> userManager)
+public class UserService(IUserRepository userRepository)
 {
     private readonly IUserRepository _userRepository = userRepository;
-    private readonly UserManager<User> _userManager = userManager;
 
     public async Task<User?> GetUserByIdAsync(Guid id)
     {
@@ -21,13 +20,6 @@ public class UserService(IUserRepository userRepository, UserManager<User> userM
 
     public async Task<User> UpdateUserAsync(Guid id, User user)
     {
-        var result = await _userManager.UpdateAsync(user);
-
-        if (!result.Succeeded)
-        {
-            throw new Exception(string.Join('\n', result.Errors));
-        }
-
         return await _userRepository.UpdateUserAsync(id, user);
     }
 
