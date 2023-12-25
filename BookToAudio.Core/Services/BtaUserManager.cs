@@ -26,8 +26,6 @@ public class BtaUserManager
     {
         var result = await _userManager.CreateAsync(user);
         CheckErrors(result);
-        //todo password validation angular
-        //at least one uppercase ('A'-'Z'), one special character, at least 6 characters
 
         var pasResult = await _userManager.AddPasswordAsync(user, user.Password);
         CheckErrors(pasResult);

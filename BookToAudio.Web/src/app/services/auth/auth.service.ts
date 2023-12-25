@@ -1,44 +1,25 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs';
-import { User } from '../../models/user';
+import { Сonstants } from '../../constants'
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class AuthService {
-  private apiUrl = 'https://localhost:7057/api/users';
-
-  constructor(private http: HttpClient) {}
-
-  checkIfUserExists(userName: string): Observable<boolean> {
-    return this.http.post<boolean>(`${this.apiUrl}/userExists`, { userName: userName })
-      .pipe(
-        catchError((error) => {
-          console.error('Error checking user existence:', error);
-          throw error;
-        })
-      );
-  }
-  
-  loginUser(credentials: { username: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials);
+  setToken(token: string): void {
+    localStorage.setItem(Сonstants.AccessToken, token);
   }
 
-  register(user: User): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/api/users/register`, user);
+  getToken(): string | null {
+    return localStorage.getItem(Сonstants.AccessToken);
   }
 
-  deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/api/users/${id}`);
-  }
+  isAuthenticated(): boolean {
+    if (this.getToken())
+    {
+      return true;
+    }
 
-  updateUser(id: string, user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/api/users/${id}`, user);
-  }
-
-  getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/api/users/${id}`);
+    return false;
   }
 }
