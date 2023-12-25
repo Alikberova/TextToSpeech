@@ -15,5 +15,4 @@ import { HomeComponent } from './home/home.component';
     imports: [CommonModule, FormsModule, RouterOutlet, AppNavComponent, HomeComponent, FooterComponent]
 })
 export class AppComponent {
-
 }

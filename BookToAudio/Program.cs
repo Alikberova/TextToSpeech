@@ -1,23 +1,39 @@
-using BookToAudio.Core.Repositories;
-using BookToAudio.Core.Services;
+using BookToAudio.Core.Config;
+using BookToAudio.Core.Entities;
+using BookToAudio.Extensions;
 using BookToAudio.Infa;
-using BookToAudio.Infra.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddServices();
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WebCorsPolicy",
+        builder => builder.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+AddAuthentication(builder);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>();
@@ -37,4 +53,32 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseCors("WebCorsPolicy");
+
 app.Run();
+
+static void AddAuthentication(WebApplicationBuilder builder)
+{
+    var jwtConfig = builder.Configuration.GetRequiredSection("Jwt").Get<Jwt>();
+
+    var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig!.Symmetric.Key));
+
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtConfig.Issuer,
+                ValidAudience = jwtConfig.Audience,
+                IssuerSigningKey = symmetricKey
+            };
+        });
+}

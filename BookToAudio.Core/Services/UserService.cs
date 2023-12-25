@@ -1,5 +1,6 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace BookToAudio.Core.Services;
 
@@ -7,24 +8,24 @@ public class UserService(IUserRepository userRepository)
 {
     private readonly IUserRepository _userRepository = userRepository;
 
-    public User? GetUserById(Guid id)
+    public async Task<User?> GetUserByIdAsync(Guid id)
     {
-        return _userRepository.GetUserById(id);
+        return await _userRepository.GetUserByIdAsync(id);
     }
 
-    public void AddUser(User user)
+    public async Task AddUserAsync(User user)
     {
-        _userRepository.AddUser(user);
+        await _userRepository.AddUserAsync(user);
     }
 
-    public User? UpdateUser(Guid id, User user)
+    public async Task<User> UpdateUserAsync(Guid id, User user)
     {
-        return _userRepository.UpdateUser(id, user);
+        return await _userRepository.UpdateUserAsync(id, user);
     }
 
-    public bool DeleteUser(Guid id)
+    public async Task<bool> DeleteUserAsync(Guid id)
     {
-        return _userRepository.DeleteUser(id);
+        return await _userRepository.DeleteUserAsync(id);
     }
 
     public IEnumerable<User> GetUsers()
@@ -32,8 +33,13 @@ public class UserService(IUserRepository userRepository)
         return _userRepository.GetUsers();
     }
 
-    public bool UserExists(string email, string phone)
+    public async Task<bool> UserExistsAsync(string? userName)
     {
-        return _userRepository.UserExists(email, phone);
+        return await _userRepository.UserExistsAsync(userName);
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        return _userRepository.GetUserByUsername(username);
     }
 }
