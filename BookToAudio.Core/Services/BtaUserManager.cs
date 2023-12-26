@@ -12,39 +12,40 @@ public class BtaUserManager
         _userManager = userManager;
     }
 
-    public async Task<bool> UserExists(string? userName)
+    public async Task<bool> UserExists(string userName)
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
             return false;
         }
 
-        return await FindByNameAsync(userName) is not null;
+        return await _userManager.FindByNameAsync(userName) is not null;
     }
 
-    public async Task CreateAsync(User user)
+    public async Task<User> CreateAsync(User user)
     {
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user, user.Password);
+
         CheckErrors(result);
 
-        var pasResult = await _userManager.AddPasswordAsync(user, user.Password);
-        CheckErrors(pasResult);
+        return (await _userManager.FindByIdAsync(user.Id.ToString()))!;
     }
 
-    public async Task<User> UpdateAsync(Guid id, User user)
+    public async Task<User> UpdateAsync(User user)
     {
         var result = await _userManager.UpdateAsync(user);
 
         CheckErrors(result);
 
-        return user;
+        return (await _userManager.FindByIdAsync(user.Id.ToString()))!;
     }
 
     public async Task DeleteAsync(Guid id)
     {
-        var user = await FindByIdAsync(id);
+        var user = await _userManager.FindByIdAsync(id.ToString()) ??
+            throw new InvalidOperationException("User not found.");
 
-        var result = await _userManager.DeleteAsync(user!);
+        var result = await _userManager.DeleteAsync(user);
 
         CheckErrors(result);
     }
@@ -67,6 +68,11 @@ public class BtaUserManager
         }
 
         var errors = string.Join('\n', result.Errors.Select(e => e.Description));
-        throw new Exception(errors);
+
+        throw new IdentityOperationException(errors);
     }
+}
+
+public class IdentityOperationException(string message) : Exception(message)
+{
 }

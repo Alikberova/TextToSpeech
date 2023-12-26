@@ -1,6 +1,7 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services;
 using BookToAudio.Infa.Dto;
+using BookToAudio.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using LoginRequest = BookToAudio.Infa.Dto.LoginRequest;
@@ -52,11 +53,11 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
-    // PUT api/users/{id}
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateUser(Guid id, [FromBody] User user)
+    // PUT api/users/update
+    [HttpPut("update")]
+    public async Task<ActionResult> UpdateUser([FromBody] User user)
     {
-        var updatedUser = await _btaUserManager.UpdateAsync(id, user);
+        var updatedUser = await _btaUserManager.UpdateAsync(user);
 
         return Ok(updatedUser);
     }
