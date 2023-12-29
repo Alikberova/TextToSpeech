@@ -40,8 +40,9 @@ public class TextFileService : ITextFileService
         return chunks;
     }
 
-    //todo Гадаєте, ми їх знайдемо? – запитує вона.
-    //"?" here doesn't mean the sentence end
+    //Гадаєте, ми їх знайдемо? – запитує вона.
+    //"?" here doesn't mean the sentence end.
+    //TODO: if you met combination of: $"{char}? - {lowercase letter}" - do not treat this as the sentence end
 
     private int FindLastSentenceEnd(string text, int start, int end)
     {
