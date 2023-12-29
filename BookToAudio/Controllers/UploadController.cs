@@ -7,7 +7,6 @@ namespace BookToAudio.Controllers;
 [ApiController]
 public class UploadController : ControllerBase
 {
-    // This could be a service to handle file storage and retrieval
     private readonly IFileStorageService _fileStorageService;
 
     public UploadController(IFileStorageService fileStorageService)

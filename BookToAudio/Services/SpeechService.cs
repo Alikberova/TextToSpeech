@@ -27,14 +27,14 @@ public class SpeechService
 
     internal async Task CreateSpeechAsync(SpeechRequest request)
     {
-        var maxLwngth = 4096;
+        var maxLength = 4096;
 
         if (HostingEnvironment.IsDevelopment())
         {
-            maxLwngth = 150;
+            maxLength = 150;
         }
 
-        var textChunks = _textFileService.SplitTextIfGreaterThan(request.Input, maxLwngth);
+        var textChunks = _textFileService.SplitTextIfGreaterThan(request.Input, maxLength);
 
         ReadOnlyMemory<byte>[] bytes = await _openAiService.RequestSpeechChunksAsync(request, textChunks);
 

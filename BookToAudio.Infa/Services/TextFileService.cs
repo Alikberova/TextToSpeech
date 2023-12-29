@@ -21,7 +21,10 @@ public class TextFileService : ITextFileService
 
         while (start < text.Length)
         {
-            int end = start + maxLength > text.Length ? text.Length : start + maxLength;
+            int end = start + maxLength > text.Length ?
+                text.Length :
+                start + maxLength;
+
             int lastSentenceEnd = FindLastSentenceEnd(text, start, end);
 
             if (lastSentenceEnd == -1)
@@ -45,16 +48,18 @@ public class TextFileService : ITextFileService
         // Search for sentence-ending punctuation within the specified range
         for (int i = end - 1; i >= start; i--)
         {
-            if (text[i] == '.' || text[i] == '?' || text[i] == '!')
+            if (IsSentenceEnd(text, i))
             {
-                // Return the position after the punctuation if it's the end of a sentence
-                if (i + 1 == text.Length || char.IsWhiteSpace(text[i + 1]))
-                {
-                    return i + 1;
-                }
+                return i + 1;
             }
         }
 
         return -1; // No sentence end found in the range
+    }
+
+    private static bool IsSentenceEnd(string text, int i)
+    {
+        return (text[i] is '.' or '?' or '!') &&
+            (i + 1 == text.Length || char.IsWhiteSpace(text[i + 1]));
     }
 }
