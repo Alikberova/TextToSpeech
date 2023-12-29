@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
-builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -59,7 +59,7 @@ app.Run();
 
 static void AddAuthentication(WebApplicationBuilder builder)
 {
-    var jwtConfig = builder.Configuration.GetRequiredSection("Jwt").Get<Jwt>();
+    var jwtConfig = builder.Configuration.GetRequiredSection(ConfigConstants.JwtConfig).Get<JwtConfig>();
 
     var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig!.Symmetric.Key));
 
