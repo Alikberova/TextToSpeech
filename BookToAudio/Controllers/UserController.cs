@@ -16,7 +16,9 @@ public class UserController : ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly BtaUserManager _btaUserManager;
 
-    public UserController(AuthenticationService authentication, UserManager<User> userManager, BtaUserManager btaUserManager)
+    public UserController(AuthenticationService authentication,
+        UserManager<User> userManager,
+        BtaUserManager btaUserManager)
     {
         _authentication = authentication;
         _userManager = userManager;
@@ -34,7 +36,7 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> RegisterUser([FromBody] User user)
     {
-        if (await _btaUserManager.UserExists(user.UserName))
+        if (await _btaUserManager.UserExists(user.UserName!))
         {
             return Conflict("User with the same email or phone already exists.");
         }

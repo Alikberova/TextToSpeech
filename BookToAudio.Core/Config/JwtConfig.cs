@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Core.Config;
 
-public class Jwt
+public class JwtConfig
 {
     public Symmetric Symmetric { get; set; } = new();
     public Asymmetric Asymmetric { get; set; } = new();

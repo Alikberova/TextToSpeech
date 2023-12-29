@@ -11,9 +11,9 @@ namespace BookToAudio.Infa.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly Jwt _jwtConfig;
+    private readonly JwtConfig _jwtConfig;
 
-    public TokenService(IOptions<Jwt> jwtConfigOptions)
+    public TokenService(IOptions<JwtConfig> jwtConfigOptions)
     {
         _jwtConfig = jwtConfigOptions.Value;
     }
