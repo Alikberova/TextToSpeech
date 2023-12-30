@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { UserClient } from '../http-clients/user-client';
 import { AuthService } from '../services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -11,7 +12,8 @@ import { AuthService } from '../services/auth/auth.service';
     imports: [AuthFormComponent]
 })
 export class LoginComponent {
-  constructor(private userClient: UserClient, private authService: AuthService) {}
+  constructor(private userClient: UserClient, private authService: AuthService,
+    private router: Router) {}
 
   title = 'Login';
   buttonLabel = 'Sign In';
@@ -36,7 +38,7 @@ export class LoginComponent {
 
   handleAuthenticationSuccess(token: string) {
     this.authService.setToken(token);
-    //todo redirect to home page
+    this.router.navigate(['home'])
   }
 
   handleAuthenticationFailure(error: any) {
