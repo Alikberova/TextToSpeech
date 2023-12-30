@@ -10,18 +10,18 @@
   .form-element {
     width: 100%;
   }
-  
-  /* Styles for the play icon */
-  .play-icon {
-    cursor: pointer;
-    float: right;
-    margin-left: 8px; /* Spacing between the text and icon */
-    color: var(--color-11);
-    transition: transform 0.3s ease-in-out, color 0.3s ease;
-  }
-  
-  .play-icon:hover {
-    color: #b282ff;
-    transform: scale(1.1);
-  }
+}
+
+/* Styles for the play icon */
+.play-icon {
+  cursor: pointer;
+  float: right;
+  margin-left: 8px; /* Spacing between the text and icon */
+  color: var(--color-11);
+  transition: transform 0.3s ease-in-out, color 0.3s ease;
+}
+
+.play-icon:hover {
+  color: #b282ff;
+  transform: scale(1.1);
 }
