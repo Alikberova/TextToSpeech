@@ -7,13 +7,6 @@ public interface IAudioFileService
 
 public class AudioFileService : IAudioFileService
 {
-    private readonly IPathService _pathService;
-
-    public AudioFileService(IPathService pathService)
-    {
-        _pathService = pathService;
-    }
-
     public byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
     {
         using var memoryStream = new MemoryStream();
