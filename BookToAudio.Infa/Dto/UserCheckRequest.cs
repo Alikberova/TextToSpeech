@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Infa.Dto;
+﻿namespace BookToAudio.Infra.Dto;
 
 public class UserCheckRequest
 {

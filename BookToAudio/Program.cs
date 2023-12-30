@@ -1,7 +1,7 @@
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Extensions;
-using BookToAudio.Infa;
+using BookToAudio.Infra;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

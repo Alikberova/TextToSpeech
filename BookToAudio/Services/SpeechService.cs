@@ -1,7 +1,6 @@
 ﻿using BookToAudio.Core;
-using BookToAudio.Core.Config;
 using BookToAudio.Core.Services.Interfaces;
-using BookToAudio.Infa.Services;
+using BookToAudio.Infra.Services;
 using OpenAI.Audio;
 
 namespace BookToAudio.Services;
@@ -11,17 +10,17 @@ public class SpeechService
     private readonly ITextFileService _textFileService;
     private readonly IOpenAiService _openAiService;
     private readonly IAudioFileService _audioFileService;
-    private readonly IConfiguration _configuration;
+    private readonly IPathService _pathService;
 
     public SpeechService(ITextFileService textFileService,
         IOpenAiService openAiService,
         IAudioFileService audioFileService,
-        IConfiguration configuration)
+        IPathService pathService)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
         _audioFileService = audioFileService;
-        _configuration = configuration;
+        _pathService = pathService;
     }
     
 
@@ -42,10 +41,7 @@ public class SpeechService
 
         if (HostingEnvironment.IsDevelopment())
         {
-            var storagePath = _configuration.GetValue<string>(ConfigConstants.FileStoragePath) ??
-                throw new ArgumentNullException(ConfigConstants.FileStoragePath);
-
-            string filePath = Path.Combine(storagePath, $"{DateTime.Now.Minute}.mp3"); ;
+            string filePath = _pathService.GetFileStorageFilePath($"{DateTime.Now.Minute}.mp3");
             await File.WriteAllBytesAsync(filePath, result);
         }
 

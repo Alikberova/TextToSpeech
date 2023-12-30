@@ -1,8 +1,8 @@
 ﻿using OpenAI.Audio;
 
-namespace BookToAudio.Infa.Dto;
+namespace BookToAudio.Infra.Dto;
 
-public class SpeechRequestDto
+public class SpeechRequest
 {
     public string Model { get; set; } = string.Empty;
     public SpeechVoice Voice { get; set; }

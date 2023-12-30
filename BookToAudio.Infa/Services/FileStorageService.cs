@@ -1,7 +1,4 @@
-﻿using BookToAudio.Core.Config;
-using Microsoft.Extensions.Configuration;
-
-namespace BookToAudio.Infa.Services;
+﻿namespace BookToAudio.Infra.Services;
 
 public interface IFileStorageService
 {
@@ -13,16 +10,9 @@ public class FileStorageService : IFileStorageService
 {
     private readonly string _storagePath;
 
-    public FileStorageService(IConfiguration configuration)
+    public FileStorageService(IPathService pathService)
     {
-        var storagePath = configuration.GetValue<string>(ConfigConstants.FileStoragePath);
-
-        if (string.IsNullOrWhiteSpace(storagePath))
-        {
-            throw new ArgumentNullException(nameof(storagePath));
-        }
-
-        _storagePath = storagePath;
+        _storagePath = pathService.GetFileStoragePath();
 
         Directory.CreateDirectory(_storagePath);
     }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace BookToAudio.Infa.Migrations
+namespace BookToAudio.Infra.Migrations
 {
     /// <inheritdoc />
     public partial class InitialMigration : Migration

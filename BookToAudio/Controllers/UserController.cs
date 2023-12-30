@@ -1,10 +1,10 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services;
-using BookToAudio.Infa.Dto;
+using BookToAudio.Infra.Dto;
 using BookToAudio.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using LoginRequest = BookToAudio.Infa.Dto.LoginRequest;
+using LoginRequest = BookToAudio.Infra.Dto.LoginRequest;
 
 namespace BookToAudio.Controllers;
 
