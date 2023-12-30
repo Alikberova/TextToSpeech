@@ -2,7 +2,7 @@
 using BookToAudio.Core.Services;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Core.Services.Interfaces.Ai;
-using BookToAudio.Infa.Services;
+using BookToAudio.Infra.Services;
 using BookToAudio.Infra.Repositories;
 using BookToAudio.Services;
 
@@ -22,6 +22,7 @@ public static class ServicesDiExtension
         services.AddScoped<IOpenAiService, OpenAiService>();
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IAudioFileService, AudioFileService>();
+        services.AddScoped<IPathService, PathService>();
 
         return services;
     }

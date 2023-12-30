@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BookToAudio.Infa\BookToAudio.Infa.csproj" />
+    <ProjectReference Include="..\BookToAudio.Infa\BookToAudio.Infra.csproj" />
   </ItemGroup>
 
 </Project>

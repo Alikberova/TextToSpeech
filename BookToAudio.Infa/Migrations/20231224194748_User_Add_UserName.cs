@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BookToAudio.Infa.Migrations
+namespace BookToAudio.Infra.Migrations
 {
     /// <inheritdoc />
     public partial class User_Add_UserName : Migration

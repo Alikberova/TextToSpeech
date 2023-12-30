@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookToAudio.Infa;
+namespace BookToAudio.Infra;
 
 public class AppDbContext : IdentityDbContext<User>
 {

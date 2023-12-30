@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BookToAudio.Infa.Migrations
+namespace BookToAudio.Infra.Migrations
 {
     /// <inheritdoc />
     public partial class User_Add_Identity : Migration

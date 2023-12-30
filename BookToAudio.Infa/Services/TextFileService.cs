@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Infa.Services;
+﻿namespace BookToAudio.Infra.Services;
 
 public interface ITextFileService
 {

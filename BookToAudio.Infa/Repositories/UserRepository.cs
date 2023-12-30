@@ -1,6 +1,6 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Repositories;
-using BookToAudio.Infa;
+using BookToAudio.Infra;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookToAudio.Infra.Repositories;

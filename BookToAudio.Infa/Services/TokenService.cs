@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BookToAudio.Infa.Services;
+namespace BookToAudio.Infra.Services;
 
 public class TokenService : ITokenService
 {
