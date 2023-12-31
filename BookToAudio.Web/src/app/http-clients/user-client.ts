@@ -18,19 +18,19 @@ export class UserClient {
     }
   
     register(user: User): Observable<User> {
-      return this.http.post<User>(`${this.apiUrl}/api/users/register`, user);
+      return this.http.post<User>(`${this.apiUrl}/register`, user);
     }
   
     deleteUser(id: string): Observable<void> {
-      return this.http.delete<void>(`${this.apiUrl}/api/users/${id}`);
+      return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
   
     updateUser(id: string, user: User): Observable<User> {
-      return this.http.put<User>(`${this.apiUrl}/api/users/${id}`, user);
+      return this.http.put<User>(`${this.apiUrl}/${id}`, user);
     }
   
     getUserById(id: string): Observable<User> {
-      return this.http.get<User>(`${this.apiUrl}/api/users/${id}`);
+      return this.http.get<User>(`${this.apiUrl}/${id}`);
     }
     
     checkIfUserExists(userName: string): Observable<boolean> {
