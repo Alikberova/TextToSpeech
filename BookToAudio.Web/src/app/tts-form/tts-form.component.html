@@ -3,7 +3,8 @@
       <mat-label>Select voice</mat-label>
       <mat-select [(ngModel)]="selectedVoice" name="selectedVoice">
         <mat-option *ngFor="let voice of voices" [value]="voice">
-          {{voice}}
+          {{ voice.name }}
+          <mat-icon class="play-icon" (click)="playVoiceSample($event, voice)">play_circle</mat-icon>
         </mat-option>
       </mat-select>
     </mat-form-field>

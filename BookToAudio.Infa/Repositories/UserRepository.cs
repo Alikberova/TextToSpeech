@@ -1,6 +1,7 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Repositories;
-using BookToAudio.Infa;
+using BookToAudio.Infra;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookToAudio.Infra.Repositories;
 
@@ -10,54 +11,61 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
 
     public IEnumerable<User> GetUsers()
     {
-        return _dbContext.Users.ToList();
+        return _dbContext.Users;
     }
 
-    public void AddUser(User newUser)
+    public async Task AddUserAsync(User newUser)
     {
-        _dbContext.Users.Add(newUser);
-        _dbContext.SaveChanges();
+        await _dbContext.Users.AddAsync(newUser);
+        await _dbContext.SaveChangesAsync();
     }
 
-    public bool DeleteUser(Guid id)
+    public async Task<bool> DeleteUserAsync(Guid id)
     {
         var userToDelete = _dbContext.Users.Find(id);
 
         if (userToDelete != null)
         {
             _dbContext.Users.Remove(userToDelete);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return true;
         }
 
         return false;
     }
 
-    public User? UpdateUser(Guid id, User user)
+    public async Task<User> UpdateUserAsync(Guid id, User user)
     {
-        var existingUser = _dbContext.Users.Find(id);
+        var existingUser = await _dbContext.Users.FindAsync(id);
 
-        if (existingUser == null)
-        {
-            return null;
-        }
-        existingUser.FirstName = user.FirstName;
+        existingUser!.FirstName = user.FirstName;
         existingUser.LastName = user.LastName;
         existingUser.Email = user.Email;
-        existingUser.Phone = user.Phone;
+        existingUser.PhoneNumber = user.PhoneNumber;
+        existingUser.UserName = user.UserName;
 
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
 
         return existingUser;
     }
 
-    public User? GetUserById(Guid id)
+    public async Task<User?> GetUserByIdAsync(Guid id)
     {
-        return _dbContext.Users.Find(id);
+        return await _dbContext.Users.SingleOrDefaultAsync(u => u.Id == id.ToString());
     }
 
-    public bool UserExists(string email, string phone)
+    public async Task<bool> UserExistsAsync(string? userName)
     {
-        return _dbContext.Users.Any(u => u.Email == email || u.Phone == phone);
+        if (string.IsNullOrWhiteSpace(userName))
+        {
+            return false;
+        }
+
+        return await _dbContext.Users.AnyAsync(u => u.UserName == userName);
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        return _dbContext.Users.SingleOrDefault(u => u.UserName == username);
     }
 }

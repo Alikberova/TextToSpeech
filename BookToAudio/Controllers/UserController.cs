@@ -1,68 +1,82 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services;
+using BookToAudio.Infra.Dto.User;
+using BookToAudio.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using LoginRequest = BookToAudio.Infra.Dto.User.LoginRequest;
 
 namespace BookToAudio.Controllers;
 
 [Route("api/users")]
 [ApiController]
-public class UserController(UserService userService) : ControllerBase
+public class UserController : ControllerBase
 {
-    private readonly UserService _userService = userService;
+    private readonly AuthenticationService _authentication;
+    private readonly UserManager<User> _userManager;
+    private readonly BtaUserManager _btaUserManager;
+
+    public UserController(AuthenticationService authentication,
+        UserManager<User> userManager,
+        BtaUserManager btaUserManager)
+    {
+        _authentication = authentication;
+        _userManager = userManager;
+        _btaUserManager = btaUserManager;
+    }
 
     // GET api/users
     [HttpGet]
     public IActionResult GetUsers()
     {
-        return Ok(_userService);
+        return Ok(_userManager.Users);
     }
 
     // POST api/users/register
     [HttpPost("register")]
-    public IActionResult RegisterUser([FromBody] User user)
+    public async Task<ActionResult> RegisterUser([FromBody] User user)
     {
-        if (UserExists(user.Email, user.Phone))
+        if (await _btaUserManager.UserExists(user.UserName!))
         {
             return Conflict("User with the same email or phone already exists.");
         }
 
-        user.Id = Guid.NewGuid();
-        _userService.AddUser(user);
+        var createdUser = await _btaUserManager.CreateAsync(user);
 
-        return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+        var response = new RegisterResponse
+        {
+            Id = createdUser.Id,
+            Email = createdUser.Email,
+            PhoneNumber = createdUser.PhoneNumber,
+            UserName = createdUser.UserName!
+        };
+
+        return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, response);
     }
 
     // DELETE api/users/{id}
     [HttpDelete("{id}")]
-    public IActionResult DeleteUser(Guid id)
+    public async Task<ActionResult> DeleteUser(Guid id)
     {
-        if (!_userService.DeleteUser(id))
-        {
-            return NotFound("User not found.");
-        }
+        await _btaUserManager.DeleteAsync(id);
 
         return NoContent();
     }
 
-    // PUT api/users/{id}
-    [HttpPut("{id}")]
-    public IActionResult UpdateUser(Guid id, [FromBody] User user)
+    // PUT api/users/update
+    [HttpPut("update")]
+    public async Task<ActionResult> UpdateUser([FromBody] User user)
     {
-        var updatedUser = _userService.UpdateUser(id, user);
-
-        if (updatedUser is  null)
-        {
-            return NotFound("User not found.");
-        }
+        var updatedUser = await _btaUserManager.UpdateAsync(user);
 
         return Ok(updatedUser);
     }
 
     // GET api/users/{id}
     [HttpGet("{id}")]
-    public IActionResult GetUserById(Guid id)
+    public async Task<ActionResult> GetUserById(Guid id)
     {
-        var user = _userService.GetUserById(id);
+        var user = await _btaUserManager.FindByIdAsync(id);
 
         if (user is null)
         {
@@ -72,8 +86,22 @@ public class UserController(UserService userService) : ControllerBase
         return Ok(user);
     }
 
-    private bool UserExists(string email, string phone)
+    [HttpPost("userExists")]
+    public async Task<ActionResult> UserExists([FromBody] UserCheckRequest request)
     {
-        return _userService.UserExists(email, phone);
+        return Ok(await _btaUserManager.UserExists(request.UserName));
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login([FromBody] LoginRequest request)
+    {
+        var token = await _authentication.Login(request.Username, request.Password);
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            return Ok(new { Token = token });
+        }
+
+        return Unauthorized("Invalid username or password");
     }
 }
