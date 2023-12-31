@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Infra.Dto;
+﻿namespace BookToAudio.Infra.Dto.User;
 
 public class LoginRequest
 {

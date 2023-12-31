@@ -16,6 +16,7 @@ export class AuthFormComponent {
 
   userName: string = '';
   password: string = '';
+  hidePassword = true;
 
   onSubmit(): void {
     this.formSubmitted.emit({ userName: this.userName, password: this.password });

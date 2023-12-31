@@ -37,7 +37,7 @@ public class BtaUserManager
 
         CheckErrors(result);
 
-        return (await _userManager.FindByIdAsync(user.Id.ToString()))!;
+        return (await _userManager.FindByIdAsync(user.Id))!;
     }
 
     public async Task DeleteAsync(Guid id)

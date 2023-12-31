@@ -1,10 +1,10 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services;
-using BookToAudio.Infra.Dto;
+using BookToAudio.Infra.Dto.User;
 using BookToAudio.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using LoginRequest = BookToAudio.Infra.Dto.LoginRequest;
+using LoginRequest = BookToAudio.Infra.Dto.User.LoginRequest;
 
 namespace BookToAudio.Controllers;
 
@@ -41,9 +41,17 @@ public class UserController : ControllerBase
             return Conflict("User with the same email or phone already exists.");
         }
 
-        await _btaUserManager.CreateAsync(user);
+        var createdUser = await _btaUserManager.CreateAsync(user);
 
-        return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+        var response = new RegisterResponse
+        {
+            Id = createdUser.Id,
+            Email = createdUser.Email,
+            PhoneNumber = createdUser.PhoneNumber,
+            UserName = createdUser.UserName!
+        };
+
+        return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, response);
     }
 
     // DELETE api/users/{id}

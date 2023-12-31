@@ -3,6 +3,7 @@ import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { UserClient } from '../http-clients/user-client';
 import { AuthService } from '../services/auth/auth.service';
 import { Router } from '@angular/router';
+import { SnackbarService } from '../shared-ui/snackbar-service';
 
 @Component({
     selector: 'app-login',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   constructor(private userClient: UserClient, private authService: AuthService,
-    private router: Router) {}
+    private router: Router, private snackbarService: SnackbarService) {}
 
   title = 'Login';
   buttonLabel = 'Sign In';
@@ -23,7 +24,8 @@ export class LoginComponent {
     .subscribe({
       next: (exists) => exists ?
         this.authenticateUser(authData.userName, authData.password) :
-        console.error("User does not exist. Show an error message. todo"),
+        this.snackbarService.showError("User does not exist")
+        ,
       error: (e) => console.error(e)
     })
   }
@@ -32,17 +34,12 @@ export class LoginComponent {
     const credentials = { username: userName, password: password };
     this.userClient.loginUser(credentials).subscribe({
       next: (response) => this.handleAuthenticationSuccess(response.token),
-      error: (error) => this.handleAuthenticationFailure(error)
+      error: (error) => this.snackbarService.showError(error)
     })
   }
 
   handleAuthenticationSuccess(token: string) {
     this.authService.setToken(token);
     this.router.navigate(['home'])
-  }
-
-  handleAuthenticationFailure(error: any) {
-    console.error('Login failed. Show an error message.', error)
-    //todo show error message
   }
 }
