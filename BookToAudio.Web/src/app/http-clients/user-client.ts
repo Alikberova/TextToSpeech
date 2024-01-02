@@ -13,7 +13,7 @@ export class UserClient {
 
     constructor(private http: HttpClient) {}
   
-    loginUser(credentials: { username: string; password: string }): Observable<any> {
+    loginUser(credentials: { userName: string; password: string }): Observable<any> {
       return this.http.post<any>(`${this.apiUrl}/login`, credentials);
     }
   
@@ -31,15 +31,5 @@ export class UserClient {
   
     getUserById(id: string): Observable<User> {
       return this.http.get<User>(`${this.apiUrl}/${id}`);
-    }
-    
-    checkIfUserExists(userName: string): Observable<boolean> {
-      return this.http.post<boolean>(`${this.apiUrl}/userExists`, { userName: userName })
-        .pipe(
-          catchError((error) => {
-            console.error('Error checking user existence:', error);
-            throw error;
-          })
-        );
     }
 }
