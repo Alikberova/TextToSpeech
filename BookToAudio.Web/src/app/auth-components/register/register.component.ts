@@ -5,6 +5,7 @@ import { UserClient } from '../../http-clients/user-client';
 import { AuthService } from '../../services/auth/auth.service';
 import {User} from '../../models/user'
 import { SnackbarService } from '../../shared-ui/snackbar-service';
+import { ErrorHandlerService } from '../../services/error-handler-service';
 
 @Component({
     selector: 'app-register',
@@ -16,7 +17,8 @@ import { SnackbarService } from '../../shared-ui/snackbar-service';
 
 export class RegisterComponent {
   constructor(private userClient: UserClient, private authService: AuthService,
-    private router: Router, private snackbarService: SnackbarService) {}
+    private router: Router, private snackbarService: SnackbarService,
+    private errorHandler: ErrorHandlerService) {}
 
   title = 'Register';
   buttonLabel = 'Sign Up';
@@ -40,12 +42,8 @@ export class RegisterComponent {
     };
 
     this.userClient.register(user).subscribe({
-      next: (res) => {
-        this.router.navigate(['home']);
-      },
-      error: (err) => {
-        this.snackbarService.showError(err);
-      }
+      next: (response) => this.router.navigate(['home']),
+      error: (err) => this.errorHandler.handleHttpError(err)
     });
   }
 
