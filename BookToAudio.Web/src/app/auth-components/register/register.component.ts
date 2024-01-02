@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { Router } from '@angular/router';
-import { UserClient } from '../http-clients/user-client';
-import { AuthService } from '../services/auth/auth.service';
-import {User} from '../models/user'
-import { SnackbarService } from '../shared-ui/snackbar-service';
+import { UserClient } from '../../http-clients/user-client';
+import { AuthService } from '../../services/auth/auth.service';
+import {User} from '../../models/user'
+import { SnackbarService } from '../../shared-ui/snackbar-service';
 
 @Component({
     selector: 'app-register',
@@ -47,5 +47,11 @@ export class RegisterComponent {
         this.snackbarService.showError(err);
       }
     });
+  }
+
+  handleToggle(isRegister: boolean): void {
+    if (!isRegister) {
+      this.router.navigate(['login']);
+    }
   }
 }
