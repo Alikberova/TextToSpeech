@@ -33,7 +33,13 @@ public class TextFileService : ITextFileService
                 lastSentenceEnd = end;
             }
 
-            chunks.Add(text.Substring(start, lastSentenceEnd - start).Trim());
+            var chunk = text.Substring(start, lastSentenceEnd - start).Trim();
+
+            if (chunk != string.Empty)
+            {
+                chunks.Add(chunk);
+            }
+            
             start = lastSentenceEnd;
         }
 

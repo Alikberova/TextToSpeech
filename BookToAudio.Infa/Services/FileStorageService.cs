@@ -3,7 +3,7 @@
 public interface IFileStorageService
 {
     Task<string> StoreFileAsync(string fileContent);
-    Task<string> RetrieveFileAsync(string fileId);
+    Task<string> RetrieveFileTextAsync(string fileId);
 }
 
 public class FileStorageService : IFileStorageService
@@ -27,7 +27,7 @@ public class FileStorageService : IFileStorageService
         return fileId;
     }
 
-    public async Task<string> RetrieveFileAsync(string fileId)
+    public async Task<string> RetrieveFileTextAsync(string fileId)
     {
         string filePath = Path.Combine(_storagePath, fileId);
 

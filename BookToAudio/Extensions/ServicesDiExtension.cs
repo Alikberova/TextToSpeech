@@ -23,6 +23,8 @@ public static class ServicesDiExtension
         services.AddScoped<IFileStorageService, FileStorageService>();
         services.AddScoped<IAudioFileService, AudioFileService>();
         services.AddScoped<IPathService, PathService>();
+        services.AddScoped<IAudioFileRepository, AudioFileRepository>();
+        services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
 
         return services;
     }

@@ -11,4 +11,5 @@ public class AppDbContext : IdentityDbContext<User>
     }
 
     public DbSet<TtsConversion> TtsConversions { get; set; }
+    public DbSet<AudioFile> AudioFiles { get; set; }
 }
