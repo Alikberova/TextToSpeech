@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
   providedIn: 'root'
 })
+
 export class SnackbarService {
   constructor(private snackBar: MatSnackBar) {}
 
@@ -13,12 +14,8 @@ export class SnackbarService {
     });
   }
 
-  showError(error: any) {
-    if (error.error) {
-      console.error(error)
-      this.show(error.error);
-      return;
-    }
+  showError(error: string) {
+    console.error(error)
     this.show(error);
   }
 }
