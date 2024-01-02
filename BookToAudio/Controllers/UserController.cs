@@ -86,15 +86,14 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("userExists")]
-    public async Task<ActionResult> UserExists([FromBody] UserCheckRequest request)
-    {
-        return Ok(await _btaUserManager.UserExists(request.UserName));
-    }
-
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginRequest request)
     {
+        if (!await _btaUserManager.UserExists(request.Username))
+        {
+            return NotFound("User does not exist");
+        }
+
         var token = await _authentication.Login(request.Username, request.Password);
 
         if (!string.IsNullOrWhiteSpace(token))

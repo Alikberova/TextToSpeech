@@ -19,22 +19,11 @@ export class LoginComponent {
   title = 'Login';
   buttonLabel = 'Sign In';
 
-  onFormSubmitted(authData: { userName: string; password: string }): void {
-    this.userClient.checkIfUserExists(authData.userName)
+  onFormSubmitted(credentials: { userName: string; password: string }): void {
+    this.userClient.loginUser(credentials)
     .subscribe({
-      next: (exists) => exists ?
-        this.authenticateUser(authData.userName, authData.password) :
-        this.snackbarService.showError("User does not exist")
-        ,
-      error: (e) => console.error(e)
-    })
-  }
-
-  authenticateUser(userName: string, password: string) {
-    const credentials = { username: userName, password: password };
-    this.userClient.loginUser(credentials).subscribe({
       next: (response) => this.handleAuthenticationSuccess(response.token),
-      error: (error) => this.snackbarService.showError(error)
+      error: (e) => this.snackbarService.showError(e)
     })
   }
 
