@@ -1,6 +1,9 @@
 <div class="login-container">
   <div class="login-card">
-    <h1>{{ title }}</h1>
+
+    <toggle-button (changed)="onToggleChange($event)" [isRegister]="isRegister">
+    </toggle-button>
+
     <form (ngSubmit)="onSubmit()" autocomplete="on">
         <mat-form-field class="input-field">
           <input matInput [(ngModel)]="userName" name="username" placeholder="Username"  required>
@@ -12,5 +15,6 @@
         </mat-form-field>
       <button mat-raised-button class="button-primary" type="submit">{{ buttonLabel }}</button>
     </form>
+
   </div>
 </div>

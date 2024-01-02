@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AppMaterialModule } from '../app.material/app.material.module';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
@@ -14,13 +16,29 @@ import { CommonModule } from '@angular/common';
 })
 export class AppNavComponent {
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  constructor(private breakpointObserver: BreakpointObserver, private authService: AuthService,
+    private router: Router) {}
+
+  menu = ['Menu Item 1', 'Menu Item 2', 'Menu Item 3', 'Menu Item 4'];
+
+  get isLoggedIn() {
+    return this.authService.isAuthenticated();
+  }
+
+  //todo adapt the UI and behavior for mobile device
+  isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches),
       shareReplay()
     );
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
-  // You can define your menu item here.
-  menu = ['Menu Item 1', 'Menu Item 2', 'Menu Item 3', 'Menu Item 4'];
+  logoutUser(): void {
+    this.authService.removeToken();
+    this.router.navigate(['home']);
+  }
+
+  redirectToLogin() {
+    this.router.navigate(['login']);
+  }
 }

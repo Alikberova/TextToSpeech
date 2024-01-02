@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Сonstants } from "../constants";
+import { Constants } from "../constants";
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 })
 
 export class AudioClient {
-    private apiUrl = `${Сonstants.ApiUrl}/audio`;
+    private apiUrl = `${Constants.ApiUrl}/audio`;
 
     constructor(private http: HttpClient) {}
   
