@@ -4,7 +4,7 @@
       <mat-select [(ngModel)]="selectedVoice" name="selectedVoice">
         <mat-option *ngFor="let voice of voices" [value]="voice">
           {{ voice.name }}
-          <mat-icon class="play-icon" (click)="playVoiceSample($event, voice)">play_circle</mat-icon>
+          <mat-icon class="play-icon" (click)="playVoiceSample($event, voice, speed)">play_circle</mat-icon>
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -16,9 +16,16 @@
   
     <mat-form-field class="form-element">
       <mat-label>Setup speed</mat-label>
-      <input matInput type="number" min="1" max="4" step="0.1" [(ngModel)]="speed" name="speed"/>
+      <input matInput type="number" min="0.5" max="4" step="0.1" [(ngModel)]="speed" name="speed"/>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" class="form-element">Submit</button>
-    <button mat-raised-button color="accent" class="form-element" [disabled]="!chosenFile">Download</button>
+  <button mat-raised-button color="primary" class="form-element">Submit</button>
+  <button
+    mat-raised-button
+    color="accent"
+    class="form-element"
+    [disabled]="!chosenFile"
+  >
+    Download
+  </button>
 </form>

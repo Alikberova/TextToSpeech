@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { AuthFormComponent } from "../auth-form/auth-form.component";
+import { AuthFormComponent } from '../auth-form/auth-form.component';
 import { UserClient } from '../../http-clients/user-client';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { ErrorHandlerService } from '../../services/error-handler-service';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    templateUrl: './login.component.html',
-    styleUrl: './login.component.scss',
-    imports: [AuthFormComponent]
+  selector: 'app-login',
+  standalone: true,
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  imports: [AuthFormComponent],
 })
 export class LoginComponent {
   constructor(private userClient: UserClient, private authService: AuthService,
@@ -29,7 +29,7 @@ export class LoginComponent {
 
   handleAuthenticationSuccess(token: string) {
     this.authService.setToken(token);
-    this.router.navigate(['home'])
+    this.router.navigate(['home']);
   }
 
   handleToggle(isRegister: boolean): void {
