@@ -29,4 +29,5 @@ public class TtsConversion
     public Voice Voice { get; set; }
     public string ResponseFormat { get; set; } = string.Empty;
     public double Speed { get; set; }
+    public string Input { get; set; } = string.Empty;
 }
