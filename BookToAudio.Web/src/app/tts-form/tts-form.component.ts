@@ -15,7 +15,7 @@ import { TextToSpeech } from '../models/text-to-speech';
 })
 export class TtsFormComponent {
   constructor(private openAiClient: OpenaiClient) {}
-
+  //todo delete id 
   voices = [
     { id: 'alloy', name: 'Alloy' },
     { id: 'echo', name: 'Echo' },
