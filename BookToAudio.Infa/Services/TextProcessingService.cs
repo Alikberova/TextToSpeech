@@ -46,10 +46,6 @@ public class TextProcessingService : ITextProcessingService
         return chunks;
     }
 
-    //Гадаєте, ми їх знайдемо? – запитує вона.
-    //"?" here doesn't mean the sentence end.
-    //TODO: if you met combination of: $"{char}? - {lowercase letter}" - do not treat this as the sentence end
-
     private int FindLastSentenceEnd(string text, int start, int end)
     {
         // Search for sentence-ending punctuation within the specified range
