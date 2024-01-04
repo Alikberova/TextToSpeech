@@ -1,7 +1,7 @@
 ﻿using BookToAudio.Core.Config;
 using Microsoft.Extensions.Configuration;
 
-namespace BookToAudio.Infra.Services;
+namespace BookToAudio.Infra.Services.Common;
 
 public interface IPathService
 {

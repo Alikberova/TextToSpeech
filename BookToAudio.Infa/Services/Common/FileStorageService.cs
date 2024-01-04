@@ -1,9 +1,8 @@
-﻿namespace BookToAudio.Infra.Services;
+﻿namespace BookToAudio.Infra.Services.Common;
 
 public interface IFileStorageService
 {
     Task<string> StoreFileAsync(string fileContent);
-    Task<string> RetrieveFileTextAsync(string fileId);
 }
 
 public class FileStorageService : IFileStorageService
@@ -25,17 +24,5 @@ public class FileStorageService : IFileStorageService
         await File.WriteAllTextAsync(filePath, fileContent);
 
         return fileId;
-    }
-
-    public async Task<string> RetrieveFileTextAsync(string fileId)
-    {
-        string filePath = Path.Combine(_storagePath, fileId);
-
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException("The file was not found.", fileId);
-        }
-
-        return await File.ReadAllTextAsync(filePath);
     }
 }
