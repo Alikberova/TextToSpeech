@@ -1,11 +1,11 @@
 ﻿namespace BookToAudio.Infra.Services;
 
-public interface ITextFileService
+public interface ITextProcessingService
 {
     List<string> SplitTextIfGreaterThan(string text, int limit);
 }
 
-public class TextFileService : ITextFileService
+public class TextProcessingService : ITextProcessingService
 {
     public List<string> SplitTextIfGreaterThan(string text, int maxLength)
     {

@@ -2,38 +2,44 @@
 using BookToAudio.Core.Repositories;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Infra.Services;
+using BookToAudio.Infra.Services.Common;
+using BookToAudio.Infra.Services.Factories;
+using BookToAudio.Infra.Services.FileProcessing;
 using OpenAI.Audio;
 
 namespace BookToAudio.Services;
 
 public class SpeechService
 {
-    private readonly ITextFileService _textFileService;
+    private readonly ITextProcessingService _textFileService;
     private readonly IOpenAiService _openAiService;
     private readonly IAudioFileService _audioFileService;
     private readonly IPathService _pathService;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly FileProcessorFactory _fileProcessorFactory;
     private readonly IAudioFileRepositoryService _audioFileRepositoryService;
 
-    public SpeechService(ITextFileService textFileService,
+    public SpeechService(ITextProcessingService textFileService,
         IOpenAiService openAiService,
         IAudioFileService audioFileService,
         IPathService pathService,
-        IFileStorageService fileStorageService,
+        FileProcessorFactory fileProcessorFactory,
         IAudioFileRepositoryService audioFileRepositoryService)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
         _audioFileService = audioFileService;
         _pathService = pathService;
-        _fileStorageService = fileStorageService;
+        _fileProcessorFactory = fileProcessorFactory;
         _audioFileRepositoryService = audioFileRepositoryService;
     }
     
 
     internal async Task CreateSpeechAsync(Infra.Dto.SpeechRequest request)
     {
-        var fileText = await _fileStorageService.RetrieveFileTextAsync(request.FileId.ToString());
+        var fileProcessor = _fileProcessorFactory.GetProcessor(request.FileType) ??
+            throw new NotSupportedException("File type not supported");
+
+        var fileText = await fileProcessor.ExtractContentAsync(request.FileId.ToString());
 
         var maxLength = 4096;
 

@@ -9,4 +9,5 @@ public class SpeechRequest
     public SpeechResponseFormat ResponseFormat { get; set; }
     public float? Speed { get; set; }
     public Guid FileId { get; set; }
+    public string FileType { get; set; }
 }
