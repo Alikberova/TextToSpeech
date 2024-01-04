@@ -2,7 +2,7 @@
 
 public interface ITextProcessingService
 {
-    List<string> SplitTextIfGreaterThan(string text, int limit);
+    List<string> SplitTextIfGreaterThan(string text, int maxLength);
 }
 
 public class TextProcessingService : ITextProcessingService
