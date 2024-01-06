@@ -17,12 +17,12 @@ export class TtsFormComponent {
   constructor(private openAiClient: OpenaiClient) {}
   //todo delete id 
   voices = [
-    { id: 'alloy', name: 'Alloy' },
-    { id: 'echo', name: 'Echo' },
-    { id: 'fable', name: 'Fable' },
-    { id: 'onyx', name: 'Onyx' },
-    { id: 'nova', name: 'Nova' },
-    { id: 'shimmer', name: 'Shimmer' },
+    { name: 'Alloy' },
+    { name: 'Echo' },
+    { name: 'Fable' },
+    { name: 'Onyx' },
+    { name: 'Nova' },
+    { name: 'Shimmer' },
   ];
 
   selectedVoice = 'Alloy';
@@ -40,6 +40,7 @@ export class TtsFormComponent {
   //todo change input "now time"
   playVoiceSample(event: MouseEvent, voiceId: string, speed: number): void {
     event.stopPropagation();
+    
     const testParams: TextToSpeech = {
       model: 'tts-1',
       voice: voiceId,
@@ -50,7 +51,7 @@ export class TtsFormComponent {
   }
 
   playSemple(param: TextToSpeech) {
-    this.openAiClient.createSpeech(param).subscribe((blob) => {
+    this.openAiClient.createSpeech(param).subscribe((blob: Blob) => {
       const audio = new Audio();
       const url = URL.createObjectURL(blob);
       audio.src = url;
