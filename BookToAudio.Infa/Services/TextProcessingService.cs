@@ -70,12 +70,6 @@ public class TextProcessingService : ITextProcessingService
         return -1; // No sentence end found in the range
     }
 
-    //private static bool IsSentenceEnd(string text, int i)
-    //{
-    //    return (text[i] is '.' or '?' or '!') &&
-    //        (i + 1 == text.Length || char.IsWhiteSpace(text[i + 1]));
-    //}
-
     private static bool IsSentenceEnd(string text, int i)
     {
         if (text[i] is '.' or '!')
