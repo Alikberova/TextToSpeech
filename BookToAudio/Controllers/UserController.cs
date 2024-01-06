@@ -1,5 +1,5 @@
 ﻿using BookToAudio.Core.Entities;
-using BookToAudio.Core.Services.Interfaces;
+using BookToAudio.Core.Services;
 using BookToAudio.Infra.Dto.User;
 using BookToAudio.Services;
 using Microsoft.AspNetCore.Identity;
@@ -14,11 +14,11 @@ public class UserController : ControllerBase
 {
     private readonly AuthenticationService _authentication;
     private readonly UserManager<User> _userManager;
-    private readonly IBtaUserManager _btaUserManager;
+    private readonly BtaUserManager _btaUserManager;
 
     public UserController(AuthenticationService authentication,
         UserManager<User> userManager,
-        IBtaUserManager btaUserManager)
+        BtaUserManager btaUserManager)
     {
         _authentication = authentication;
         _userManager = userManager;
