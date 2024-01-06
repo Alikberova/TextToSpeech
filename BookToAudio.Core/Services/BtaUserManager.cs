@@ -1,9 +1,10 @@
 ﻿using BookToAudio.Core.Entities;
+using BookToAudio.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookToAudio.Core.Services;
 
-public class BtaUserManager
+public class BtaUserManager : IBtaUserManager
 {
     private readonly UserManager<User> _userManager;
 
