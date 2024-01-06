@@ -22,7 +22,7 @@ public static class ServicesDiExtension
 
         // other services
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<BtaUserManager>();
+        services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IOpenAiService, OpenAiService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();

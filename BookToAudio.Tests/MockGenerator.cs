@@ -15,10 +15,10 @@ public class MockGenerator : IClassFixture<DbContextFixture>
     [Fact]
     public void GenerateTestData()
     {
-        var userFactory = new UserFactory();
-        var fakeUsers = userFactory.Generate(5);
+        //var userFactory = new UserFactory();
+        //var fakeUsers = userFactory.Generate(5);
 
-        _dbContext.DbContext.AddRange(fakeUsers);
-        _dbContext.DbContext.SaveChanges();
+        //_dbContext.DbContext.AddRange(fakeUsers);
+        //_dbContext.DbContext.SaveChanges();
     }
 }
