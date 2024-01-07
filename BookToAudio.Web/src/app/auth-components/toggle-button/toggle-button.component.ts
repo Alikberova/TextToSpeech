@@ -10,7 +10,7 @@ export class ToggleButtonComponent  {
   @Output() changed = new EventEmitter<boolean>();
   @Input() isRegister: boolean = false;
   
-  label: string = 'Login';
+  label: string = '';
 
   @ViewChild('checkbox') checkbox!: ElementRef;
 

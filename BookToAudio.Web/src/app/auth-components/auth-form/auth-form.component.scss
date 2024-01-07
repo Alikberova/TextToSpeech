@@ -42,3 +42,17 @@
 .input-field {
   width: 100%;
 }
+
+.svg-background {
+  background-image: url('../../../assets/svg/undraw_audio_player_re_cl20.svg');
+  background-size: contain;
+  background-position:center ;
+  background-repeat: no-repeat;
+  height: 600px;
+  width: 40%;
+  pointer-events: none;
+  user-select: none;
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
