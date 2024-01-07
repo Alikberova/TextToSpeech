@@ -19,7 +19,7 @@ export class AppNavComponent {
   constructor(private breakpointObserver: BreakpointObserver, private authService: AuthService,
     private router: Router) {}
 
-  menu = ['Menu Item 1', 'Menu Item 2', 'Menu Item 3', 'Menu Item 4'];
+  menu = [''];
 
   get isLoggedIn() {
     return this.authService.isAuthenticated();
