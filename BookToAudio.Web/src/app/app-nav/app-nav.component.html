@@ -1,11 +1,15 @@
 <mat-toolbar color="primary">
-  <span>Your Logo Here</span>
-  
+
+  <div class="logo-container" (click)="redirectToHome()">
+    <span class="logo-text">text to speech</span>
+    <div class="logo-stripe"></div>
+    <span class="slogan-text">everything to speech</span>
+  </div>
+
   <span class="menu-items">
     <button mat-button *ngFor="let item of menu">{{item}}</button>
 
     <button mat-button *ngIf="!isLoggedIn" (click)="redirectToLogin()">Login</button>
-    
     <button mat-button [matMenuTriggerFor]="profileMenu" *ngIf="isLoggedIn">Profile</button>
     <mat-menu #profileMenu="matMenu">
       <button mat-menu-item>Profile</button>

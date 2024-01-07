@@ -2,7 +2,7 @@
     display: block;
     position: relative;
     width: 200px;
-    height: 50px;
+    height: 45px;
     width: 50%; /* 50% width of the host element */
   }
   
@@ -17,11 +17,11 @@ input[type="checkbox"] {
   width: 50%; /* Use 50% of parent width */
   height: calc(100% - 0.2rem); /* Height minus offset */
   background-color: #fff;
-  border-radius: 22px;
+  border-radius: 20px;
   cursor: pointer;
   z-index: 100;
   transition: left 0.3s;
-
+  user-select: none;
   line-height: 2.8rem;
   font-family: Lato, sans-serif;
   font-size: 1.1rem;

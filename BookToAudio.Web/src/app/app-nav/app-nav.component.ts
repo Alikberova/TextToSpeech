@@ -35,10 +35,14 @@ export class AppNavComponent {
 
   logoutUser(): void {
     this.authService.removeToken();
-    this.router.navigate(['home']);
+    this.redirectToHome();
   }
 
   redirectToLogin() {
     this.router.navigate(['login']);
+  }
+
+  redirectToHome() {
+    this.router.navigate(['home']);
   }
 }
