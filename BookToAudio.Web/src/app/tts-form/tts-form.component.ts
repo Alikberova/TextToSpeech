@@ -16,13 +16,13 @@ import { TextToSpeech } from '../models/text-to-speech';
 export class TtsFormComponent {
   constructor(private openAiClient: OpenaiClient) {}
   //todo delete id 
-  voices = [
-    { name: 'Alloy' },
-    { name: 'Echo' },
-    { name: 'Fable' },
-    { name: 'Onyx' },
-    { name: 'Nova' },
-    { name: 'Shimmer' },
+ voices = [
+    { name: 'alloy' },
+    { name: 'echo' },
+    { name: 'fable' },
+    { name: 'onyx' },
+    { name: 'nova' },
+    { name: 'shimmer' },
   ];
 
   selectedVoice = 'Alloy';
@@ -51,6 +51,7 @@ export class TtsFormComponent {
   }
 
   playSemple(param: TextToSpeech) {
+    //debugger;
     this.openAiClient.createSpeech(param).subscribe((blob: Blob) => {
       const audio = new Audio();
       const url = URL.createObjectURL(blob);
