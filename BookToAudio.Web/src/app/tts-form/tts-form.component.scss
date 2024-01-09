@@ -25,3 +25,10 @@
   color: #b282ff;
   transform: scale(1.1);
 }
+
+.file-upload.form-element { 
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 30px; 
+}
