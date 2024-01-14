@@ -1,5 +1,7 @@
+@import "colors";
+
 .footer {
-  background-color: var(--color-footer-background);
+  background-color: $footer-background-color;
   padding: 20px 0;
 }
 
@@ -16,7 +18,7 @@
 .footer-content span, .footer-content a {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: #bbb;
+  color: $light-gray;
 }
 
 .footer-content a {
@@ -26,7 +28,7 @@
 }
 
 .footer-content a:hover {
-  color: #fff;
+  color: $white;
 }
 
 @media screen and (max-width: 600px) {

@@ -1,0 +1,19 @@
+@use 'base/theme' as theme;
+@use '@angular/material' as mat;
+@import "base/color-pallete";
+
+$primary: mat.get-theme-color(theme.$deeppurple-amber-theme, 'primary');
+$secondary: $color-vivid-magenta;
+$tertiary: $color-indigo-dye;
+$accent: mat.get-theme-color(theme.$deeppurple-amber-theme, 'accent');
+$warn: mat.get-theme-color(theme.$deeppurple-amber-theme, 'warn');
+
+$white: #fff;
+$light-gray: #bbb;
+$dark-gray: #333;
+
+$background-color: $gradient-soft-dawn;
+$footer-background-color: $dark-gray;
+
+$header-color: $dark-gray;
+$link-color: $color-electric-indigo;
