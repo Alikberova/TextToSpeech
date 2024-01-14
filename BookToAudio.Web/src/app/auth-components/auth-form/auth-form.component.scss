@@ -1,3 +1,5 @@
+@import "colors";
+
 .login-container {
     display: flex;
     justify-content: center;
@@ -7,7 +9,7 @@
   
 .login-card {
   padding: 20px 25px;
-  background-color: var(--color-septenary);
+  background-color: $color-indigo-dye;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -17,13 +19,13 @@
     margin-top: 20px;
 
     mat-icon {
-      color: var(--color-septenary);
+      color: $color-indigo-dye;
     }
   }
 }
   
 .button-primary {
-  background-color: var(--color-primary);
+  background-color: $color-vivid-magenta;
   color: white;
   cursor: pointer;
   width: 50%;
@@ -36,7 +38,7 @@
 }
   
 .button-primary:hover {
-  background-color: var(--color-secondary);
+  background-color: $color-deep-fuchsia;
 }
 
 .input-field {

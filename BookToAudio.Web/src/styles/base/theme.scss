@@ -1,0 +1,14 @@
+@use '@angular/material' as mat;
+
+$deeppurple-amber-primary: mat.define-palette(mat.$deep-purple-palette);
+$deeppurple-amber-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$deeppurple-amber-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object (a configuration of palettes).
+$deeppurple-amber-theme: mat.define-light-theme((
+  color: (
+    primary: $deeppurple-amber-primary,
+    accent: $deeppurple-amber-accent,
+    warn: $deeppurple-amber-warn,
+  )
+));

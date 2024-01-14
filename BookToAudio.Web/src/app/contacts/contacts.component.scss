@@ -1,3 +1,5 @@
+@import "colors";
+
 .contact-layout {
     display: flex;
     flex-direction: column;
@@ -8,13 +10,12 @@
     width: 30%;
     margin: 5rem auto;
     padding: 2.3rem;
-    background-color: #fff;
+    background-color: $white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // subtle shadow for depth
     border-radius: 8px;
     min-width: 250px;
 
     h2 {
-        color: #333; // todo header color
         margin-bottom: 1.5rem;
         text-align: center;
     }
@@ -29,12 +30,6 @@
         .address {
             margin-left: 1rem;
         }
-
-        a {
-            color: #0056b3; // todo link color
-            text-decoration: none;
-        }
-
     }
 }
 
