@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Observable, catchError } from "rxjs";
 import { User } from "../models/user";
-import { Constants } from "../constants";
+import { ConfigConstants } from "../constants/config-constants";
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
 })
 
 export class UserClient {
-    private apiUrl = `${Constants.ApiUrl}/users`;
+    private apiUrl = `${ConfigConstants.ApiUrl}/users`;
 
     constructor(private http: HttpClient) {}
   
