@@ -19,6 +19,11 @@
     --gradient-1: linear-gradient(19deg, #21D4FD 0%, #B721FF 100%);
   }
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
 }
