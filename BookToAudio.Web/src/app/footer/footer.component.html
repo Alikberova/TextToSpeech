@@ -1,5 +1,6 @@
 <footer class="footer">
-    <div class="container">
-      <p class="text-center">© 2024 Text-to-Speech Application</p>
-    </div>
+  <div class="container footer-content">
+    <a mat-button *ngFor="let link of links" [routerLink]="link.path">{{ link.label }}</a>
+    <span>© {{year}} text to speech</span>
+  </div>
 </footer>

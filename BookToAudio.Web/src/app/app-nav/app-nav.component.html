@@ -9,7 +9,7 @@
   <span class="menu-items">
     <button mat-button *ngFor="let item of menu">{{item}}</button>
 
-    <button mat-button *ngIf="!isLoggedIn" (click)="redirectToLogin()">Login</button>
+    <button mat-button *ngIf="!isLoggedIn" (click)="redirectToLogin()" hidden>Login</button>
     <button mat-button [matMenuTriggerFor]="profileMenu" *ngIf="isLoggedIn">Profile</button>
     <mat-menu #profileMenu="matMenu">
       <button mat-menu-item>Profile</button>
