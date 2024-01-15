@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Tests", "BookTo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Selenium.Tests", "BookToAudio.Selenium.Tests\BookToAudio.Selenium.Tests.csproj", "{F6C70506-C1E2-47FA-B73C-B42FB1F2095C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,12 +45,17 @@ Global
 		{9E0132F9-4D5F-4E9C-9C86-844FD7315FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E0132F9-4D5F-4E9C-9C86-844FD7315FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E0132F9-4D5F-4E9C-9C86-844FD7315FF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6C70506-C1E2-47FA-B73C-B42FB1F2095C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6C70506-C1E2-47FA-B73C-B42FB1F2095C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6C70506-C1E2-47FA-B73C-B42FB1F2095C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6C70506-C1E2-47FA-B73C-B42FB1F2095C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9E0132F9-4D5F-4E9C-9C86-844FD7315FF5} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
+		{F6C70506-C1E2-47FA-B73C-B42FB1F2095C} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD282FE1-B6D4-4EBF-BF28-4E0BB9E5FD62}
