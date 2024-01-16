@@ -1,13 +1,12 @@
 $appnav-height: 64px;
 
-$container-height: calc(100vh - #{appnav-height});
+$container-height: calc(100vh - $appnav-height);
 
 $quarter-vw: 25vw;
-
 $quarter-vh: 25vh;
 
 $half-vw: 50vw;
-
 $half-vh: 50vh;
 
 $triple-quarter-vh: 75vh;
+$triple-quarter-vw: 75vw;
