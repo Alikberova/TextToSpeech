@@ -1,6 +1,5 @@
-@use "mixins/containers" as mixins;
+@use "mixins/containers" as containers;
 @import "colors";
-@import "sizes";
 @import "base/color-pallete";
 
 .feedback-card {
@@ -30,7 +29,7 @@ mat-card-title {
 }
 
 mat-card-content {
-    @include mixins.white-rounded-container;
+    @include containers.white-rounded-container;
 }
 
 button {

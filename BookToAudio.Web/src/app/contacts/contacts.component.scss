@@ -1,4 +1,4 @@
-@use 'mixins/containers' as mixins;
+@use 'mixins/containers' as containers;
 
 .contact-layout {
     display: flex;
@@ -8,7 +8,7 @@
 }
 
 .contacts-container {
-    @include mixins.white-rounded-container;
+    @include containers.white-rounded-container;
     width: 30%;
     margin: 5rem auto;
     min-width: 250px;
