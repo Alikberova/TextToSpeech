@@ -10,12 +10,17 @@ body {
 }
 
  h1, h2, h3, h4 {
-  color: $header-color;
+  color: $heading-color;
 }
 
 a {
   color: $link-color;
   text-decoration: none;
+}
+
+.content {
+  height: 100%;
+  background: inherit !important;
 }
 
 //todo колесо очікування: https://cssgradient.io/gradient-backgrounds/

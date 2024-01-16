@@ -1,0 +1,12 @@
+@import "colors";
+
+@mixin white-rounded-container {
+    @include rounded-container($white);
+}
+
+@mixin rounded-container($background) {
+    padding: 2.8rem !important;
+    background: $background;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
