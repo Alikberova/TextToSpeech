@@ -23,6 +23,7 @@ export class PrivacyPolicyComponent implements OnInit {
   lastUpdatedDate = 'TODO: Date of production launch';
 
   constructor(private http: HttpClient) {}
+
   ngOnInit() {
     this.getPrivacyPolicy().subscribe(data => {
       const sections = data.split('\r\n').filter(section => section.trim() !== '');
@@ -32,7 +33,7 @@ export class PrivacyPolicyComponent implements OnInit {
 
         lines.forEach((line, index) => {
           if (index === 0 && line.startsWith('#')) {
-            sectionObj.heading = line.substring(1).trim(); // Assume first line could be a heading
+            sectionObj.heading = line.substring(1).trim(); // first line is a heading
           } else {
             sectionObj.paragraphs.push(line);
           }
@@ -41,7 +42,6 @@ export class PrivacyPolicyComponent implements OnInit {
         this.policySections.push(sectionObj);
       });
     });
-    console.log(this.policySections);
   }
 
   getPrivacyPolicy(): Observable<string> {
