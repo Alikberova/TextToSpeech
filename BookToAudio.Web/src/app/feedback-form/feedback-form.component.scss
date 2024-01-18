@@ -30,6 +30,10 @@ mat-card-title {
 
 mat-card-content {
     @include containers.white-rounded-container;
+    @media screen and (max-width: 768px) {
+        max-width: 75vw;
+        margin-bottom: 100px;
+    }
 }
 
 button {

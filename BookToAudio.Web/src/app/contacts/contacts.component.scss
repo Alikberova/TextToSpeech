@@ -5,13 +5,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    margin-top: 2rem;
+    min-height: 150px;
 }
 
 .contacts-container {
     @include containers.white-rounded-container;
-    width: 30%;
-    margin: 5rem auto;
-    min-width: 250px;
+    width: 90%;
+    max-width: 600px;
+    margin-bottom: 2rem; 
 
     h2 {
         margin-bottom: 1.5rem;
@@ -36,9 +39,12 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    height: 300px;
-    width: 35%;
-    min-width: 300px;
+    width: 90%; // Same width as contacts-container for consistency
+    max-width: 600px; // Control the maximum size of the SVG
+    height: auto; // Allow the height to adjust based on the width
+    margin-bottom: 2rem;
+    min-height: 300px; 
+
     pointer-events: none;
     user-select: none;
 
