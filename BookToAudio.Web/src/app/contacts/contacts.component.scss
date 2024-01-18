@@ -1,33 +1,38 @@
 @use 'mixins/containers' as containers;
 
+$container-width: 90%;
+
 .contact-layout {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    margin-top: 2rem;
+    min-height: 150px;
 }
 
 .contacts-container {
     @include containers.white-rounded-container;
-    width: 30%;
-    margin: 5rem auto;
-    min-width: 250px;
+    width: $container-width;
+    max-width: 600px;
+    margin-bottom: 2rem; 
+}
 
-    h2 {
-        margin-bottom: 1.5rem;
-        text-align: center;
-    }
+h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
 
-    li {
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        font-size: 1rem;
+li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
 
-        a,
-        .address {
-            margin-left: 1rem;
-        }
+    a,
+    .address {
+        margin-left: 1rem;
     }
 }
 
@@ -36,9 +41,11 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    height: 300px;
-    width: 35%;
-    min-width: 300px;
+    width: $container-width;
+    max-width: 600px;
+    height: auto;
+    margin-bottom: 2rem;
+    min-height: 300px; 
     pointer-events: none;
     user-select: none;
 
