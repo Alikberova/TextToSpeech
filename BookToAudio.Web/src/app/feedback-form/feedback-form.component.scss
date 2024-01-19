@@ -1,11 +1,13 @@
 @use "mixins/containers" as containers;
 @import "colors";
+@import "sizes";
 @import "base/color-pallete";
 
-.feedback-card {
+.content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: none !important;
 }
 
 mat-card-title {

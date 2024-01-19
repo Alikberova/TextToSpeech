@@ -1,4 +1,4 @@
-.privacy-policy-card {
+mat-card {
     margin: 20px 20vw;
     padding: 50px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); //todo mixin
@@ -25,16 +25,16 @@ p {
 }
 
 @media screen and (max-width: 768px) {
-    .privacy-policy-card {
+    mat-card {
         margin: 10px;
         padding: 15px;
     }
 
-    .mat-card-title {
+    mat-card-title {
         font-size: 1.3rem;
     }
 
-    .mat-card-subtitle {
+    mat-card-subtitle {
         font-size: 1rem;
     }
 
