@@ -16,7 +16,7 @@ export class FooterComponent {
   links = [
     { path: '/qa', label: 'Q&A' },
     { path: '/contacts', label: 'Contacts' },
-    { path: '/privacy-policy', label: 'Privacy Policy' },
-    { path: '/terms-of-use', label: 'Terms of Use' }
+    { path: '/legal/privacy-policy', label: 'Privacy Policy' },
+    { path: 'legal//terms-of-use', label: 'Terms of Use' }
   ];
 }

@@ -1,0 +1,62 @@
+{
+    "lastUpdatedDate": "2023-01-01",
+    "sections": [
+      {
+        "heading": "Introduction",
+        "content": "Welcome to Text to Speech (\"we\", \"us\", \"our\"). Text to Speech, along with our slogan \"everything to speech\", aims to convert text in files into audio and allows users to download this audio. This Privacy Policy outlines our practices regarding the collection, use, and protection of your data."
+      },
+      {
+        "heading": "Information Collection",
+        "content": "We do not currently collect personal information such as names or email addresses. However, we collect and store text documents and possibly audio files uploaded by users. These are used solely for the purpose of providing and improving our service."
+      },
+      {
+        "heading": "Purpose of Data Collection",
+        "content": "The text and audio files collected are used for development purposes, to enhance the functionality and user experience of our service."
+      },
+      {
+        "heading": "Data Storage and Security",
+        "content": "While the exact details of data storage are yet to be finalized, we are considering cloud storage solutions. The security of your data is a priority for us, and we are committed to implementing appropriate measures to protect it."
+      },
+      {
+        "heading": "Cookies and Tracking Technologies",
+        "content": "As of now, we do not use cookies or tracking technologies, but this may change in the future to improve user experience."
+      },
+      {
+        "heading": "Data Transfer and Storage",
+        "content": "As we consider various server locations, including potential cloud storage solutions in different countries, it is important to note that user data may be transferred to and processed in countries other than your country of residence. These countries may have data protection laws that are different from those in your country."
+      },
+      {
+        "heading": "Compliance with Data Protection Standards",
+        "content": "We are committed to maintaining a high standard of data privacy and will strive to protect your information in accordance with the best practices, following guidelines similar to those set by the GDPR, regardless of where your data is processed."
+      },
+      {
+        "heading": "Safeguards for International Transfer",
+        "content": "We will implement appropriate safeguards to ensure the protection of your data during any international transfer. This may include the use of standard contractual clauses, adherence to recognized frameworks like the Privacy Shield (if applicable), or relying on the data protection policies of our cloud providers."
+      },
+      {
+        "heading": "User Rights and Data Management",
+        "content": "Currently, users do not have personal accounts to manage their data. However, if you wish to request the deletion of your data, please contact us at everything.to.speech@gmail.com."
+      },
+      {
+        "heading": "Children’s Privacy",
+        "content": "Our site does not have age restrictions, and we do not knowingly collect personally identifiable information from children. We store only the text and audio files you provide."
+      },
+      {
+        "heading": "Updates to Our Privacy Policy",
+        "content": "We reserve the right to modify this policy. Users will be notified of any changes through a message or banner on our site."
+      },
+      {
+        "heading": "Contact Information",
+        "content": "For any privacy-related concerns, please contact us at email everything.to.speech@gmail.com or Telegram @yev_tts"
+      },
+      {
+        "heading": "Effective Date",
+        "content": "This Privacy Policy is effective as of [TODO Insert Effective Date - likely the date of your production launch]."
+      },
+      {
+        "heading": "Beta Testing Specifics",
+        "content": "During our beta testing phase, we are gathering feedback to improve our service. The features and data usage currently in place will remain the same but may be expanded upon after the beta testing concludes. Beta testers are encouraged to provide feedback and report any concerns."
+      }
+    ]
+  }
+  
