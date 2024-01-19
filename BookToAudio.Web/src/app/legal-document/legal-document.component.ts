@@ -24,7 +24,6 @@ export class LegalDocumentComponent {
     this.route.paramMap.subscribe(params => {
       const docType = params.get('docType')!;
       this.document = this.documentService.getDocument(docType);
-      console.log(this.document.sections)
       this.lastUpdatedDate = this.document.lastUpdatedDate;
       window.scrollTo(0, 0);
     });
