@@ -3,23 +3,23 @@
     <mat-card-title>Feedback Form</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form>
+    <form (ngSubmit)="submitFeedback()">
       <mat-form-field appearance="fill">
         <mat-label>Your Name</mat-label>
-        <input matInput placeholder="Enter your name">
+        <input matInput placeholder="Enter your name" [(ngModel)]="feedback.name" name="name" required>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Your Email</mat-label>
-        <input matInput placeholder="Enter your email">
+        <input matInput type="email" placeholder="Enter your email" [(ngModel)]="feedback.email" name="email" required>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Your Feedback</mat-label>
-        <textarea matInput placeholder="Enter your feedback"></textarea>
+        <textarea matInput placeholder="Enter your feedback" [(ngModel)]="feedback.message" name="message" required></textarea>
       </mat-form-field>
 
-      <button mat-raised-button color="primary">Submit</button>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
     </form>
   </mat-card-content>
 </mat-card>

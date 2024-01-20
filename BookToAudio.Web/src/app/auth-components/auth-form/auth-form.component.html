@@ -2,21 +2,25 @@
   <div class="svg-background"></div>
 
   <div class="login-card">
-    
-    <toggle-button (changed)="onToggleChange($event)" [isRegister]="isRegister">
+    <toggle-button (changed)="onToggleChange($event)" [isRegister]="isRegister" role="button"
+      aria-label="Toggle Registration/Login">
     </toggle-button>
 
     <form (ngSubmit)="onSubmit()" autocomplete="on">
-        <mat-form-field class="input-field">
-          <input matInput [(ngModel)]="userName" name="username" placeholder="Username"  required>
-        </mat-form-field>
-        <mat-form-field class="input-field">
-          <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Password" required
+      <mat-form-field class="input-field">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="userName" name="username" placeholder="Username" required>
+      </mat-form-field>
+
+      <mat-form-field class="input-field">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" placeholder="Password" required
           [type]="hidePassword ? 'password' : 'text'">
-          <mat-icon matSuffix (click)="hidePassword = !hidePassword">{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </mat-form-field>
+        <mat-icon matSuffix (click)="hidePassword = !hidePassword"
+          aria-label="Toggle Password Visibility">{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </mat-form-field>
+
       <button mat-raised-button class="button-primary" type="submit">{{ buttonLabel }}</button>
     </form>
-
   </div>
 </div>
