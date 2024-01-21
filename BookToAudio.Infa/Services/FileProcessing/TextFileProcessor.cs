@@ -12,7 +12,7 @@ public class TextFileProcessor : IFileProcessor
         _pathService = pathService;
     }
 
-    public bool CanProcess(string fileType) => fileType.Equals(".txt", StringComparison.OrdinalIgnoreCase);
+    public bool CanProcess(string fileType) => fileType.Equals("txt", StringComparison.OrdinalIgnoreCase);
 
     public async Task<string> ExtractContentAsync(string fileId)
     {

@@ -1,4 +1,5 @@
 ﻿using BookToAudio.Core;
+using BookToAudio.Core.Entities;
 using BookToAudio.Core.Repositories;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Infra.Services;
@@ -6,6 +7,7 @@ using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
 using OpenAI.Audio;
+using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Services;
 
@@ -17,13 +19,15 @@ public class SpeechService
     private readonly IPathService _pathService;
     private readonly FileProcessorFactory _fileProcessorFactory;
     private readonly IAudioFileRepositoryService _audioFileRepositoryService;
+    private readonly IFileStorageService _fileStorageService;
 
     public SpeechService(ITextProcessingService textFileService,
         IOpenAiService openAiService,
         IAudioFileService audioFileService,
         IPathService pathService,
         FileProcessorFactory fileProcessorFactory,
-        IAudioFileRepositoryService audioFileRepositoryService)
+        IAudioFileRepositoryService audioFileRepositoryService,
+        IFileStorageService fileStorageService)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
@@ -31,15 +35,25 @@ public class SpeechService
         _pathService = pathService;
         _fileProcessorFactory = fileProcessorFactory;
         _audioFileRepositoryService = audioFileRepositoryService;
+        _fileStorageService = fileStorageService;
     }
     
-
-    internal async Task CreateSpeechAsync(Infra.Dto.SpeechRequest request)
+    internal async Task<Guid> CreateSpeechAsync(Infra.Dto.SpeechRequest request)
     {
-        var fileProcessor = _fileProcessorFactory.GetProcessor(request.FileType) ??
+        var filedata = request.File?.FileName.Split('.');
+
+        if (filedata?.Length is not 2)
+        {
+            throw new ArgumentException("Couldn't get the extension type from file because expected that file name will contain 1 dot");
+        }
+
+        var fileProcessor = _fileProcessorFactory.GetProcessor(filedata[1]) ??
             throw new NotSupportedException("File type not supported");
 
-        var fileText = await fileProcessor.ExtractContentAsync(request.FileId.ToString());
+        //store file on the machine; save to db later todo
+        var fileId = await _fileStorageService.StoreFileAsync(request.File!);
+
+        var fileText = await fileProcessor.ExtractContentAsync(fileId.ToString());
 
         var maxLength = 4096;
 
@@ -52,7 +66,17 @@ public class SpeechService
 
         var newRequest = new SpeechRequest(fileText, request.Model, request.Voice, request.ResponseFormat, request.Speed);
 
-        ReadOnlyMemory<byte>[] bytesCollection = await _openAiService.RequestSpeechChunksAsync(newRequest, textChunks);
+        var audioFile = new AudioFile
+        {
+            Id = fileId,
+            CreatedAt = DateTime.UtcNow,
+            Status = Status.Processing
+        };
+
+        // MIGRATION IS NOT DONE YET; THIS WILL THROW AN ERROR
+        await _audioFileRepositoryService.AddAudioFileAsync(audioFile);
+
+        var bytesCollection = await _openAiService.RequestSpeechChunksAsync(newRequest, textChunks);
 
         var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
 
@@ -62,7 +86,12 @@ public class SpeechService
             await File.WriteAllBytesAsync(filePath, bytes);
         }
 
-        await _audioFileRepositoryService.AddAudioFileAsync(bytes, request.FileId);
+        audioFile.Status = Status.Completed;
+        audioFile.Data = bytes;
+
+        await _audioFileRepositoryService.UpdateAudioFileAsync(audioFile);
+
+        return fileId;
         // TODO: audio metadata
     }
 }

@@ -1,7 +1,7 @@
-export class TextToSpeech {
-  model: string = "";
-  input: string = "";
-  voice: string = "";
+export interface SpeechRequest {
+  model: string;
   speed?: number;
-  responseFormat?: string;
+  voice?: string;
+  input?: string;
+  file?: File
 }

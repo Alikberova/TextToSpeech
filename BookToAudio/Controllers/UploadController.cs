@@ -22,13 +22,7 @@ public class UploadController : ControllerBase
             return BadRequest("No file uploaded.");
         }
 
-        string fileContent;
-        using (var reader = new StreamReader(file.OpenReadStream()))
-        {
-            fileContent = await reader.ReadToEndAsync();
-        }
-
-        var fileId = await _fileStorageService.StoreFileAsync(fileContent);
+        var fileId = await _fileStorageService.StoreFileAsync(file);
 
         return Ok(new { FileId = fileId });
     }

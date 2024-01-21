@@ -1,4 +1,6 @@
-﻿namespace BookToAudio.Core.Entities;
+﻿using static BookToAudio.Core.Enums;
+
+namespace BookToAudio.Core.Entities;
 
 public class AudioFile
 {
@@ -7,4 +9,5 @@ public class AudioFile
     public byte[] Data { get; set; } = [];
     public DateTime CreatedAt { get; set; }
     public string Description { get; set; } = string.Empty;
+    public Status Status { get; set; }
 }

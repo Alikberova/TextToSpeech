@@ -34,3 +34,12 @@
   justify-content: flex-start;
   gap: 30px; 
 }
+
+.submit-btn {
+  pointer-events: auto !important; // to turn on tooltip on disabled button
+}
+
+.progress-bar-container {
+  height: 3px;
+  width: 100%;
+}
