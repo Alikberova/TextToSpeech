@@ -4,7 +4,10 @@
       <mat-select [(ngModel)]="selectedVoice" name="selectedVoice">
         <mat-option *ngFor="let voice of voices" [value]="voice.name">
           {{ voice.name }}
-          <mat-icon class="play-icon" (click)="playVoiceSample($event, voice.name, speed)">play_circle</mat-icon>
+          <mat-icon
+            class="play-icon"
+            (click)="playVoiceSample($event, voice.name, speed)"
+            [attr.aria-label]="'Play voice sample for ' + voice.name">play_circle</mat-icon>
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -14,7 +17,7 @@
       <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt"/>
       <div>
         <span *ngIf="chosenFileName">{{ chosenFileName }}</span>
-        <button mat-button *ngIf="chosenFileName" (click)="clearFileSelection()" color="warn">
+        <button mat-button *ngIf="chosenFileName" (click)="clearFileSelection()" color="warn" aria-label="Clear selected file">
           <mat-icon>clear</mat-icon>
         </button>
       </div>
