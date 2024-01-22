@@ -1,7 +1,9 @@
+import { SpeechVoice } from "./speech-voice.enum";
+
 export interface SpeechRequest {
   model: string;
   speed?: number;
-  voice?: string;
+  voice?: SpeechVoice;
   input?: string;
-  file?: File
+  file?: File;
 }

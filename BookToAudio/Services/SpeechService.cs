@@ -1,12 +1,13 @@
 ﻿using BookToAudio.Core;
 using BookToAudio.Core.Entities;
-using BookToAudio.Core.Repositories;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Infra.Services;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
-using OpenAI.Audio;
+using BookToAudio.RealTime;
+using Microsoft.AspNetCore.SignalR;
+
 using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Services;
@@ -18,80 +19,124 @@ public class SpeechService
     private readonly IAudioFileService _audioFileService;
     private readonly IPathService _pathService;
     private readonly FileProcessorFactory _fileProcessorFactory;
-    private readonly IAudioFileRepositoryService _audioFileRepositoryService;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IHubContext<AudioHub> _hubContext;
 
     public SpeechService(ITextProcessingService textFileService,
         IOpenAiService openAiService,
         IAudioFileService audioFileService,
         IPathService pathService,
         FileProcessorFactory fileProcessorFactory,
-        IAudioFileRepositoryService audioFileRepositoryService,
-        IFileStorageService fileStorageService)
+        IFileStorageService fileStorageService,
+        IHubContext<AudioHub> hubContext)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
         _audioFileService = audioFileService;
         _pathService = pathService;
         _fileProcessorFactory = fileProcessorFactory;
-        _audioFileRepositoryService = audioFileRepositoryService;
         _fileStorageService = fileStorageService;
+        _hubContext = hubContext;
     }
-    
-    internal async Task<Guid> CreateSpeechAsync(Infra.Dto.SpeechRequest request)
+
+    /// <summary>
+    /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns>ID of the newly created audio file</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public Guid CreateSpeech(Infra.Dto.SpeechRequest request)
     {
-        var filedata = request.File?.FileName.Split('.');
-
-        if (filedata?.Length is not 2)
+        if (request.File is null)
         {
-            throw new ArgumentException("Couldn't get the extension type from file because expected that file name will contain 1 dot");
+            throw new ArgumentException(nameof(request.File));
         }
-
-        var fileProcessor = _fileProcessorFactory.GetProcessor(filedata[1]) ??
-            throw new NotSupportedException("File type not supported");
-
-        //store file on the machine; save to db later todo
-        var fileId = await _fileStorageService.StoreFileAsync(request.File!);
-
-        var fileText = await fileProcessor.ExtractContentAsync(fileId.ToString());
-
-        var maxLength = 4096;
-
-        if (HostingEnvironment.IsDevelopment())
-        {
-            maxLength = 150;
-        }
-
-        var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, maxLength);
-
-        var newRequest = new SpeechRequest(fileText, request.Model, request.Voice, request.ResponseFormat, request.Speed);
 
         var audioFile = new AudioFile
         {
-            Id = fileId,
+            Id = Guid.NewGuid(),
+            Status = Status.Processing,
             CreatedAt = DateTime.UtcNow,
-            Status = Status.Processing
         };
 
-        // MIGRATION IS NOT DONE YET; THIS WILL THROW AN ERROR
-        await _audioFileRepositoryService.AddAudioFileAsync(audioFile);
+        var fileId = audioFile.Id;
 
-        var bytesCollection = await _openAiService.RequestSpeechChunksAsync(newRequest, textChunks);
-
-        var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
-
-        if (HostingEnvironment.IsDevelopment())
-        {
-            string filePath = _pathService.GetFileStorageFilePath($"{DateTime.Now.Minute}.mp3");
-            await File.WriteAllBytesAsync(filePath, bytes);
-        }
-
-        audioFile.Status = Status.Completed;
-        audioFile.Data = bytes;
-
-        await _audioFileRepositoryService.UpdateAudioFileAsync(audioFile);
+        // 
+        _ = ProcessSpeechAsync(request, audioFile);
 
         return fileId;
-        // TODO: audio metadata
     }
+
+    internal async Task ProcessSpeechAsync(Infra.Dto.SpeechRequest request, AudioFile audioFile)
+    {
+        try
+        {
+            string fileText = await ExtractContent(request);
+
+            var maxLength = 4096;
+
+            if (HostingEnvironment.IsDevelopment())
+            {
+                maxLength = 150;
+            }
+
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, maxLength);
+
+            var bytesCollection = await _openAiService.RequestSpeechChunksAsync(textChunks, request.Model, request.Voice, request.Speed);
+
+            var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
+
+            string localFilePath = _pathService.CreateFileStorageFilePath($"{audioFile.Id}.mp3");
+
+            await File.WriteAllBytesAsync(localFilePath, bytes);
+
+            audioFile.Status = Status.Completed;
+            audioFile.Data = bytes;
+
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+            // TODO: audio metadata
+        }
+        catch (Exception ex)
+        {
+            audioFile.Status = Status.Failed;
+
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+        }
+    }
+
+    private async Task<string> ExtractContent(Infra.Dto.SpeechRequest request)
+    {
+        var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
+        throw new NotSupportedException("File type not supported");
+
+        var fileText = await fileProcessor.ExtractContentAsync(request.File!);
+        return fileText;
+    }
+
+    public async Task<MemoryStream> CreateSpeechSample(Infra.Dto.SpeechRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Input))
+        {
+            throw new ArgumentException(nameof(request.Input));
+        }
+
+        var bytesCollection = await _openAiService.RequestSpeechChunksAsync([request.Input], request.Model, request.Voice, request.Speed);
+
+        if (bytesCollection.Length is not 1)
+        {
+            throw new Exception($"Bytes collection length is not as expected - expected  1, got: {bytesCollection.Length}");
+        }
+
+        return new MemoryStream(bytesCollection[0].ToArray());
+    }
+
+    /// <summary>
+    /// Notify clients about the status update
+    /// </summary>
+    private async Task UpdateAudioStatus(Guid audioFileId, string status)
+    {
+        await _hubContext.Clients.All.SendAsync("AudioStatusUpdated", audioFileId.ToString(), status);
+    }
+
+    // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.
 }

@@ -9,7 +9,6 @@ namespace BookToAudio.Controllers;
 public class SpeechController : ControllerBase
 {
     private readonly SpeechService _speechService;
-    
 
     public SpeechController(SpeechService speechService)
     {
@@ -18,10 +17,18 @@ public class SpeechController : ControllerBase
 
     // POST api/<SpeechController>
     [HttpPost]
-    public async Task<IActionResult> CreateSpeech([FromForm] SpeechRequest request)
+    public IActionResult CreateSpeech([FromForm] SpeechRequest request)
     {
-        var fileId = await _speechService.CreateSpeechAsync(request);
+        var fileId = _speechService.CreateSpeech(request);
 
         return Ok(fileId);
+    }
+
+    [HttpPost("sample")]
+    public async Task<IActionResult> GetSpeechSample([FromBody] SpeechRequest request)
+    {
+        var audioStream = await _speechService.CreateSpeechSample(request);
+
+        return new FileStreamResult(audioStream, "audio/mpeg");
     }
 }

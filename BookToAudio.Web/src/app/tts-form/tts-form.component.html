@@ -1,10 +1,10 @@
 <form class="tts-form content" (ngSubmit)="onSubmit()">
   <mat-form-field class="form-element">
     <mat-label>Select voice</mat-label>
-    <mat-select [(ngModel)]="textToSpeech.voice" name="voice" [placeholder]="voices[0]">
+    <mat-select [(ngModel)]="textToSpeech.voice" name="voice">
       <mat-option *ngFor="let voice of voices" [value]="voice">
         {{ voice }}
-        <mat-icon class="play-icon" (click)="playVoiceSample($event, voice, textToSpeech.speed!)"
+        <mat-icon class="play-icon" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)"
           [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
       </mat-option>
     </mat-select>
@@ -32,11 +32,12 @@
   </div>
 
   <button mat-raised-button color="primary" class="form-element submit-btn" [disabled]="!textToSpeech.file"
-    [matTooltip]="textToSpeech.file ? '' : 'You need to select file first'">Submit
+    [matTooltip]="textToSpeech.file || isSpeechReady ? '' : 'You need to select file first'">Submit
   </button>
 
-  <button type="button" mat-raised-button color="accent" class="form-element" [disabled]="!isSpeechReady" (click)="download()">
+  <a mat-raised-button color="accent" class="form-element" [href]="audioDownloadUrl" download
+    [disabled]="!isSpeechReady">
     Download
-  </button>
+  </a>
 
 </form>
