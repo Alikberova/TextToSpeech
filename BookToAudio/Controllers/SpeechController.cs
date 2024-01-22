@@ -18,11 +18,10 @@ public class SpeechController : ControllerBase
 
     // POST api/<SpeechController>
     [HttpPost]
-    public async Task<IActionResult> CreateSpeech([FromBody] SpeechRequest request)
+    public async Task<IActionResult> CreateSpeech([FromForm] SpeechRequest request)
     {
-        await _speechService.CreateSpeechAsync(request);
+        var fileId = await _speechService.CreateSpeechAsync(request);
 
-        //todo how to be informed that speech is ready
-        return Ok("Speech creation initiated.");
+        return Ok(fileId);
     }
 }

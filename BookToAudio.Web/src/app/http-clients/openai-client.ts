@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigConstants } from '../constants/config-constants';
-import { TextToSpeech } from '../models/text-to-speech';
+import { SpeechRequest } from '../models/text-to-speech';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class OpenaiClient {
   //todo найти способ как взять апикей с переменых окружения
   constructor(private http: HttpClient) {}
 
-  createSpeech(textToSpeech: TextToSpeech) {
+  createSpeech(textToSpeech: SpeechRequest) {
     const body = {
       model: textToSpeech.model,
       voice: textToSpeech.voice,

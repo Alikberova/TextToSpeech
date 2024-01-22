@@ -1,40 +1,42 @@
-<form class="tts-form content" >
-    <mat-form-field class="form-element">
-      <mat-label>Select voice</mat-label>
-      <mat-select [(ngModel)]="selectedVoice" name="selectedVoice">
-        <mat-option *ngFor="let voice of voices" [value]="voice.name">
-          {{ voice.name }}
-          <mat-icon
-            class="play-icon"
-            (click)="playVoiceSample($event, voice.name, speed)"
-            [attr.aria-label]="'Play voice sample for ' + voice.name">play_circle</mat-icon>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+<form class="tts-form content" (ngSubmit)="onSubmit()">
+  <mat-form-field class="form-element">
+    <mat-label>Select voice</mat-label>
+    <mat-select [(ngModel)]="textToSpeech.voice" name="voice" [placeholder]="voices[0]">
+      <mat-option *ngFor="let voice of voices" [value]="voice">
+        {{ voice }}
+        <mat-icon class="play-icon" (click)="playVoiceSample($event, voice, textToSpeech.speed!)"
+          [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 
-    <div class="file-upload form-element">
-      <button mat-raised-button color="primary" (click)="fileInput.click()">Choose File</button>
-      <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt"/>
-      <div>
-        <span *ngIf="chosenFileName">{{ chosenFileName }}</span>
-        <button mat-button *ngIf="chosenFileName" (click)="clearFileSelection()" color="warn" aria-label="Clear selected file">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </div>
+  <div class="file-upload form-element">
+    <button type="button" mat-raised-button color="primary" (click)="fileInput.click()">Choose File</button>
+    <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt" />
+    <div>
+      <span *ngIf="textToSpeech.file">{{ textToSpeech.file.name }}</span>
+      <button mat-button *ngIf="textToSpeech.file" (click)="clearFileSelection()" color="warn"
+        aria-label="Clear selected file">
+        <mat-icon>clear</mat-icon>
+      </button>
     </div>
-  
-    <mat-form-field class="form-element">
-      <mat-label>Setup speed</mat-label>
-      <input matInput type="number" min="0.5" max="4" step="0.1" [(ngModel)]="speed" name="speed"/>
-    </mat-form-field>
+  </div>
 
-  <button mat-raised-button color="primary" class="form-element">Submit</button>
-  <button
-    mat-raised-button
-    color="accent"
-    class="form-element"
-    [disabled]="!chosenFile"
-  >
+  <mat-form-field class="form-element">
+    <mat-label>Setup speed</mat-label>
+    <input matInput type="number" min="0.5" max="4" step="0.1" [(ngModel)]="textToSpeech.speed" name="speed" />
+  </mat-form-field>
+
+  <div class="progress-bar-container">
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <button mat-raised-button color="primary" class="form-element submit-btn" [disabled]="!textToSpeech.file"
+    [matTooltip]="textToSpeech.file ? '' : 'You need to select file first'">Submit
+  </button>
+
+  <button type="button" mat-raised-button color="accent" class="form-element" [disabled]="!isSpeechReady" (click)="download()">
     Download
   </button>
+
 </form>

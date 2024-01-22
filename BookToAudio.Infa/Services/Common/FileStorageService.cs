@@ -1,8 +1,10 @@
-﻿namespace BookToAudio.Infra.Services.Common;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BookToAudio.Infra.Services.Common;
 
 public interface IFileStorageService
 {
-    Task<string> StoreFileAsync(string fileContent);
+    Task<Guid> StoreFileAsync(IFormFile file);
 }
 
 public class FileStorageService : IFileStorageService
@@ -16,10 +18,16 @@ public class FileStorageService : IFileStorageService
         Directory.CreateDirectory(_storagePath);
     }
 
-    public async Task<string> StoreFileAsync(string fileContent)
+    public async Task<Guid> StoreFileAsync(IFormFile file)
     {
-        string fileId = Guid.NewGuid().ToString();
-        string filePath = Path.Combine(_storagePath, fileId);
+        string fileContent;
+        using (var reader = new StreamReader(file.OpenReadStream()))
+        {
+            fileContent = await reader.ReadToEndAsync();
+        }
+
+        var fileId = Guid.NewGuid();
+        var filePath = Path.Combine(_storagePath, fileId.ToString());
 
         await File.WriteAllTextAsync(filePath, fileContent);
 
