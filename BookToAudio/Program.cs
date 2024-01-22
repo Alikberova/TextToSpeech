@@ -2,6 +2,7 @@ using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Extensions;
 using BookToAudio.Infra;
+using BookToAudio.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSignalR();
+
 builder.Services.AddServices();
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
@@ -24,7 +27,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("WebCorsPolicy",
         builder => builder.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
@@ -48,12 +52,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("WebCorsPolicy"); // CORS should be before other middleware
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("WebCorsPolicy");
+app.MapHub<AudioHub>("/audiohub");
 
 app.Run();
 

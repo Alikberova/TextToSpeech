@@ -10,4 +10,5 @@ public class SpeechRequest
     public SpeechResponseFormat ResponseFormat { get; set; }
     public float Speed { get; set; } = 1;
     public IFormFile? File { get; set; }
+    public string? Input { get; set; }
 }

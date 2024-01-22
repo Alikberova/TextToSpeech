@@ -1,5 +1,6 @@
 ﻿using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace BookToAudio.Infra.Services.FileProcessing;
 
@@ -12,10 +13,11 @@ public class TextFileProcessor : IFileProcessor
         _pathService = pathService;
     }
 
-    public bool CanProcess(string fileType) => fileType.Equals("txt", StringComparison.OrdinalIgnoreCase);
+    public bool CanProcess(string fileType) => fileType.Equals(".txt", StringComparison.OrdinalIgnoreCase);
 
     public async Task<string> ExtractContentAsync(string fileId)
     {
+        //todo delete if not used
         string filePath = Path.Combine(_pathService.GetFileStoragePath(), fileId);
 
         if (!File.Exists(filePath))
@@ -24,5 +26,16 @@ public class TextFileProcessor : IFileProcessor
         }
 
         return await File.ReadAllTextAsync(filePath);
+    }
+
+    public async Task<string> ExtractContentAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return await Task.FromResult(string.Empty);
+        }
+
+        using var reader = new StreamReader(file.OpenReadStream());
+        return await reader.ReadToEndAsync();
     }
 }

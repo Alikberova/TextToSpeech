@@ -1,5 +1,6 @@
 ﻿using BookToAudio.Infra.Services.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace BookToAudio.Controllers;
 
@@ -14,27 +15,31 @@ public class AudioController : ControllerBase
         _pathService = pathService;
     }
 
-    [HttpGet]
-    [Route("downloadmp3/{fileId}")]
-    public IActionResult DownloadMp3(string fileId)
+    [HttpGet("downloadmp3/{fileId}/{fileName}")]
+    public IActionResult DownloadMp3(string fileId, string fileName)
     {
-        // Replace this with your logic to get the file path based on the fileId
-        string filePath = _pathService.GetFileStorageFilePath($"{fileId}.mp3");
+        string filePath = _pathService.CreateFileStorageFilePath($"{fileId}.mp3");
 
         if (!System.IO.File.Exists(filePath))
         {
             return NotFound("File not found.");
         }
 
-        byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-        return File(fileBytes, "audio/mpeg", Path.GetFileName(filePath));
+        var contentDisposition = new ContentDispositionHeaderValue("attachment")
+        {
+            FileName = fileName
+        };
+
+        Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
+
+        return File(System.IO.File.ReadAllBytes(filePath), "audio/mpeg");
     }
 
     [HttpGet]
     [Route("streammp3/{fileId}")]
     public async Task<IActionResult> StreamMp3(string fileId)
     {
-        string filePath = _pathService.GetFileStorageFilePath($"{fileId}.mp3");
+        string filePath = _pathService.CreateFileStorageFilePath($"{fileId}.mp3");
 
         if (!System.IO.File.Exists(filePath))
         {

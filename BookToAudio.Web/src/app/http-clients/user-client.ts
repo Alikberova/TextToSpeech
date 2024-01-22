@@ -9,7 +9,7 @@ import { Injectable } from "@angular/core";
 })
 
 export class UserClient {
-    private apiUrl = `${ConfigConstants.ApiUrl}/users`;
+    private apiUrl = `${ConfigConstants.BaseApiUrl}/users`;
 
     constructor(private http: HttpClient) {}
   
