@@ -61,7 +61,6 @@ public class SpeechService
 
         var fileId = audioFile.Id;
 
-        // 
         _ = ProcessSpeechAsync(request, audioFile);
 
         return fileId;

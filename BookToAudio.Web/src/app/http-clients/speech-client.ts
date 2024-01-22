@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class SpeechClient {
-  private apiUrl = `${ConfigConstants.ApiUrl}/speech`;
+  private apiUrl = `${ConfigConstants.BaseApiUrl}/speech`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import { ConfigConstants } from '../constants/config-constants';
 export class SignalRService {
   private hubConnection!: signalR.HubConnection;
 
-  public startConnection = () => {
+  startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${ConfigConstants.BaseUrl}/audioHub`)
       .build();
@@ -19,7 +19,7 @@ export class SignalRService {
       .catch(err => console.log('Error while starting connection: ' + err));
   };
 
-  public addAudioStatusListener(callback: (fileId: string, status: string) => void) {
+  addAudioStatusListener(callback: (fileId: string, status: string) => void) {
     this.hubConnection.on('AudioStatusUpdated', (fileId, status) => {
       callback(fileId, status);
     });

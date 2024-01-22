@@ -93,7 +93,7 @@ export class TtsFormComponent implements OnInit {
 
     this.speechClient.createSpeech(this.textToSpeech).subscribe({
       error: (error) => {
-        console.error(error, new Date());
+        console.error(error);
         this.isLoading = false;
         this.errorHandler.handleHttpError(error);
       }
@@ -104,6 +104,7 @@ export class TtsFormComponent implements OnInit {
     console.log(`Status of file ${fileId} updated to ${status}`, new Date());
     if (status !== 'Completed') {
       this.snackBarService.showError(`An error occurred while creating speech. Audio file status is ${status}`);
+      return;
     }
     this.isLoading = false;
     this.isSpeechReady = true;
@@ -112,10 +113,9 @@ export class TtsFormComponent implements OnInit {
   }
 
   private setDownloadData(audioFileId: string) {
-    const apiUrl = `${ConfigConstants.ApiUrl}/audio`;
+    const apiUrl = `${ConfigConstants.BaseApiUrl}/audio`;
     const fileNameWithoutExtension = this.textToSpeech.file!.name.replace(/\.[^/.]+$/, '');
-    
-    const audioDownloadFilename = fileNameWithoutExtension+ '.mp3'; // Store this for the download attribute
+    const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
   }
 }
