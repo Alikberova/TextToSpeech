@@ -110,6 +110,7 @@ export class TtsFormComponent implements OnInit {
     this.isSpeechReady = true;
     this.setDownloadData(fileId);
     this.clearFileSelection();
+    this.snackBarService.showSuccess('The audio file is ready, you can download it');
   }
 
   private setDownloadData(audioFileId: string) {

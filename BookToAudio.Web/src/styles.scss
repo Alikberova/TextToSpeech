@@ -23,6 +23,23 @@ a {
   background: inherit !important;
 }
 
+.snackbar {
+  margin-bottom: 80px !important;
+
+  @media (max-width: 600px) {
+    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
+  }
+}
+
+.snackbar-success {
+  --mdc-snackbar-container-color: #{$snackbar-color--success};
+  --mat-snack-bar-button-color: #{$snackbar-color--success-action};
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: #{$snackbar-color--error};
+}
+
 //todo колесо очікування: https://cssgradient.io/gradient-backgrounds/
 // font-family: 'Comfortaa', sans-serif; //maybe buttons
 // font-family: 'Noto Sans Display', sans-serif;
