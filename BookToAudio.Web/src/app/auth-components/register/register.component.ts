@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import {User} from '../../models/user'
 import { SnackbarService } from '../../shared-ui/snackbar-service';
 import { ErrorHandlerService } from '../../services/error-handler-service';
+import { RoutesConstants } from '../../constants/routes-constants';
 
 @Component({
     selector: 'app-register',
@@ -42,14 +43,14 @@ export class RegisterComponent {
     };
 
     this.userClient.register(user).subscribe({
-      next: (response) => this.router.navigate(['home']),
+      next: () => this.router.navigate([RoutesConstants.home]),
       error: (err) => this.errorHandler.handleHttpError(err)
     });
   }
 
   handleToggle(isRegister: boolean): void {
     if (!isRegister) {
-      this.router.navigate(['login']);
+      this.router.navigate([RoutesConstants.login]);
     }
   }
 }

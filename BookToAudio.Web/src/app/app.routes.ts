@@ -6,15 +6,16 @@ import { QaComponent } from './qa/qa.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
 import { LegalDocumentComponent } from './legal-document/legal-document.component';
+import { RoutesConstants } from './constants/routes-constants';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'home', component: HomeComponent },
-  { path: 'qa', component: QaComponent, pathMatch: 'full' },
-  { path: 'contacts', component: ContactsComponent, pathMatch: 'full' },
-  { path: "feedback", component: FeedbackFormComponent, pathMatch: 'full'},
-  { path: 'legal/:docType', component: LegalDocumentComponent },
+  { path: '', redirectTo: RoutesConstants.home, pathMatch: 'full' },
+  { path: RoutesConstants.login, component: LoginComponent },
+  { path: RoutesConstants.register, component: RegisterComponent },
+  { path: RoutesConstants.home, component: HomeComponent },
+  { path: RoutesConstants.qa, component: QaComponent, pathMatch: 'full' },
+  { path: RoutesConstants.contacts, component: ContactsComponent, pathMatch: 'full' },
+  { path: RoutesConstants.feedback, component: FeedbackFormComponent, pathMatch: 'full'},
+  { path: RoutesConstants.legal_documentType, component: LegalDocumentComponent },
   { path: '**', component: HomeComponent },
 ];
