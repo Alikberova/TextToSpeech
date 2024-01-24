@@ -4,6 +4,7 @@ import { UserClient } from '../../http-clients/user-client';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { ErrorHandlerService } from '../../services/error-handler-service';
+import { RoutesConstants } from '../../constants/routes-constants';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +35,7 @@ export class LoginComponent {
 
   handleToggle(isRegister: boolean): void {
     if (isRegister) {
-      this.router.navigate(['register']);
+      this.router.navigate([RoutesConstants.register]);
     }
   }
 }

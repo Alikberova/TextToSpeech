@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DocumentService } from '../services/document.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { DocumentType } from '../constants/routes-constants';
 
 @Component({
   selector: 'app-legal-document',
@@ -22,8 +23,8 @@ export class LegalDocumentComponent {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const docType = params.get('docType')!;
-      this.document = this.documentService.getDocument(docType);
+      const documentType = params.get(DocumentType)!;
+      this.document = this.documentService.getDocument(documentType);
       this.lastUpdatedDate = this.document.lastUpdatedDate;
       window.scrollTo(0, 0);
     });

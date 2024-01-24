@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import * as PrivacyPolicyData from '../../assets/privacy-policy.json';
 import * as TermsOfUseData from '../../assets/terms-of-use.json';
+import { PrivacyPolicy, TermsOfUse } from '../constants/routes-constants';
 
 @Injectable({ providedIn: 'root' })
 
 export class DocumentService {
 
   getDocument(documentType: string): any {
-    if (documentType === 'privacy-policy') {
+    if (documentType === PrivacyPolicy) {
       return PrivacyPolicyData;
     }
-    if (documentType === 'terms-of-use') {
+    if (documentType === TermsOfUse) {
       return TermsOfUseData;
     }
     return null;

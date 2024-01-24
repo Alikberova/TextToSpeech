@@ -6,6 +6,7 @@ import { AppMaterialModule } from '../app.material/app.material.module';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { RoutesConstants } from '../constants/routes-constants';
 
 @Component({
   selector: 'app-nav',
@@ -20,7 +21,7 @@ export class AppNavComponent {
     private router: Router) {}
 
     menu = [
-      { name: 'Feedback', route: '/feedback' },
+      { name: 'Feedback', route: `/${RoutesConstants.feedback}` },
     ];
   
   get isLoggedIn() {
@@ -41,10 +42,10 @@ export class AppNavComponent {
   }
 
   redirectToLogin() {
-    this.router.navigate(['login']);
+    this.router.navigate([RoutesConstants.login]);
   }
 
   redirectToHome() {
-    this.router.navigate(['home']);
+    this.router.navigate([RoutesConstants.home]);
   }
 }

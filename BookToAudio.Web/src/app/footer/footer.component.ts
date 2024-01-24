@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { RoutesConstants } from '../constants/routes-constants';
 
 @Component({
   selector: 'app-footer',
@@ -14,9 +15,9 @@ export class FooterComponent {
   year = new Date().getFullYear();
   
   links = [
-    { path: '/qa', label: 'Q&A' },
-    { path: '/contacts', label: 'Contacts' },
-    { path: '/legal/privacy-policy', label: 'Privacy Policy' },
-    { path: 'legal//terms-of-use', label: 'Terms of Use' }
+    { path: `/${RoutesConstants.qa}`, label: 'Q&A' },
+    { path: `/${RoutesConstants.contacts}`, label: 'Contacts' },
+    { path: `/${RoutesConstants.privacyPolicy}`, label: 'Privacy Policy' },
+    { path: `/${RoutesConstants.termsOfUse}`, label: 'Terms of Use' },
   ];
 }
