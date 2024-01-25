@@ -4,7 +4,7 @@ import { UserClient } from '../../http-clients/user-client';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { ErrorHandlerService } from '../../services/error-handler-service';
-import { RoutesConstants } from '../../constants/routes-constants';
+import { RoutesConstants } from '../../constants/route-constants';
 
 @Component({
   selector: 'app-login',

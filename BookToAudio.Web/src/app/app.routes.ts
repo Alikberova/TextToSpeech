@@ -6,7 +6,7 @@ import { QaComponent } from './qa/qa.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
 import { LegalDocumentComponent } from './legal-document/legal-document.component';
-import { RoutesConstants } from './constants/routes-constants';
+import { RoutesConstants } from './constants/route-constants';
 
 export const routes: Routes = [
   { path: '', redirectTo: RoutesConstants.home, pathMatch: 'full' },

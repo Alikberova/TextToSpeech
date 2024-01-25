@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import {User} from '../../models/user'
 import { SnackbarService } from '../../shared-ui/snackbar-service';
 import { ErrorHandlerService } from '../../services/error-handler-service';
-import { RoutesConstants } from '../../constants/routes-constants';
+import { RoutesConstants } from '../../constants/route-constants';
 
 @Component({
     selector: 'app-register',

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RoutesConstants } from '../constants/routes-constants';
+import { RoutesConstants } from '../constants/route-constants';
 
 @Component({
   selector: 'app-footer',

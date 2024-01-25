@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as PrivacyPolicyData from '../../assets/privacy-policy.json';
 import * as TermsOfUseData from '../../assets/terms-of-use.json';
-import { PrivacyPolicy, TermsOfUse } from '../constants/routes-constants';
+import { PrivacyPolicy, TermsOfUse } from '../constants/route-constants';
 
 @Injectable({ providedIn: 'root' })
 
@@ -14,6 +14,6 @@ export class DocumentService {
     if (documentType === TermsOfUse) {
       return TermsOfUseData;
     }
-    return null;
+    throw new Error(`Unknown document type: ${documentType}`);
   }
 }

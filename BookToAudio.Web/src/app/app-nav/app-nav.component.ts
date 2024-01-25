@@ -6,7 +6,7 @@ import { AppMaterialModule } from '../app.material/app.material.module';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { RoutesConstants } from '../constants/routes-constants';
+import { RoutesConstants } from '../constants/route-constants';
 
 @Component({
   selector: 'app-nav',
