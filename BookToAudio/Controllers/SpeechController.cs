@@ -1,4 +1,4 @@
-﻿using BookToAudio.Infra.Dto;
+﻿using BookToAudio.Core.Dto;
 using BookToAudio.Services;
 using Microsoft.AspNetCore.Mvc;
 
