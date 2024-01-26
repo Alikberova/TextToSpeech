@@ -13,7 +13,7 @@ import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
     standalone: true,
     templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [CommonModule, FormsModule, RouterOutlet, AppNavComponent, HomeComponent, FooterComponent, FeedbackFormComponent]
+  imports: [CommonModule, FormsModule, RouterOutlet, AppNavComponent, HomeComponent, FooterComponent]
 })
 export class AppComponent {
 }

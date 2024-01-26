@@ -3,7 +3,6 @@ import { FeedbackRequest } from "../models/feedback"
 import { HttpClient } from "@angular/common/http";
 import { ConfigConstants } from '../constants/config-constants';
 
-
 @Injectable({
   providedIn: "root"
 })
@@ -23,6 +22,5 @@ export class FeedbackService {
     }
 
     return this.http.post<string>(this.apiUrl, body)
-
   }
 }

@@ -8,21 +8,15 @@ namespace BookToAudio.Controllers;
     [ApiController]
 public class EmailController: ControllerBase
 {
-    IEmailService _emailService;
+    private readonly IEmailService _emailService;
     public EmailController(IEmailService emailService)
     {
         _emailService = emailService;
     }
 
     [HttpPost]
-  public void  feadback([FromBody] FeedbackRequest request)
+  public void  SendMessage([FromBody] EmailRequest request)
    {
         _emailService.FeedbackMessage(request);
    }
-
-    [HttpGet]
-   public string getting() {
-        return "getting work";
-    }
 }
-

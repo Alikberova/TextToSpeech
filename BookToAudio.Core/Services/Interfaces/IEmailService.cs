@@ -2,6 +2,5 @@
 
 public interface IEmailService
 {
-  public  void FeedbackMessage(Dto.FeedbackRequest request);
+  public  void FeedbackMessage(Dto.EmailRequest request);
 }
-

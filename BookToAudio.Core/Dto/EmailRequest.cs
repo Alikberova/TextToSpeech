@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Core.Dto;
 
- public class FeedbackRequest
+ public class EmailRequest
 {
     public string Name { get; set; }
     public string UserEmail { get; set; }
