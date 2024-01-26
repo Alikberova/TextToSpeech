@@ -17,6 +17,6 @@ public class EmailController: ControllerBase
     [HttpPost]
   public void  SendMessage([FromBody] EmailRequest request)
    {
-        _emailService.FeedbackMessage(request);
+        _emailService.SendEmail(request);
    }
 }
