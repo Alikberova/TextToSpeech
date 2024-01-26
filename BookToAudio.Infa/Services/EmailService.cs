@@ -14,7 +14,7 @@ public class EmailService: IEmailService
     {
         _emailConfig = emailConfig.Value;
     }
-    public void FeedbackMessage(Core.Dto.EmailRequest request)
+    public void SendEmail(Core.Dto.EmailRequest request)
     {
         var email = new MimeMessage();  
         email.From.Add(new MailboxAddress("User", _emailConfig.EmailFrom));
