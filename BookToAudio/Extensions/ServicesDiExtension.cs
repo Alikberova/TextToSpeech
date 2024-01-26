@@ -27,6 +27,7 @@ public static class ServicesDiExtension
         services.AddScoped<IOpenAiService, OpenAiService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

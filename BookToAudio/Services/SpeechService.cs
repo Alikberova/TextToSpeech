@@ -45,7 +45,7 @@ public class SpeechService
     /// <param name="request"></param>
     /// <returns>ID of the newly created audio file</returns>
     /// <exception cref="ArgumentException"></exception>
-    public Guid CreateSpeech(Infra.Dto.SpeechRequest request)
+    public Guid CreateSpeech(Core.Dto.SpeechRequest request)
     {
         if (request.File is null)
         {
@@ -66,7 +66,7 @@ public class SpeechService
         return fileId;
     }
 
-    internal async Task ProcessSpeechAsync(Infra.Dto.SpeechRequest request, AudioFile audioFile)
+    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, AudioFile audioFile)
     {
         try
         {
@@ -103,7 +103,7 @@ public class SpeechService
         }
     }
 
-    private async Task<string> ExtractContent(Infra.Dto.SpeechRequest request)
+    private async Task<string> ExtractContent(Core.Dto.SpeechRequest request)
     {
         var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
         throw new NotSupportedException("File type not supported");
@@ -112,7 +112,7 @@ public class SpeechService
         return fileText;
     }
 
-    public async Task<MemoryStream> CreateSpeechSample(Infra.Dto.SpeechRequest request)
+    public async Task<MemoryStream> CreateSpeechSample(Core.Dto.SpeechRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Input))
         {

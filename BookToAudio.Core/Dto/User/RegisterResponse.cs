@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Infra.Dto.User;
+﻿namespace BookToAudio.Core.Dto.User;
 
 public class RegisterResponse
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using OpenAI.Audio;
 
-namespace BookToAudio.Infra.Dto;
+namespace BookToAudio.Core.Dto;
 
 public class SpeechRequest
 {
