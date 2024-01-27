@@ -1,7 +1,6 @@
 ﻿using BookToAudio.Core;
 using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services.Interfaces;
-using BookToAudio.Infra.Services;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
@@ -10,9 +9,9 @@ using Microsoft.AspNetCore.SignalR;
 
 using static BookToAudio.Core.Enums;
 
-namespace BookToAudio.Services;
+namespace BookToAudio.Infra.Services;
 
-public class SpeechService
+public class SpeechService : ISpeechService
 {
     private readonly ITextProcessingService _textFileService;
     private readonly IOpenAiService _openAiService;

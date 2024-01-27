@@ -1,5 +1,5 @@
 ﻿using BookToAudio.Core.Dto;
-using BookToAudio.Services;
+using BookToAudio.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookToAudio.Controllers;
@@ -8,9 +8,9 @@ namespace BookToAudio.Controllers;
 [ApiController]
 public class SpeechController : ControllerBase
 {
-    private readonly SpeechService _speechService;
+    private readonly ISpeechService _speechService;
 
-    public SpeechController(SpeechService speechService)
+    public SpeechController(ISpeechService speechService)
     {
         _speechService = speechService;
     }
