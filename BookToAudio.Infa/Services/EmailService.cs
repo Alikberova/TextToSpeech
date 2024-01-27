@@ -8,12 +8,13 @@ namespace BookToAudio.Services;
 
 public class EmailService: IEmailService
 {
- private readonly EmailConfig _emailConfig;
+    private readonly EmailConfig _emailConfig;
 
     public EmailService(IOptions<EmailConfig> emailConfig)
     {
         _emailConfig = emailConfig.Value;
     }
+
     public void SendEmail(Core.Dto.EmailRequest request)
     {
         var email = new MimeMessage();  
@@ -26,12 +27,11 @@ public class EmailService: IEmailService
             Text = $"Message from {request.Name}:\n {request.Message}"
         };
 
-        using (var smtp = new SmtpClient())
-        {
-            smtp.Connect("smtp.gmail.com", 587, false);
-            smtp.Authenticate("ukr.bit.2023", _emailConfig.EmailFromPassword);
-            smtp.Send(email);
-            smtp.Disconnect(true);
-        }
+        using var smtp = new SmtpClient();
+        
+        smtp.Connect("smtp.gmail.com", 587, false);
+        smtp.Authenticate(_emailConfig.EmailFrom, _emailConfig.EmailFromPassword);
+        smtp.Send(email);
+        smtp.Disconnect(true);
     }
 }
