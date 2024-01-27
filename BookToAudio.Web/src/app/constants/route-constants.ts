@@ -11,6 +11,7 @@ export const RoutesConstants = {
     qa: 'qa',
     contacts: 'contacts',
     feedback: 'feedback',
+    ttsForm: 'tts-form',
     legal_documentType: `${legal}/:${DocumentType}`,
     privacyPolicy: `${legal}/${PrivacyPolicy}`,
     termsOfUse: `${legal}/${TermsOfUse}`,

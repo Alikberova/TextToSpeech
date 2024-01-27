@@ -7,6 +7,7 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
 import { LegalDocumentComponent } from './legal-document/legal-document.component';
 import { RoutesConstants } from './constants/route-constants';
+import { TtsFormComponent } from './tts-form/tts-form.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: RoutesConstants.home, pathMatch: 'full' },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: RoutesConstants.contacts, component: ContactsComponent, pathMatch: 'full' },
   { path: RoutesConstants.feedback, component: FeedbackFormComponent, pathMatch: 'full'},
   { path: RoutesConstants.legal_documentType, component: LegalDocumentComponent },
+  { path: RoutesConstants.ttsForm, component: TtsFormComponent, pathMatch: 'full' },
   { path: '**', component: HomeComponent },
 ];
