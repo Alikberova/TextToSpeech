@@ -4,8 +4,8 @@ using BookToAudio.Core.Services.Interfaces;
 
 namespace BookToAudio.Controllers;
 
-    [Route("api/[controller]")]
-    [ApiController]
+[Route("api/[controller]")]
+[ApiController]
 public class EmailController: ControllerBase
 {
     private readonly IEmailService _emailService;
@@ -15,8 +15,8 @@ public class EmailController: ControllerBase
     }
 
     [HttpPost]
-  public void  SendMessage([FromBody] EmailRequest request)
-   {
+    public void  SendMessage([FromBody] EmailRequest request)
+    {
         _emailService.SendEmail(request);
-   }
+    }
 }
