@@ -11,8 +11,10 @@
   </mat-form-field>
 
   <div class="file-upload form-element">
-    <button type="button" mat-raised-button color="primary" (click)="fileInput.click()">Choose File</button>
-    <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt" />
+    <button type="button" mat-raised-button color="primary" (click)="fileInput.click()"
+    [ngClass]="{'file-selected': textToSpeech.file}">Choose File</button>
+    <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt"
+      aria-label="Upload File"/>
     <div>
       <span *ngIf="textToSpeech.file">{{ textToSpeech.file.name }}</span>
       <button mat-button *ngIf="textToSpeech.file" (click)="clearFileSelection()" color="warn"

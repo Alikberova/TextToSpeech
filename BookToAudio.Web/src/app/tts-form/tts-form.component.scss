@@ -23,7 +23,7 @@
   transition: transform 0.3s ease-in-out, color 0.3s ease;
 
   &:hover {
-    color: lighten($color-blue-gem, 10%);
+    color: lighten(adjust-hue($color-blue-gem, 10deg), 10%);
     transform: scale(1.2);
   }
 }
@@ -32,7 +32,12 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 30px; 
+  gap: 30px;
+  @media (max-width: 400px) {
+    flex-direction: column;
+    align-items: normal;
+    gap: 10px;
+  }
 }
 
 .submit-btn {
@@ -42,4 +47,8 @@
 .progress-bar-container {
   height: 3px;
   width: 100%;
+}
+
+.file-selected {
+  background-color: lighten(desaturate($primary, 15%),10%);
 }
