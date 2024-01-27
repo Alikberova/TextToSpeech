@@ -20,7 +20,8 @@ export class AppNavComponent {
   constructor(private breakpointObserver: BreakpointObserver, private authService: AuthService,
     private router: Router) {}
 
-    menu = [
+  menu = [
+      { name: 'Generate Speech', route: `/${RoutesConstants.ttsForm}` },
       { name: 'Feedback', route: `/${RoutesConstants.feedback}` },
     ];
   
