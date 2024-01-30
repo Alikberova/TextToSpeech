@@ -46,6 +46,12 @@ export class TtsFormComponent implements OnInit {
   isSpeechReady = false;
   audioDownloadUrl = '';
 
+  private audio: HTMLAudioElement | null = null;
+  isPlaying = false;
+  currentlyLoadingAudio = false;
+  isPlayingVoice: string | null = null;
+  currentlyPlayingVoice: string | null = null;
+
   textToSpeech: SpeechRequest = {
     model: this.models[0],
     voice: SpeechVoice[Object.keys(SpeechVoice)[0] as keyof typeof SpeechVoice],
@@ -59,9 +65,21 @@ export class TtsFormComponent implements OnInit {
       this.textToSpeech.file = target.files[0];
     }
   }
-  
+
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
     event.stopPropagation();
+    this.isPlaying = true;
+    if(this.isPlayingVoice === voice && this.audio){
+     this.audio.play();
+    }
+    else{
+    this.currentlyLoadingAudio = true;
+    if(this.audio){
+      this.audio.pause();
+      URL.revokeObjectURL(this.audio.currentSrc)
+    }
+    this.isPlayingVoice = voice;
+    this.currentlyPlayingVoice = voice;
     const request: SpeechRequest = {
       model: this.textToSpeech.model,
       voice: SpeechVoice[voice as keyof typeof SpeechVoice],
@@ -71,17 +89,37 @@ export class TtsFormComponent implements OnInit {
     this.speechClient.getSpeechSample(request).subscribe({
       next: (blob) => this.playAudio(blob),
       error: (err) => this.errorHandler.handleHttpError(err)
-    })
+    })}
   }
 
   playAudio(blob: Blob) {
-    const audio = new Audio();
-      const url = URL.createObjectURL(blob);
-      audio.src = url;
-      audio.load();
-      audio
-        .play()
-        .catch((error) => console.log('error to in playAudio.', error));
+    this.audio = new Audio();
+    const url = URL.createObjectURL(blob);
+    this.audio.src = url;
+    this.audio
+    this.audio.load();
+    this.audio.oncanplay = () => {
+      this.audio!
+      .play().then(()=>{
+        this.currentlyLoadingAudio = false;
+        this.isPlaying = true;
+      })
+      .catch((error) => console.log('error to in playAudio.', error));
+    }
+    
+      this.audio.onended = () => {
+      this.isPlaying = false;
+      this.isPlayingVoice = null;
+      this.currentlyPlayingVoice = null;
+    }
+  }
+
+  pauseAudio(event: MouseEvent) {
+    event.stopPropagation();
+      if(this.audio){
+        this.audio.pause();
+        this.isPlaying = false;
+      }
   }
 
   clearFileSelection() {

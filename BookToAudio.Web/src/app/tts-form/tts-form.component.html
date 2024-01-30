@@ -4,8 +4,9 @@
     <mat-select [(ngModel)]="textToSpeech.voice" name="voice">
       <mat-option *ngFor="let voice of voices" [value]="voice">
         {{ voice }}
-        <mat-icon class="play-icon" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)"
-          [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
+        <mat-icon [ngClass]="{'disabled': currentlyLoadingAudio}" class="play-icon" *ngIf="!isPlaying || currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
+        <mat-icon class="play-icon" *ngIf="!currentlyLoadingAudio && isPlaying && currentlyPlayingVoice === voice" (click)="pauseAudio($event)">pause</mat-icon>
+        <mat-icon class="play-icon" *ngIf="currentlyLoadingAudio && currentlyPlayingVoice === voice" (click)="pauseAudio($event)">downloading</mat-icon>
       </mat-option>
     </mat-select>
   </mat-form-field>
@@ -14,11 +15,11 @@
     <button type="button" mat-raised-button color="primary" (click)="fileInput.click()"
     [ngClass]="{'file-selected': textToSpeech.file}">Choose File</button>
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt"
-      aria-label="Upload File"/>
+           aria-label="Upload File"/>
     <div>
       <span *ngIf="textToSpeech.file">{{ textToSpeech.file.name }}</span>
       <button mat-button *ngIf="textToSpeech.file" (click)="clearFileSelection()" color="warn"
-        aria-label="Clear selected file">
+              aria-label="Clear selected file">
         <mat-icon>clear</mat-icon>
       </button>
     </div>
@@ -38,7 +39,7 @@
   </button>
 
   <a mat-raised-button color="accent" class="form-element" [href]="audioDownloadUrl" download
-    [disabled]="!isSpeechReady">
+     [disabled]="!isSpeechReady">
     Download
   </a>
 
