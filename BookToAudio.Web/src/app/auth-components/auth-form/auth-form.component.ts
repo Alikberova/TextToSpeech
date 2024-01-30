@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AppMaterialModule } from '../../app.material/app.material.module';
 import { FormsModule } from '@angular/forms';
 import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-auth-form',
   standalone: true,
-  imports: [ AppMaterialModule, FormsModule, ToggleButtonComponent ],
+  imports: [MatIconModule, MatInputModule, FormsModule, ToggleButtonComponent, MatFormFieldModule],
   templateUrl: './auth-form.component.html',
   styleUrl: './auth-form.component.scss'
 })
