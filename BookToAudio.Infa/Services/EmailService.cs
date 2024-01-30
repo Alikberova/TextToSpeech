@@ -4,9 +4,9 @@ using BookToAudio.Core.Config;
 using BookToAudio.Core.Services.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace BookToAudio.Services;
+namespace BookToAudio.Infra.Services;
 
-public class EmailService: IEmailService
+public class EmailService : IEmailService
 {
     private readonly EmailConfig _emailConfig;
 
