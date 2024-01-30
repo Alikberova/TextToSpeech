@@ -1,0 +1,19 @@
+.content {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  text-align: center;
+}
+
+.content > div {
+  max-width: 600px; 
+}
+
+.content img {
+  width: 100%;
+}
+
+.content p {
+  margin-top: 60px;
+  font-size: 25px;
+}
