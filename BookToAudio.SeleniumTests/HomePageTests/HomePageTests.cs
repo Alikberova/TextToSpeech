@@ -1,4 +1,4 @@
-namespace BookToAudio.Selenium.Tests.HomePageTests;
+namespace BookToAudio.SeleniumTests.HomePageTests;
 
 public class Tests: BaseClass
 {

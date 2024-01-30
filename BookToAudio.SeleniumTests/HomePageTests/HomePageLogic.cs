@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace BookToAudio.Selenium.Tests.HomePageTests;
+namespace BookToAudio.SeleniumTests.HomePageTests;
 
 internal class HomePageLogic
 {

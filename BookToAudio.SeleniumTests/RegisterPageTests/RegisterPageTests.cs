@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Selenium.Tests.RegisterPageTests;
+﻿namespace BookToAudio.SeleniumTests.RegisterPageTests;
 
 internal class RegisterPageTests: BaseClass
 {
