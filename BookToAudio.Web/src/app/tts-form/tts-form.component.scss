@@ -52,3 +52,8 @@
 .file-selected {
   background-color: lighten(desaturate($primary, 15%),10%);
 }
+
+.mat-icon.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
