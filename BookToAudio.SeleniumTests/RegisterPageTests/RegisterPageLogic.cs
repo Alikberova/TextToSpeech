@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace BookToAudio.Selenium.Tests.RegisterPageTests;
+namespace BookToAudio.SeleniumTests.RegisterPageTests;
 
 internal class RegisterPageLogic
 {

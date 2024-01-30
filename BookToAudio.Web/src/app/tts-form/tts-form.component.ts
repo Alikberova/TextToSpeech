@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { AppMaterialModule } from '../app.material/app.material.module';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -13,11 +12,15 @@ import { SpeechVoice } from '../models/speech-voice.enum';
 import { ConfigConstants } from '../constants/config-constants';
 import { ViewChild, ElementRef } from '@angular/core';
 import { SnackbarService } from '../shared-ui/snackbar-service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-tts-form',
   standalone: true,
-  imports: [FormsModule, AppMaterialModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule],
+  imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule],
   templateUrl: './tts-form.component.html',
   styleUrl: './tts-form.component.scss',
 })

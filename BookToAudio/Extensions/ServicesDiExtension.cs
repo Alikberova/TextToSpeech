@@ -16,11 +16,8 @@ public static class ServicesDiExtension
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        // local services
         services.AddScoped<AuthenticationService>();
-        services.AddScoped<SpeechService>();
 
-        // other services
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
@@ -28,6 +25,7 @@ public static class ServicesDiExtension
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ISpeechService, SpeechService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

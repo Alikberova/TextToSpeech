@@ -1,7 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace BookToAudio.Selenium.Tests;
+namespace BookToAudio.SeleniumTests;
 
 [TestFixture]
 public class BaseClass
