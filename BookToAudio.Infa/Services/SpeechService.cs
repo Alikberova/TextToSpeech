@@ -6,7 +6,7 @@ using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.SignalR;
-
+using System.Diagnostics;
 using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;
@@ -69,6 +69,7 @@ public class SpeechService : ISpeechService
     {
         try
         {
+            // todo handle errors
             string fileText = await ExtractContent(request);
 
             var maxLength = 4096;
@@ -84,7 +85,7 @@ public class SpeechService : ISpeechService
 
             var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
 
-            string localFilePath = _pathService.CreateFileStorageFilePath($"{audioFile.Id}.mp3");
+            var localFilePath = _pathService.CreateFileStorageFilePath($"{audioFile.Id}.mp3");
 
             await File.WriteAllBytesAsync(localFilePath, bytes);
 
@@ -92,13 +93,12 @@ public class SpeechService : ISpeechService
             audioFile.Data = bytes;
 
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
-            // TODO: audio metadata
         }
         catch (Exception ex)
         {
             audioFile.Status = Status.Failed;
-
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+            throw;
         }
     }
 

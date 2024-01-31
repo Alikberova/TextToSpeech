@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.RealTime", "Boo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.SeleniumTests", "BookToAudio.SeleniumTests\BookToAudio.SeleniumTests.csproj", "{553EB44A-2BF7-4D27-870F-D356C6366021}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.TestingInfra", "BookToAudio.TestingInfra\BookToAudio.TestingInfra.csproj", "{5968434E-9D12-40B9-B90D-55ADD5465CF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.IntegrationTests", "BookToAudio.IntegrationTests\BookToAudio.IntegrationTests.csproj", "{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5968434E-9D12-40B9-B90D-55ADD5465CF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5968434E-9D12-40B9-B90D-55ADD5465CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5968434E-9D12-40B9-B90D-55ADD5465CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5968434E-9D12-40B9-B90D-55ADD5465CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +74,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9E0132F9-4D5F-4E9C-9C86-844FD7315FF5} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 		{553EB44A-2BF7-4D27-870F-D356C6366021} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
+		{5968434E-9D12-40B9-B90D-55ADD5465CF5} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
+		{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD282FE1-B6D4-4EBF-BF28-4E0BB9E5FD62}

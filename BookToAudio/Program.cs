@@ -60,7 +60,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<AudioHub>("/audiohub");
+    app.MapHub<AudioHub>("/audioHub");
 
 app.Run();
 
@@ -89,3 +89,5 @@ static void AddAuthentication(WebApplicationBuilder builder)
             };
         });
 }
+
+public partial class Program { }
