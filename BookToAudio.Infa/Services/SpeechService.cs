@@ -6,7 +6,6 @@ using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.SignalR;
-using System.Diagnostics;
 using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;

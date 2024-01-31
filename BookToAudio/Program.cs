@@ -60,7 +60,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-    app.MapHub<AudioHub>("/audioHub");
+app.MapHub<AudioHub>("/audioHub");
 
 app.Run();
 
