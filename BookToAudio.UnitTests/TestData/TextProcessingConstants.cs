@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Tests.TestData;
+﻿namespace BookToAudio.UnitTests.TestData;
 
 internal class TextProcessingConstants
 {

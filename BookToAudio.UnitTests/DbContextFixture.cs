@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
-namespace BookToAudio.Tests;
+namespace BookToAudio.UnitTests;
 
 public class DbContextFixture : IDisposable
 {

@@ -4,7 +4,7 @@ namespace BookToAudio.RealTime;
 
 public class AudioHub : Hub
 {
-    public async Task NotifyAudioStatus(string fileId, string status)
+    public async Task NotifyAudioStatus(Guid fileId, string status)
     {
         await Clients.All.SendAsync("AudioStatusUpdated", fileId, status);
     }

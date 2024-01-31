@@ -1,7 +1,7 @@
-using BookToAudio.Tests.TestData;
+using BookToAudio.UnitTests.TestData;
 using Xunit;
 
-namespace BookToAudio.Tests;
+namespace BookToAudio.UnitTests;
 
 public class MockGenerator : IClassFixture<DbContextFixture>
 {

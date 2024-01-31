@@ -13,7 +13,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-	<PackageReference Include="Bogus" Version="35.4.0" />
 	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0-release-23619-01" />
 	<PackageReference Include="xunit" Version="2.6.6" />
 	<PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
@@ -23,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BookToAudio.Infa\BookToAudio.Infra.csproj" />
+    <ProjectReference Include="..\BookToAudio.TestingInfra\BookToAudio.TestingInfra.csproj" />
   </ItemGroup>
 
 </Project>
