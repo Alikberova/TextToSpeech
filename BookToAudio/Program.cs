@@ -17,67 +17,59 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("D:\\BookToAudio\\Logs\\log_.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-try
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
+
+builder.Services.AddServices();
+
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+builder.Services.AddCors(options =>
 {
-    var builder = WebApplication.CreateBuilder(args);
+    options.AddPolicy("WebCorsPolicy",
+        builder => builder.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
 
-    builder.Services.AddControllers();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
 
-    builder.Services.AddSignalR();
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
 
-    builder.Services.AddServices();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
 
-    builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("WebCorsPolicy",
-            builder => builder.WithOrigins("http://localhost:4200")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials());
-    });
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
-    builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
+AddAuthentication(builder);
 
-    builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
+var app = builder.Build();
 
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
-
-    builder.Services.AddIdentity<User, IdentityRole>()
-        .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
-
-    AddAuthentication(builder);
-
-    var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
-    app.UseHttpsRedirection();
-    app.UseCors("WebCorsPolicy"); // CORS should be before other middleware
-
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    app.MapControllers();
-    app.MapHub<AudioHub>("/audioHub");
-
-    app.Run();
-}
-catch (Exception ex)
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    Log.Fatal(ex, "Host terminated unexpectedly");
-    throw;
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+app.UseCors("WebCorsPolicy"); // CORS should be before other middleware
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+app.MapHub<AudioHub>("/audioHub");
+
+app.Run();
 
 static void AddAuthentication(WebApplicationBuilder builder)
 {
