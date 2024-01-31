@@ -119,7 +119,7 @@ export class TtsFormComponent implements OnInit {
       }
   }
 
-  disabledButton(event: MouseEvent){
+  stopPropagation(event: MouseEvent){
     event.stopPropagation();
   }
 
