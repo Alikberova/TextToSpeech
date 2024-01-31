@@ -11,13 +11,12 @@ using Serilog;
 using System.Reflection;
 using System.Text;
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
-    .WriteTo.Console()
-    .WriteTo.File("D:\\BookToAudio\\Logs\\log_.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.MinimumLevel.Debug()
+    .WriteTo.Console()
+    .WriteTo.File("D:\\BookToAudio\\Logs\\log_.txt", rollingInterval: RollingInterval.Hour).CreateLogger());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
