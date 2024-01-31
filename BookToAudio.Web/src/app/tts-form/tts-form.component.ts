@@ -47,10 +47,9 @@ export class TtsFormComponent implements OnInit {
   audioDownloadUrl = '';
 
   private audio: HTMLAudioElement | null = null;
-  isPlaying = false;
+  isPlaying = false; 
   currentlyLoadingAudio = false;
-  isPlayingVoice: string | null = null;
-  currentlyPlayingVoice: string | null = null;
+  currentlyPlayingVoice: string | null = null; 
 
   textToSpeech: SpeechRequest = {
     model: this.models[0],
@@ -69,7 +68,7 @@ export class TtsFormComponent implements OnInit {
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
     event.stopPropagation();
     this.isPlaying = true;
-    if(this.isPlayingVoice === voice && this.audio){
+    if (this.currentlyPlayingVoice === voice && this.audio){
      this.audio.play();
     }
     else{
@@ -78,7 +77,6 @@ export class TtsFormComponent implements OnInit {
       this.audio.pause();
       URL.revokeObjectURL(this.audio.currentSrc)
     }
-    this.isPlayingVoice = voice;
     this.currentlyPlayingVoice = voice;
     const request: SpeechRequest = {
       model: this.textToSpeech.model,
@@ -109,7 +107,6 @@ export class TtsFormComponent implements OnInit {
     
       this.audio.onended = () => {
       this.isPlaying = false;
-      this.isPlayingVoice = null;
       this.currentlyPlayingVoice = null;
     }
   }
@@ -120,6 +117,10 @@ export class TtsFormComponent implements OnInit {
         this.audio.pause();
         this.isPlaying = false;
       }
+  }
+
+  stopPropagation(event: MouseEvent){
+    event.stopPropagation();
   }
 
   clearFileSelection() {
