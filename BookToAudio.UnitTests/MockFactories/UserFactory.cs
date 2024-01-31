@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using BookToAudio.Core.Entities;
 
-namespace BookToAudio.Tests.TestData;
+namespace BookToAudio.UnitTests.TestData;
 
 internal class UserFactory : Faker<User>
 {
