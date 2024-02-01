@@ -4,8 +4,9 @@
     <mat-select [(ngModel)]="textToSpeech.voice" name="voice">
       <mat-option *ngFor="let voice of voices" [value]="voice">
         {{ voice }}
-        <mat-icon [ngClass]="{'disabled': currentlyLoadingAudio}" class="play-icon" *ngIf="!isPlaying || currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
-        <mat-icon class="play-icon" *ngIf="!currentlyLoadingAudio && isPlaying && currentlyPlayingVoice === voice" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
+        <mat-icon [ngClass]="{'disabled': currentlyLoadingAudio}" class="play-icon" *ngIf="!isPlaying && currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
+        <mat-icon class="play-icon pause" *ngIf="!isPlaying && currentlyPlayingVoice === voice && pause" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Pause voice sample'">play_circle</mat-icon>
+        <mat-icon class="play-icon" *ngIf="!currentlyLoadingAudio && currentlyPlayingVoice === voice && !pause" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
         <mat-icon class="play-icon" *ngIf="currentlyLoadingAudio && currentlyPlayingVoice === voice" [attr.aria-label]="'Voice sample is loading'" (click)="stopPropagation($event)">downloading</mat-icon>
       </mat-option>
     </mat-select>
