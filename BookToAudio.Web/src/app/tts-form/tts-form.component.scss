@@ -26,6 +26,9 @@
     color: lighten(adjust-hue($color-blue-gem, 10deg), 10%);
     transform: scale(1.2);
   }
+  &.pause {
+    color: lighten(adjust-hue($color-blue-gem, 10deg), 20%);
+  }
 }
 
 .file-upload.form-element { 

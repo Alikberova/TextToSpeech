@@ -49,7 +49,8 @@ export class TtsFormComponent implements OnInit {
   private audio: HTMLAudioElement | null = null;
   isPlaying = false; 
   currentlyLoadingAudio = false;
-  currentlyPlayingVoice: string | null = null; 
+  currentlyPlayingVoice: string | null = null;
+  isPaused = false;
 
   textToSpeech: SpeechRequest = {
     model: this.models[0],
@@ -67,17 +68,18 @@ export class TtsFormComponent implements OnInit {
 
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
     event.stopPropagation();
-    this.isPlaying = true;
     if (this.currentlyPlayingVoice === voice && this.audio){
-     this.audio.play();
+      this.audio.play();
+      this.isPaused = false
     }
     else{
     this.currentlyLoadingAudio = true;
-    if(this.audio){
-      this.audio.pause();
-      URL.revokeObjectURL(this.audio.currentSrc)
-    }
     this.currentlyPlayingVoice = voice;
+      if (this.audio) {
+        this.audio.pause();
+        URL.revokeObjectURL(this.audio.currentSrc)
+      }
+    this.isPaused = false;
     const request: SpeechRequest = {
       model: this.textToSpeech.model,
       voice: SpeechVoice[voice as keyof typeof SpeechVoice],
@@ -86,7 +88,10 @@ export class TtsFormComponent implements OnInit {
     };
     this.speechClient.getSpeechSample(request).subscribe({
       next: (blob) => this.playAudio(blob),
-      error: (err) => this.errorHandler.handleHttpError(err)
+      error: (err) => {
+        this.currentlyPlayingVoice = null;
+        this.errorHandler.handleHttpError(err);
+      }
     })}
   }
 
@@ -100,7 +105,6 @@ export class TtsFormComponent implements OnInit {
       this.audio!
       .play().then(()=>{
         this.currentlyLoadingAudio = false;
-        this.isPlaying = true;
       })
       .catch((error) => console.log('error to in playAudio.', error));
     }
@@ -108,16 +112,17 @@ export class TtsFormComponent implements OnInit {
       this.audio.onended = () => {
       this.isPlaying = false;
       this.currentlyPlayingVoice = null;
-    }
+      }
   }
 
   pauseAudio(event: MouseEvent) {
     event.stopPropagation();
-      if(this.audio){
-        this.audio.pause();
-        this.isPlaying = false;
-      }
+      
+       this.audio!.pause();
+       this.isPaused = true;
+       this.isPlaying = false;
   }
+  
 
   stopPropagation(event: MouseEvent){
     event.stopPropagation();
