@@ -50,7 +50,7 @@ export class TtsFormComponent implements OnInit {
   isPlaying = false; 
   currentlyLoadingAudio = false;
   currentlyPlayingVoice: string | null = null;
-  pause = false;
+  isPause = false;
 
   textToSpeech: SpeechRequest = {
     model: this.models[0],
@@ -70,7 +70,7 @@ export class TtsFormComponent implements OnInit {
     event.stopPropagation();
     if (this.currentlyPlayingVoice === voice && this.audio){
       this.audio.play();
-      this.pause = false
+      this.isPause = false
     }
     else{
     this.currentlyLoadingAudio = true;
@@ -79,7 +79,7 @@ export class TtsFormComponent implements OnInit {
         this.audio.pause();
         URL.revokeObjectURL(this.audio.currentSrc)
       }
-    this.pause = false;
+    this.isPause = false;
     const request: SpeechRequest = {
       model: this.textToSpeech.model,
       voice: SpeechVoice[voice as keyof typeof SpeechVoice],
@@ -119,7 +119,7 @@ export class TtsFormComponent implements OnInit {
     event.stopPropagation();
       
        this.audio!.pause();
-       this.pause = true;
+       this.isPause = true;
        this.isPlaying = false;
   }
   
