@@ -13,10 +13,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+
+var LogPath = builder.Configuration["LogPath"];
+
+var nameLogFile = "log_.txt";
+
 builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File("D:\\BookToAudio\\Logs\\log_.txt", rollingInterval: RollingInterval.Hour).CreateLogger());
+    .WriteTo.File(Path.Combine(LogPath!, nameLogFile), rollingInterval: RollingInterval.Hour));//I removed the explicit Logger call in this place, since it was called twice (explicitly and indirectly)
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
