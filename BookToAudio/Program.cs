@@ -13,7 +13,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var logPath = builder.Configuration["LogPath"];
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+
+var logPath = builder.Configuration[ConfigConstants.LogPath];
 
 var nameLogFile = "log_.txt";
 
@@ -31,7 +33,6 @@ builder.Services.AddSignalR();
 
 builder.Services.AddServices();
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
