@@ -12,7 +12,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Your Email</mat-label>
-        <input matInput type="email" placeholder="Enter your email" formControlName="userEmail" name="userEmail"  (blur)="feedbackForm.get('userEmail')?.updateValueAndValidity()">
+        <input matInput type="email" placeholder="Enter your email" formControlName="userEmail" name="userEmail">
         <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('required')">Please enter email</mat-error>
         <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('invalid')">Please enter a correct email</mat-error>
       </mat-form-field>
