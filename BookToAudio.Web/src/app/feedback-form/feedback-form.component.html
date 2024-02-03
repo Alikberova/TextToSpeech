@@ -3,20 +3,24 @@
     <mat-card-title>Feedback Form</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form (ngSubmit)="submitFeedback()">
+    <form [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()">
       <mat-form-field appearance="fill">
         <mat-label>Your Name</mat-label>
-        <input matInput placeholder="Enter your name" [(ngModel)]="feedback.name" name="name" required>
+        <input matInput placeholder="Enter your name" formControlName="name" name="name" required>
+        <mat-error *ngIf="feedbackForm.get('name')?.hasError('required')">Please enter your name</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Your Email</mat-label>
-        <input matInput type="email" placeholder="Enter your email" [(ngModel)]="feedback.userEmail" name="userEmail" required>
+        <input matInput type="email" placeholder="Enter your email" formControlName="userEmail" name="userEmail"  (blur)="feedbackForm.get('userEmail')?.updateValueAndValidity()">
+        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('required')">Please enter email</mat-error>
+        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('invalid')">Please enter a correct email</mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
         <mat-label>Your Feedback</mat-label>
-        <textarea matInput placeholder="Enter your feedback" [(ngModel)]="feedback.message" name="message" required></textarea>
+        <textarea matInput placeholder="Enter your feedback" formControlName="message" name="message" required></textarea>
+        <mat-error *ngIf="feedbackForm.get('message')?.hasError('required')">Please enter message</mat-error>
       </mat-form-field>
 
       <button mat-raised-button color="primary" type="submit">Submit</button>
