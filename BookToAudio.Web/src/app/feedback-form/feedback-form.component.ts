@@ -25,12 +25,12 @@ export class FeedbackFormComponent {
       message: new FormControl("", Validators.required),
     });
     this.feedbackForm.setValue({
-      name: "lal", userEmail: "qwerty@q.com", message: "Cool service!"
+      name: "lal", userEmail: "werty@q.com", message: "Cool service!"
     });
   }
 
   submitFeedback() {
-    if(this.feedbackForm.valid) {
+    if (this.feedbackForm.valid) {
      const feedback = this.feedbackForm.value;
       this.feedbackService.feedbackMessageSend(feedback).subscribe({
         next: res => console.log(`status OK 200 \n Ressponce: \p ${res}`),
