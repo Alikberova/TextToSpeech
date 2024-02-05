@@ -18,10 +18,10 @@ export class AuthFormComponent {
   authForm: FormGroup;
   
   constructor(){
-  this.authForm = new FormGroup({
-  userName: new FormControl("", ValidationService.validationEmail),
-  password: new FormControl("")
-   })
+    this.authForm = new FormGroup({
+    userName: new FormControl("", ValidationService.validationEmail),
+    password: new FormControl("", ValidationService.matchRequiredPassword)
+    })
   }
 
   @Input() title: string = '';
