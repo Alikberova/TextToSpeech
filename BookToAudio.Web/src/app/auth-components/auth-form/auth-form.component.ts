@@ -16,11 +16,11 @@ import { CommonModule } from '@angular/common';
 })
 export class AuthFormComponent {
   authForm: FormGroup;
-  
-  constructor(){
+
+  constructor() {
     this.authForm = new FormGroup({
-    userName: new FormControl("", ValidationService.validationEmail),
-    password: new FormControl("", ValidationService.matchRequiredPassword)
+      userName: new FormControl("", ValidationService.validationEmail),
+      password: new FormControl("", ValidationService.matchRequiredPassword)
     })
   }
 
