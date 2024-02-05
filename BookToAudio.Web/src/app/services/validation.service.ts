@@ -9,9 +9,9 @@ export class ValidationService {
   static validationEmail(control: AbstractControl): ValidationErrors | null {
 
     const email = control.value;
-    const EMAIL_REGEXP = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    const emailRegexp = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     
-    if(email !== "" && !EMAIL_REGEXP.test(email)){
+    if(email !== "" && !emailRegexp.test(email)){
       return { invalid: true };
     }
     return null;
