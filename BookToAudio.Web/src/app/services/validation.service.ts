@@ -11,7 +11,7 @@ export class ValidationService {
     const email = control.value;
     const emailRegexp = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     
-    if(email !== "" && !emailRegexp.test(email)){
+    if (email !== "" && !emailRegexp.test(email)) {
       return { invalid: true };
     }
     return null;
