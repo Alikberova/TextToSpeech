@@ -13,10 +13,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+
+var logPath = builder.Configuration[ConfigConstants.LogPath];
+
+var nameLogFile = "log_.txt";
+
 builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File("D:\\BookToAudio\\Logs\\log_.txt", rollingInterval: RollingInterval.Hour).CreateLogger());
+    .WriteTo.File(Path.Combine(logPath!, nameLogFile), rollingInterval: RollingInterval.Hour));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,7 +33,6 @@ builder.Services.AddSignalR();
 
 builder.Services.AddServices();
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
