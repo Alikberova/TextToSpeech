@@ -1,8 +1,8 @@
+using BookToAudio.Api.Extensions;
+using BookToAudio.Api.Middleware;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
-using BookToAudio.Extensions;
 using BookToAudio.Infra;
-using BookToAudio.Middleware;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

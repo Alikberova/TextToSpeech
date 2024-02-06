@@ -1,4 +1,4 @@
-﻿namespace BookToAudio.Middleware;
+﻿namespace BookToAudio.Api.Middleware;
 
 public class ExceptionHandlingMiddleware
 {

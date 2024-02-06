@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
-namespace BookToAudio.Controllers;
+namespace BookToAudio.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]

@@ -4,13 +4,13 @@ using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Core.Services.Interfaces.Ai;
 using BookToAudio.Infra.Services;
 using BookToAudio.Infra.Repositories;
-using BookToAudio.Services;
 using BookToAudio.Infra.Services.Interfaces;
 using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.Common;
+using BookToAudio.Api.Services;
 
-namespace BookToAudio.Extensions;
+namespace BookToAudio.Api.Extensions;
 
 public static class ServicesDiExtension
 {

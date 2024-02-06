@@ -2,7 +2,7 @@
 using BookToAudio.Core.Dto;
 using BookToAudio.Core.Services.Interfaces;
 
-namespace BookToAudio.Controllers;
+namespace BookToAudio.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
