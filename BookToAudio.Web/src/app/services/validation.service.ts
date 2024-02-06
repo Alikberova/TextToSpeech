@@ -19,13 +19,25 @@ export class ValidationService {
 
   static matchRequiredPassword(control: AbstractControl): ValidationErrors | null {
     const password = control.value;
-    const passwordRegexp = /^(?=.*[A-Z])(?=.*[\W_])(?!.*\s).{6,}$/;
+    let errMessage = "";    
+
+      if (/(\s)/.test(password)) {
+        errMessage += "The password must not contain spaces.\n"
+      }
+      if (!/.{6}/.test(password)) {
+        errMessage += "The password must be at least 6 characters long.\n"
+      }
+      if (!/([A-Z])/.test(password)) {
+        errMessage += "The password must contain at least one capital letter.\n"
+      }
+      if (!/([\W_])/.test(password)) {
+        errMessage += "The password must contain at least one special character.\n"
+      }
     
-    if (!passwordRegexp.test(password)) {
-      return { invalid: { message: "The password has no capital letters and has no special char" } };
+    if (errMessage !== "") {
+      return { invalid: { message: errMessage } }
     }
-    else {
-      return null;
-    }
+    
+    return null;
   }
 }
