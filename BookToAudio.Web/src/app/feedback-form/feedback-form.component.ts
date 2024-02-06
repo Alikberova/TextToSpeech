@@ -20,12 +20,9 @@ export class FeedbackFormComponent {
 
   constructor(private feedbackService: FeedbackService) {
     this.feedbackForm = new FormGroup({
-      userEmail: new FormControl("",   ValidationService.validationEmail),
+      userEmail: new FormControl("", [ValidationService.validationEmail, Validators.required]),
       name: new FormControl("", Validators.required),
       message: new FormControl("", Validators.required),
-    });
-    this.feedbackForm.setValue({
-      name: "lal", userEmail: "werty@q.com", message: "Cool service!"
     });
   }
 
