@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BookToAudio.Api\BookToAudio.Api.csproj" />
     <ProjectReference Include="..\BookToAudio.TestingInfra\BookToAudio.TestingInfra.csproj" />
-    <ProjectReference Include="..\BookToAudio\BookToAudio.csproj" />
   </ItemGroup>
 
   <ItemGroup>

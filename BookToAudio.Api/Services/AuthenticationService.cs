@@ -2,7 +2,7 @@
 using BookToAudio.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace BookToAudio.Services;
+namespace BookToAudio.Api.Services;
 
 public class AuthenticationService
 {

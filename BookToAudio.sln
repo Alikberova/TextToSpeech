@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Infra", "BookTo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Core", "BookToAudio.Core\BookToAudio.Core.csproj", "{D87C615C-7DF7-48C8-A631-4CF5E2C50A55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio", "BookToAudio\BookToAudio.csproj", "{FFABDA2C-DD7F-41C1-8E9A-8A22B5318E33}"
-EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BookToAudio.Web", "BookToAudio.Web\BookToAudio.Web.esproj", "{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}"
@@ -22,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.IntegrationTests", "BookToAudio.IntegrationTests\BookToAudio.IntegrationTests.csproj", "{0DE4C0A4-01AC-4E61-8C7B-A816F72C72DD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.UnitTests", "BookToAudio.UnitTests\BookToAudio.UnitTests.csproj", "{C77B6C22-DF6B-4374-855C-DFF0C6A473DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Api", "BookToAudio.Api\BookToAudio.Api.csproj", "{04DEAF01-8698-408A-8A7D-5EDCD576BDD5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,6 @@ Global
 		{D87C615C-7DF7-48C8-A631-4CF5E2C50A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D87C615C-7DF7-48C8-A631-4CF5E2C50A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D87C615C-7DF7-48C8-A631-4CF5E2C50A55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FFABDA2C-DD7F-41C1-8E9A-8A22B5318E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FFABDA2C-DD7F-41C1-8E9A-8A22B5318E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FFABDA2C-DD7F-41C1-8E9A-8A22B5318E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FFABDA2C-DD7F-41C1-8E9A-8A22B5318E33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -67,6 +63,10 @@ Global
 		{C77B6C22-DF6B-4374-855C-DFF0C6A473DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C77B6C22-DF6B-4374-855C-DFF0C6A473DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77B6C22-DF6B-4374-855C-DFF0C6A473DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04DEAF01-8698-408A-8A7D-5EDCD576BDD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04DEAF01-8698-408A-8A7D-5EDCD576BDD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04DEAF01-8698-408A-8A7D-5EDCD576BDD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04DEAF01-8698-408A-8A7D-5EDCD576BDD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

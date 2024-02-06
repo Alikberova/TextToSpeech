@@ -1,12 +1,12 @@
 ﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Core.Dto.User;
-using BookToAudio.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using LoginRequest = BookToAudio.Core.Dto.User.LoginRequest;
+using BookToAudio.Api.Services;
 
-namespace BookToAudio.Controllers;
+namespace BookToAudio.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
