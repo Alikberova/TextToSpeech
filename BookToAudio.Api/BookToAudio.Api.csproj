@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BookToAudio.Infa\BookToAudio.Infra.csproj" />
+    <ProjectReference Include="..\BookToAudio.Infra\BookToAudio.Infra.csproj" />
     <ProjectReference Include="..\BookToAudio.RealTime\BookToAudio.RealTime.csproj" />
   </ItemGroup>
 
