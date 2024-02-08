@@ -6,7 +6,7 @@
         {{ voice }}
         <mat-icon [ngClass]="{'disabled': currentlyLoadingAudio}" class="play-icon" *ngIf="!isPlaying && currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
         <mat-icon class="play-icon pause" *ngIf="!isPlaying && currentlyPlayingVoice === voice && isPaused" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Pause voice sample'">play_circle</mat-icon>
-        <mat-icon class="play-icon" *ngIf="!currentlyLoadingAudio && currentlyPlayingVoice === voice && !isPaused" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
+        <mat-icon class="play-icon" id="pause" *ngIf="!currentlyLoadingAudio && currentlyPlayingVoice === voice && !isPaused" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
         <mat-icon class="play-icon" *ngIf="currentlyLoadingAudio && currentlyPlayingVoice === voice" [attr.aria-label]="'Voice sample is loading'" (click)="stopPropagation($event)">downloading</mat-icon>
       </mat-option>
     </mat-select>
@@ -39,7 +39,7 @@
     [matTooltip]="textToSpeech.file || isSpeechReady ? '' : 'You need to select file first'">Submit
   </button>
 
-  <a mat-raised-button color="accent" class="form-element" [href]="audioDownloadUrl" download
+  <a mat-raised-button color="accent" class="form-element" id="download" [href]="audioDownloadUrl" download
      [disabled]="!isSpeechReady">
     Download
   </a>
