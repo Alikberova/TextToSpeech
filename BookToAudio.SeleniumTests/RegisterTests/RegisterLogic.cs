@@ -2,11 +2,11 @@
 
 namespace BookToAudio.SeleniumTests.RegisterPageTests;
 
-internal class RegisterPageLogic
+internal class RegisterLogic
 {
     private readonly IWebDriver _driver;
 
-    public RegisterPageLogic(IWebDriver driver)
+    public RegisterLogic(IWebDriver driver)
     {
         _driver = driver;
     }

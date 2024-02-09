@@ -13,11 +13,13 @@ public class BaseClass
     {
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
     }
 
     [TearDown]
-    protected void TearDown()
+    protected void OneTimeSetUp()
     {
         driver.Quit();
+        driver.Dispose();
     }
 }

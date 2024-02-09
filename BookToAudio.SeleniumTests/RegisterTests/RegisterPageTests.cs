@@ -7,9 +7,9 @@ internal class RegisterPageTests: BaseClass
     public void  RagisterTests(string url)
     {
         driver.Navigate().GoToUrl(url);
-        var registerPage = new RegisterPageLogic(driver);
-        string name = "Anton";
-        string password = "Fynjy1997";
+        var registerPage = new RegisterLogic(driver);
+        string name = "selenium@ua.test";
+        string password = "Selenium_test";
         registerPage.RegisterUser(name, password);
     }
 }
