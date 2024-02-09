@@ -24,4 +24,10 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="121.0.6167.8500" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\TextTestAudioBook.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
