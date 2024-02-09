@@ -9,10 +9,10 @@ public class Tests: BaseClass
         driver.Navigate().GoToUrl(url);
 
         var ttsFormLogic = new TtsFormLogic(driver);
-        ttsFormLogic.SelectedVoice();
-        ttsFormLogic.SelectedTextFile();
-        ttsFormLogic.ClickSendBtn();
-        ttsFormLogic.ClickDownloadBtn();
-        ttsFormLogic.DeleteDownloadFile();
+        ttsFormLogic.SelectVoice();
+        ttsFormLogic.SelectTextFile();
+        ttsFormLogic.SubmitFormBtn();
+        ttsFormLogic.DownloadAudioFile();
+        ttsFormLogic.RemoveDownloadFile();
     }
 }

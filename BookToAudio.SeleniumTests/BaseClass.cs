@@ -13,7 +13,7 @@ public class BaseClass
     {
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
     }
 
     [TearDown]
