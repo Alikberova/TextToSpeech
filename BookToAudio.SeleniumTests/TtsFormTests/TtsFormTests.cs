@@ -4,7 +4,7 @@ public class Tests: BaseClass
 {
     [Test]
     [TestCase("http://localhost:4200/tts-form")]
-    public void  HomePageTests(string url)
+    public void  TtsFormPageTests(string url)
     {
         driver.Navigate().GoToUrl(url);
 

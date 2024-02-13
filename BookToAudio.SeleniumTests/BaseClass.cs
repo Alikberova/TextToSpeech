@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using BookToAudio.SeleniumTests.ProcessStart;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace BookToAudio.SeleniumTests;
@@ -11,14 +12,18 @@ public class BaseClass
     [SetUp]
     protected void Setup()
     {
+        StartClient.StartAngularApp();
+        StartServer.StartWebAPI();
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
     }
 
     [TearDown]
     protected void OneTimeSetUp()
     {
+        StartServer.StopWebAPI();
+        StartClient.StopAngularApp();
         driver.Quit();
         driver.Dispose();
     }

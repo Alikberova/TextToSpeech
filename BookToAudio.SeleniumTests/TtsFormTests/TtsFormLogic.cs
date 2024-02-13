@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using NUnit.Framework.Legacy;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
@@ -12,7 +13,7 @@ internal class TtsFormLogic
     public TtsFormLogic(IWebDriver driver)
     {
         _driver = driver;
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
     }
     private IWebElement Dropdown => _driver.FindElement(By.Id("mat-select-value-1"));
     private IWebElement PlayVoice => _driver.FindElement(By.XPath("//*[@id='mat-option-0']/mat-icon"));
@@ -26,7 +27,7 @@ internal class TtsFormLogic
     {
         Dropdown.Click();
         PlayVoice.Click();
-        _wait.Until(_ => PauseVoice.Displayed);
+        _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("pause")));
         PauseVoice.Click();
         ChooseVoice.Click();
     }
