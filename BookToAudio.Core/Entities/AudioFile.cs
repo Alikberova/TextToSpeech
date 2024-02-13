@@ -2,7 +2,7 @@
 
 namespace BookToAudio.Core.Entities;
 
-public class AudioFile
+public sealed class AudioFile
 {
     public Guid Id { get; set; }
     public string FileName { get; set; } = string.Empty;

@@ -2,7 +2,7 @@
 
 namespace BookToAudio.Infra.Services.Factories;
 
-public class FileProcessorFactory
+public sealed class FileProcessorFactory
 {
     private readonly IEnumerable<IFileProcessor> _processors;
 

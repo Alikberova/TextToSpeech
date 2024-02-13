@@ -7,7 +7,7 @@ public interface IFileStorageService
     Task<Guid> StoreFileAsync(IFormFile file);
 }
 
-public class FileStorageService : IFileStorageService
+public sealed class FileStorageService : IFileStorageService
 {
     private readonly string _storagePath;
 

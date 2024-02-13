@@ -2,7 +2,7 @@
 
 namespace BookToAudio.RealTime;
 
-public class AudioHub : Hub
+public sealed class AudioHub : Hub
 {
     public async Task NotifyAudioStatus(Guid fileId, string status)
     {

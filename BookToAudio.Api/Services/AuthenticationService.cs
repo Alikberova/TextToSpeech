@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BookToAudio.Api.Services;
 
-public class AuthenticationService
+public sealed class AuthenticationService
 {
     private readonly UserManager<User> _userManager;
     private readonly IBtaUserManager _btaUserManager;

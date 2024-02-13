@@ -5,7 +5,7 @@ public interface IAudioFileService
     byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles);
 }
 
-public class AudioFileService : IAudioFileService
+public sealed class AudioFileService : IAudioFileService
 {
     public byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
     {

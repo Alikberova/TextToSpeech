@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Core;
 
-public class Enums
+public sealed class Enums
 {
     public enum Status
     {

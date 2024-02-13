@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Api.Middleware;
 
-public class ExceptionHandlingMiddleware
+internal sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger _logger;
