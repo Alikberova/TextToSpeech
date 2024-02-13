@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace BookToAudio.Infra.Services.FileProcessing;
 
-public class TextFileProcessor : IFileProcessor
+public sealed class TextFileProcessor : IFileProcessor
 {
     private readonly IPathService _pathService;
 

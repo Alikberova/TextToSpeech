@@ -9,7 +9,7 @@ public interface IPathService
     string GetFileStoragePath();
 }
 
-public class PathService : IPathService
+public sealed class PathService : IPathService
 {
     private readonly IConfiguration _configuration;
 

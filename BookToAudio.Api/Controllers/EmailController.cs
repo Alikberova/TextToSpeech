@@ -6,7 +6,7 @@ namespace BookToAudio.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class EmailController: ControllerBase
+public sealed class EmailController : ControllerBase
 {
     private readonly IEmailService _emailService;
     public EmailController(IEmailService emailService)

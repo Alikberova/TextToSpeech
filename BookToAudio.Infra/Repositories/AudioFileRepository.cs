@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookToAudio.Infra.Repositories;
 
-public class AudioFileRepository : IAudioFileRepository
+public sealed class AudioFileRepository : IAudioFileRepository
 {
     private readonly AppDbContext _context;
 

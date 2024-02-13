@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace BookToAudio.Infra.Services;
 
-public class EmailService : IEmailService
+public sealed class EmailService : IEmailService
 {
     private readonly EmailConfig _emailConfig;
 

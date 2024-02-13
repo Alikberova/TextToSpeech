@@ -4,7 +4,7 @@ using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;
 
-public class AudioFileRepositoryService : IAudioFileRepositoryService
+public sealed class AudioFileRepositoryService : IAudioFileRepositoryService
 {
     private readonly IAudioFileRepository _audioFileRepository;
 

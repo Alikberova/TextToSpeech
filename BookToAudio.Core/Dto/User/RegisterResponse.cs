@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Core.Dto.User;
 
-public class RegisterResponse
+public sealed class RegisterResponse
 {
     public string Id { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;

@@ -10,7 +10,7 @@ using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;
 
-public class SpeechService : ISpeechService
+public sealed class SpeechService : ISpeechService
 {
     private readonly ITextProcessingService _textFileService;
     private readonly IOpenAiService _openAiService;

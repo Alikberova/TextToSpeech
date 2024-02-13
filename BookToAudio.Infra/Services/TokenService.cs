@@ -9,7 +9,7 @@ using System.Text;
 
 namespace BookToAudio.Infra.Services;
 
-public class TokenService : ITokenService
+public sealed class TokenService : ITokenService
 {
     private readonly JwtConfig _jwtConfig;
 
