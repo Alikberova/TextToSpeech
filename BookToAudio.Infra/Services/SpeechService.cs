@@ -6,6 +6,7 @@ using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;
@@ -19,6 +20,7 @@ public sealed class SpeechService : ISpeechService
     private readonly FileProcessorFactory _fileProcessorFactory;
     private readonly IFileStorageService _fileStorageService;
     private readonly IHubContext<AudioHub> _hubContext;
+    private readonly ILogger<SpeechService> _logger;
 
     public SpeechService(ITextProcessingService textFileService,
         IOpenAiService openAiService,
@@ -26,7 +28,8 @@ public sealed class SpeechService : ISpeechService
         IPathService pathService,
         FileProcessorFactory fileProcessorFactory,
         IFileStorageService fileStorageService,
-        IHubContext<AudioHub> hubContext)
+        IHubContext<AudioHub> hubContext,
+        ILogger<SpeechService> logger)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
@@ -35,6 +38,7 @@ public sealed class SpeechService : ISpeechService
         _fileProcessorFactory = fileProcessorFactory;
         _fileStorageService = fileStorageService;
         _hubContext = hubContext;
+        _logger = logger;
     }
 
     /// <summary>
@@ -95,6 +99,7 @@ public sealed class SpeechService : ISpeechService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error on processing speech");
             audioFile.Status = Status.Failed;
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
             throw;
