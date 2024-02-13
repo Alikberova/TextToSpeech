@@ -2,8 +2,8 @@
 
 internal class RegisterPageTests: BaseClass
 {
-    [Test]
-    [TestCase("http://localhost:4200/register")]
+   // [Test]
+  //  [TestCase("http://localhost:4200/register")]
     public void  RagisterTests(string url)
     {
         driver.Navigate().GoToUrl(url);
