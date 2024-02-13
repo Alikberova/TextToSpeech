@@ -14,6 +14,10 @@ public class BaseClass
     {
         StartClient.StartAngularApp();
         StartServer.StartWebAPI();
+
+        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 4200), Is.True, "Local port is not responding");
+        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 7057), Is.True, "Local port is not responding");
+
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);

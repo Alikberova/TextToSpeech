@@ -6,10 +6,10 @@ internal class CheckStartPort
 {
     public static bool CheckoutLocalPort(string ip, int port)
     {
-        int waitTime = 120;
+        const int tries = 120;
         TcpClient client = new TcpClient();
 
-        for (int i = 0; i <= waitTime; i++)
+        for (int i = 0; i <= tries; i++)
         {
             try
             {

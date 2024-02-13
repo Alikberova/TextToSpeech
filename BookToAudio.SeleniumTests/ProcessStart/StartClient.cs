@@ -1,5 +1,4 @@
-﻿using NUnit.Framework.Legacy;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
@@ -7,20 +6,31 @@ internal class StartClient
 {
     private static Process? process;
 
+    public static string AngularDirrectory()
+    {
+        var angularPath = Directory.GetCurrentDirectory();
+
+        while (angularPath != null && !Directory.Exists(Path.Combine(angularPath, "BookToAudio")))
+        {
+            angularPath = Directory.GetParent(angularPath)?.FullName;
+        }
+
+        Assert.That(!string.IsNullOrEmpty(angularPath), Is.True);
+        angularPath = Path.Combine(angularPath!, "BookToAudio.Web");
+
+        return angularPath;
+    }
     public static void StartAngularApp()
     {
         ProcessStartInfo startInfo = new("cmd.exe")
         {
             Arguments = "/c ng serve",
             UseShellExecute = false,
-            WorkingDirectory = @"C:\Users\ukrbi\source\repos\BookToAudio\BookToAudio.Web",
+            WorkingDirectory = AngularDirrectory(),
             CreateNoWindow = true,
         };
-
         process = new() { StartInfo = startInfo };
         process.Start();
-
-        ClassicAssert.IsTrue(CheckStartPort.CheckoutLocalPort("localhost", 4200), "Local port is not responding");
     }
    
     public static void StopAngularApp()

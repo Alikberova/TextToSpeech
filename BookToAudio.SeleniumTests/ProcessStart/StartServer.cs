@@ -1,26 +1,36 @@
-﻿using NUnit.Framework.Legacy;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
-
 internal class StartServer
 {
     private static Process? process;
 
+    public static string WebApiDirrectory()
+    {
+        var webApiPath = Directory.GetCurrentDirectory();
+
+        while (webApiPath != null && !Directory.Exists(Path.Combine(webApiPath, "BookToAudio")))
+        {
+            webApiPath = Directory.GetParent(webApiPath)?.FullName;
+        }
+
+        Assert.That(!string.IsNullOrEmpty(webApiPath), Is.True);
+        webApiPath = Path.Combine(webApiPath!, "BookToAudio.Api");
+
+        return webApiPath;
+    }
     public static void StartWebAPI()
     {
         ProcessStartInfo startInfo = new ("dotnet")
         {
             Arguments = "run -c Debug --launch-profile https",
             UseShellExecute = false,
-            WorkingDirectory = @"C:\Users\ukrbi\source\repos\BookToAudio\BookToAudio.Api",
+            WorkingDirectory = WebApiDirrectory(),
             CreateNoWindow = true,
         };
 
         process = new () { StartInfo = startInfo };
         process.Start();
-
-        ClassicAssert.IsTrue(CheckStartPort.CheckoutLocalPort("localhost", 7057), "Local port is not responding");
     }
 
     public static void StopWebAPI()
