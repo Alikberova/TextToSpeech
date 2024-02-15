@@ -18,6 +18,7 @@ internal class BaseClass
         Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
         Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
 
+
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
