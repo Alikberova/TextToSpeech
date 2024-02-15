@@ -12,11 +12,11 @@ internal class BaseClass
     [SetUp]
     protected void Setup()
     {
-        ServerManager.StartedServer();
-        ClientManager.StartedClient();
+        ServerManager.StartServer();
+        ClientManager.StartClient();
 
-        Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
-        Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
 
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
@@ -26,7 +26,7 @@ internal class BaseClass
     [TearDown]
     protected void OneTimeSetUp()
     {
-        AdvancedManagar.ProcessIsStopped(ServerManager.process, ClientManager.process);
+        ExtensionManager.StopProcess(ServerManager.process, ClientManager.process);
         driver.Quit();
         driver.Dispose();
     }

@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
-internal sealed class AdvancedManagar
+internal sealed class ExtensionManager
 {
-    public static bool PortChecker(string ip, int port)
+    public static bool IsPortAvailable(string ip, int port)
     {
         const int tries = 120;
         TcpClient client = new TcpClient();
@@ -44,7 +44,7 @@ internal sealed class AdvancedManagar
         return angularPath;
     }
 
-    public static void ProcessIsStopped(params Process[] process) 
+    public static void StopProcess(params Process[] process) 
     {
         foreach (var proc in process)
         {
