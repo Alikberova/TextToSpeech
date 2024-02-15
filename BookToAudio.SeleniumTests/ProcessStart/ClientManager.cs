@@ -5,6 +5,7 @@ namespace BookToAudio.SeleniumTests.ProcessStart;
 internal sealed class ClientManager
 {
     public static Process process;
+    
     public static void StartClient()
     {
         ProcessStartInfo startInfo = new("cmd.exe")
