@@ -12,7 +12,7 @@ using BookToAudio.Api.Services;
 
 namespace BookToAudio.Api.Extensions;
 
-public static class ServicesDiExtension
+internal static class ServicesDiExtension
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {

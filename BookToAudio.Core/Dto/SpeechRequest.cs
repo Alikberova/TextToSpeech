@@ -3,7 +3,7 @@ using OpenAI.Audio;
 
 namespace BookToAudio.Core.Dto;
 
-public class SpeechRequest
+public sealed class SpeechRequest
 {
     public string Model { get; set; } = string.Empty;
     public SpeechVoice Voice { get; set; }

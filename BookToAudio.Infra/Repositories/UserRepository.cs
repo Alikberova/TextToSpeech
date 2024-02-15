@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookToAudio.Infra.Repositories;
 
-public class UserRepository(AppDbContext dbContext) : IUserRepository
+public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
 {
     private readonly AppDbContext _dbContext = dbContext;
 

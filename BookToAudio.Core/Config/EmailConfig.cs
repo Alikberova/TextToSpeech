@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.Core.Config;
 
-public class EmailConfig
+public sealed class EmailConfig
 {
     public string EmailTo { get; set; } = string.Empty;
     public string EmailFrom {get; set; } = string.Empty;

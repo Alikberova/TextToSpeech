@@ -10,7 +10,7 @@ namespace BookToAudio.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
-public class UserController : ControllerBase
+public sealed class UserController : ControllerBase
 {
     private readonly AuthenticationService _authentication;
     private readonly UserManager<User> _userManager;

@@ -5,7 +5,7 @@ namespace BookToAudio.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UploadController : ControllerBase
+public sealed class UploadController : ControllerBase
 {
     private readonly IFileStorageService _fileStorageService;
 

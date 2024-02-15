@@ -4,7 +4,7 @@ using OpenAI.Models;
 
 namespace BookToAudio.Core.Services.Interfaces.Ai;
 
-public class OpenAiService : IOpenAiService
+public sealed class OpenAiService : IOpenAiService
 {
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string model = "tts-1",

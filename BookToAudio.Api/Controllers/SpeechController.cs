@@ -6,7 +6,7 @@ namespace BookToAudio.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SpeechController : ControllerBase
+public sealed class SpeechController : ControllerBase
 {
     private readonly ISpeechService _speechService;
 
