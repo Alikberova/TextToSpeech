@@ -8,15 +8,15 @@ namespace BookToAudio.SeleniumTests;
 public class BaseClass
 {
     protected IWebDriver driver;
-
+   
     [SetUp]
     protected void Setup()
     {
-        StartClient.StartAngularApp();
-        StartServer.StartWebAPI();
+        ServerManager.StartedServer();
+        ClientManager.StartedClient();
 
-        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 4200), Is.True, "Local port is not responding");
-        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 7057), Is.True, "Local port is not responding");
+        Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
+        Assert.That(AdvancedManagar.PortChecker(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
 
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
@@ -26,8 +26,7 @@ public class BaseClass
     [TearDown]
     protected void OneTimeSetUp()
     {
-        StartServer.StopWebAPI();
-        StartClient.StopAngularApp();
+        AdvancedManagar.ProcessIsStopped(ServerManager.process, ClientManager.process);
         driver.Quit();
         driver.Dispose();
     }
