@@ -2,7 +2,7 @@
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
-internal class ClientManager
+internal sealed class ClientManager
 {
     public static Process process;
     public static void StartedClient()

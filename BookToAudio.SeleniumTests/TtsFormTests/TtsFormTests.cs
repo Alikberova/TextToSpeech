@@ -1,6 +1,6 @@
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
-public class Tests: BaseClass
+internal sealed class Tests: BaseClass
 {
     [Test]
     [TestCase("http://localhost:4200/tts-form")]

@@ -5,7 +5,7 @@ using OpenQA.Selenium.Chrome;
 namespace BookToAudio.SeleniumTests;
 
 [TestFixture]
-public class BaseClass
+internal class BaseClass
 {
     protected IWebDriver driver;
    

@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.SeleniumTests.RegisterPageTests;
 
-internal class RegisterPageTests: BaseClass
+internal sealed class RegisterPageTests: BaseClass
 {
    // [Test]
   //  [TestCase("http://localhost:4200/register")]

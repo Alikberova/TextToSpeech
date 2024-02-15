@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
-internal class AdvancedManagar
+internal sealed class AdvancedManagar
 {
     public static bool PortChecker(string ip, int port)
     {

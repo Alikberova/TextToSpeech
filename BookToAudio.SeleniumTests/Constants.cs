@@ -1,6 +1,6 @@
 ﻿namespace BookToAudio.SeleniumTests;
 
-internal class ConstantsTests
+internal sealed class ConstantsTests
 {
     public const string Localhost = "localhost";
     public const string DirectoryClient = "BookToAudio.Web";
