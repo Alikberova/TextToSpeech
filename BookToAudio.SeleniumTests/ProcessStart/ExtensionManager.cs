@@ -33,14 +33,13 @@ internal sealed class ExtensionManager
     public static string GetRootDirectory(string nameDirectory)
     {
         var angularPath = Directory.GetCurrentDirectory();
-
+        
         while (angularPath != null && !Directory.Exists(Path.Combine(angularPath, "BookToAudio")))
         {
             angularPath = Directory.GetParent(angularPath)?.FullName;
         }
-
         angularPath = Path.Combine(angularPath!, nameDirectory);
-
+        
         return angularPath;
     }
 

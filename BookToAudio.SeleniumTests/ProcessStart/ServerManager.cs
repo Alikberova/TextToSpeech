@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
+
 internal sealed class ServerManager
 {
     public static Process process;
