@@ -4,6 +4,7 @@ namespace BookToAudio.SeleniumTests.ProcessStart;
 internal sealed class ServerManager
 {
     public static Process process;
+    
     public static void StartedServer()
     {
         ProcessStartInfo startInfo = new ("dotnet")
