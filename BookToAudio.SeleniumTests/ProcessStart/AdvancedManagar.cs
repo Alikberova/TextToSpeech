@@ -39,6 +39,7 @@ internal sealed class AdvancedManagar
             angularPath = Directory.GetParent(angularPath)?.FullName;
         }
         angularPath = Path.Combine(angularPath!, nameDirectory);
+        
         return angularPath;
     }
 
