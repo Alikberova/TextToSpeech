@@ -26,6 +26,7 @@ internal static class ServicesDiExtension
         services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISpeechService, SpeechService>();
+        services.AddScoped<IMetaDataService, MetaDataService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
