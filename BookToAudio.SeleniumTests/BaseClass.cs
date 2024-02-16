@@ -5,18 +5,19 @@ using OpenQA.Selenium.Chrome;
 namespace BookToAudio.SeleniumTests;
 
 [TestFixture]
-public class BaseClass
+internal class BaseClass
 {
     protected IWebDriver driver;
-
+   
     [SetUp]
     protected void Setup()
     {
-        StartClient.StartAngularApp();
-        StartServer.StartWebAPI();
+        ServerManager.StartServer();
+        ClientManager.StartClient();
 
-        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 4200), Is.True, "Local port 4200 is not responding");
-        Assert.That(CheckStartPort.CheckoutLocalPort("localhost", 7057), Is.True, "Local port 7057 is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
+
 
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
@@ -26,8 +27,7 @@ public class BaseClass
     [TearDown]
     protected void OneTimeSetUp()
     {
-        StartServer.StopWebAPI();
-        StartClient.StopAngularApp();
+        ExtensionManager.StopProcess(ServerManager.process, ClientManager.process);
         driver.Quit();
         driver.Dispose();
     }

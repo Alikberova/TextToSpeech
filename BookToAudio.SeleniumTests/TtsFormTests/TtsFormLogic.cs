@@ -5,7 +5,7 @@ using SeleniumExtras.WaitHelpers;
 
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
-internal class TtsFormLogic
+internal sealed class TtsFormLogic
 {
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;
