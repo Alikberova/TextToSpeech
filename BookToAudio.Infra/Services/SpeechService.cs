@@ -21,6 +21,7 @@ public sealed class SpeechService : ISpeechService
     private readonly IFileStorageService _fileStorageService;
     private readonly IHubContext<AudioHub> _hubContext;
     private readonly ILogger<SpeechService> _logger;
+    private readonly IMetaDataService _metaDataService;
 
     public SpeechService(ITextProcessingService textFileService,
         IOpenAiService openAiService,
@@ -29,7 +30,8 @@ public sealed class SpeechService : ISpeechService
         FileProcessorFactory fileProcessorFactory,
         IFileStorageService fileStorageService,
         IHubContext<AudioHub> hubContext,
-        ILogger<SpeechService> logger)
+        ILogger<SpeechService> logger,
+         IMetaDataService metaDataService)
     {
         _textFileService = textFileService;
         _openAiService = openAiService;
@@ -39,6 +41,7 @@ public sealed class SpeechService : ISpeechService
         _fileStorageService = fileStorageService;
         _hubContext = hubContext;
         _logger = logger;
+        _metaDataService = metaDataService;
     }
 
     /// <summary>
@@ -96,6 +99,8 @@ public sealed class SpeechService : ISpeechService
             audioFile.Data = bytes;
 
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+
+            _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
         }
         catch (Exception ex)
         {
