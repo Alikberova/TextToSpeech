@@ -17,6 +17,7 @@
     [ngClass]="{'file-selected': textToSpeech.file}">Choose File</button>
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept=".pdf,.txt"
            aria-label="Upload File"/>
+    <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxLengthInput | FormatMaxInputLengthPipe}} characters </mat-error>
     <div>
       <span *ngIf="textToSpeech.file">{{ textToSpeech.file.name }}</span>
       <button mat-button *ngIf="textToSpeech.file" (click)="clearFileSelection()" color="warn"
