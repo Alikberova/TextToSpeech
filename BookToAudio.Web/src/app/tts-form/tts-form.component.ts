@@ -173,14 +173,11 @@ export class TtsFormComponent implements OnInit {
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
   }
 
-  validateInputLength(){
-   if(this.textToSpeech.file){
-      if(this.textToSpeech.file.size > this.maxLengthInput){
+  validateInputLength(): boolean | undefined{
+    if (this.textToSpeech.file !== undefined && this.textToSpeech.file.size > this.maxLengthInput){
         this.clearFileSelection();
-        this.warnedMaxInputLength = true;
-      }else {
-          this.warnedMaxInputLength = false;
-      }
+       return this.warnedMaxInputLength = true;
     }
+    return this.warnedMaxInputLength = false;
   }
 }

@@ -11,8 +11,7 @@ export class FormatMaxInputLengthPipe implements PipeTransform{
     if (maxInputLength > 9999) {
         const formattedLength = maxInputLength.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         return formattedLength;
-    } else {
-        return maxInputLength.toString();
     }
+    return maxInputLength.toString();
   }
 }
