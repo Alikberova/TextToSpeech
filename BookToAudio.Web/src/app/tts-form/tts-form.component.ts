@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -16,11 +16,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
+
 
 @Component({
   selector: 'app-tts-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule],
+  imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, FormatMaxInputLengthPipe],
   templateUrl: './tts-form.component.html',
   styleUrl: './tts-form.component.scss',
 })
@@ -46,6 +48,9 @@ export class TtsFormComponent implements OnInit {
   isSpeechReady = false;
   audioDownloadUrl = '';
 
+  maxLengthInput = 100000;
+  warnedMaxInputLength = false;
+
   private audio: HTMLAudioElement | null = null;
   isPlaying = false; 
   currentlyLoadingAudio = false;
@@ -64,6 +69,7 @@ export class TtsFormComponent implements OnInit {
     if (target.files && target.files.length > 0) {
       this.textToSpeech.file = target.files[0];
     }
+    this.validateInputLength();
   }
 
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
@@ -165,5 +171,14 @@ export class TtsFormComponent implements OnInit {
     const fileNameWithoutExtension = this.textToSpeech.file!.name.replace(/\.[^/.]+$/, '');
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
+  }
+
+  validateInputLength(){
+    if (this.textToSpeech.file !== undefined && this.textToSpeech.file.size > this.maxLengthInput){
+        this.clearFileSelection();
+      this.warnedMaxInputLength = true;
+      return;
+    }
+    this.warnedMaxInputLength = false;
   }
 }
