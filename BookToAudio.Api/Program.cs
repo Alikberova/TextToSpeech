@@ -1,5 +1,6 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
+using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
@@ -14,7 +15,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true);
+var isDevelopment = HostingEnvironment.IsDevelopment();
+
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true);
 
 var logPath = builder.Configuration[ConfigConstants.LogPath];
 

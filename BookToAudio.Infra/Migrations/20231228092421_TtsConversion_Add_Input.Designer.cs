@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace BookToAudio.Infa.Migrations
+namespace BookToAudio.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20231228092421_TtsConversion_Add_Input")]
