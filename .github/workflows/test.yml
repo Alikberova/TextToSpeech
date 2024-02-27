@@ -29,9 +29,9 @@ jobs:
     - name: Tmp build
       run: |
         dotnet build --no-restore BookToAudio.Core
+        dotnet build --no-restore BookToAudio.SeleniumTests
         dotnet build --no-restore BookToAudio.Web
         dotnet build --no-restore BookToAudio.Realtime
-        dotnet build --no-restore BookToAudio.SeleniumTests
         dotnet build --no-restore BookToAudio.Infra
         dotnet build --no-restore BookToAudio.TestingInfra
         dotnet build --no-restore BookToAudio.Api
