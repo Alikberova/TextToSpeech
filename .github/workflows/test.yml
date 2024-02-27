@@ -6,15 +6,12 @@ on:
     branches: [ "master", "dev" ]
 
 jobs:
-  deploy:
+  build_and_test:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Restore dependencies
-      run: dotnet restore
-
     - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal

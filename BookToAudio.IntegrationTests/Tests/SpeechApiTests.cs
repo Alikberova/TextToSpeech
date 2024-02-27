@@ -85,7 +85,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         //Assert
 
         Assert.True(completedTask == spechStatusUpdated.Task, "Timed out to update speech status");
-        Assert.Equal(status, Status.Completed.ToString());
+        Assert.Equal(Status.Completed.ToString(), status);
         Assert.True(isAudioFileIdValid, "Audio file ID is not a valid guid");
         Assert.True(Mp3FileUtilities.IsMp3Valid(audioFilePath), InvalidMp3Error);
 
