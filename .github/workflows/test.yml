@@ -23,15 +23,15 @@ jobs:
 
     - name: Tmp build
       run: |
-        dotnet build BookToAudio.Core
-        dotnet build BookToAudio.Realtime
-        dotnet build BookToAudio.Web
-        dotnet build BookToAudio.SeleniumTests
-        dotnet build BookToAudio.Infra
-        dotnet build BookToAudio.TestingInfra
-        dotnet build BookToAudio.Api
-        dotnet build BookToAudio.IntegrationTests
-        dotnet build BookToAudio.UnitTests
+        dotnet build --no-restore BookToAudio/BookToAudio.Core
+        dotnet build --no-restore BookToAudio/BookToAudio.Realtime
+        dotnet build --no-restore BookToAudio/BookToAudio.Web
+        dotnet build --no-restore BookToAudio/BookToAudio.SeleniumTests
+        dotnet build --no-restore BookToAudio/BookToAudio.Infra
+        dotnet build --no-restore BookToAudio/BookToAudio.TestingInfra
+        dotnet build --no-restore BookToAudio/BookToAudio.Api
+        dotnet build --no-restore BookToAudio/BookToAudio.IntegrationTests
+        dotnet build --no-restore BookToAudio/BookToAudio.UnitTests
 
     - name: Build
       run: dotnet build --no-restore
