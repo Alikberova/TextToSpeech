@@ -7,8 +7,8 @@ internal sealed class ExtensionManager
 {
     public static bool IsPortAvailable(string ip, int port)
     {
-        const int tries = 120;
-        TcpClient client = new TcpClient();
+        const int tries = 60;
+        TcpClient client = new ();
 
         for (int i = 0; i <= tries; i++)
         {
@@ -16,9 +16,9 @@ internal sealed class ExtensionManager
             {
               client.Connect(ip, port);
             }
-            catch (Exception)
+            catch (SocketException)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
             if (client.Connected)
             {
@@ -26,21 +26,24 @@ internal sealed class ExtensionManager
                 return true;
             }
         }
+
         client.Close();
+
         return false;
     }
 
-    public static string GetRootDirectory(string nameDirectory)
+    public static string GetProjectDirectory(string projectName)
     {
-        var angularPath = Directory.GetCurrentDirectory();
+        var path = Directory.GetCurrentDirectory();
         
-        while (angularPath != null && !Directory.Exists(Path.Combine(angularPath, "BookToAudio")))
+        while (path != null && !Directory.Exists(Path.Combine(path, projectName)))
         {
-            angularPath = Directory.GetParent(angularPath)?.FullName;
+            path = Directory.GetParent(path)?.FullName;
         }
-        angularPath = Path.Combine(angularPath!, nameDirectory);
+
+        path = Path.Combine(path!, projectName);
         
-        return angularPath;
+        return path;
     }
 
     public static void StopProcess(params Process[] process) 

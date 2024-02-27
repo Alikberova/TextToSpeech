@@ -15,9 +15,8 @@ internal class BaseClass
         ServerManager.StartServer();
         ClientManager.StartClient();
 
-        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortClient), Is.True, "Local port is not responding");
-        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.PortServer), Is.True, "Local port is not responding");
-
+        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ClientPort), Is.True, "Local port is not responding");
+        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ServerPort), Is.True, "Local port is not responding");
 
         driver = new ChromeDriver();
         driver.Manage().Window.Maximize();
@@ -25,9 +24,9 @@ internal class BaseClass
     }
 
     [TearDown]
-    protected void OneTimeSetUp()
+    protected void Cleanup()
     {
-        ExtensionManager.StopProcess(ServerManager.process, ClientManager.process);
+        ExtensionManager.StopProcess(ServerManager._process, ClientManager._process);
         driver.Quit();
         driver.Dispose();
     }

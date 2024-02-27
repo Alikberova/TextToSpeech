@@ -4,7 +4,7 @@ namespace BookToAudio.SeleniumTests.ProcessStart;
 
 internal sealed class ClientManager
 {
-    public static Process process;
+    public static Process _process = null!;
     
     public static void StartClient()
     {
@@ -12,10 +12,11 @@ internal sealed class ClientManager
         {
             Arguments = "/c ng serve",
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetRootDirectory(ConstantsTests.DirectoryClient),
+            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ClientProjectName),
             CreateNoWindow = true,
         };
-        process = new() { StartInfo = startInfo };
-        process.Start();
+
+        _process = new() { StartInfo = startInfo };
+        _process.Start();
     }
 }

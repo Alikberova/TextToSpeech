@@ -3,8 +3,8 @@
 internal sealed class ConstantsTests
 {
     public const string Localhost = "localhost";
-    public const string DirectoryClient = "BookToAudio.Web";
-    public const string DirectoryServer = "BookToAudio.Api";
-    public const int PortClient = 4200;
-    public const int PortServer = 7057;
+    public const string ClientProjectName = "BookToAudio.Web";
+    public const string ServerProjectName = "BookToAudio.Api";
+    public const int ClientPort = 4200;
+    public const int ServerPort = 7057;
 }

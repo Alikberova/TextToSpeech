@@ -4,7 +4,7 @@ namespace BookToAudio.SeleniumTests.ProcessStart;
 
 internal sealed class ServerManager
 {
-    public static Process process;
+    public static Process _process = null!;
     
     public static void StartServer()
     {
@@ -12,10 +12,11 @@ internal sealed class ServerManager
         {
             Arguments = "run -c Debug --launch-profile https",
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetRootDirectory(ConstantsTests.DirectoryServer),
+            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ServerProjectName),
             CreateNoWindow = true,
         };
-        process = new () { StartInfo = startInfo };
-        process.Start();
+
+        _process = new () { StartInfo = startInfo };
+        _process.Start();
     }
 }
