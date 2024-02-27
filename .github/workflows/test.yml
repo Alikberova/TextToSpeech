@@ -21,6 +21,18 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Tmp build
+      run: |
+        dotnet build BookToAudio.Core
+        dotnet build BookToAudio.Realtime
+        dotnet build BookToAudio.Web
+        dotnet build BookToAudio.SeleniumTests
+        dotnet build BookToAudio.Infra
+        dotnet build BookToAudio.TestingInfra
+        dotnet build BookToAudio.Api
+        dotnet build BookToAudio.IntegrationTests
+        dotnet build BookToAudio.UnitTests
+
     - name: Build
       run: dotnet build --no-restore
 
