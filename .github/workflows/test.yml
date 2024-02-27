@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Build
-      run: dotnet build
-
+    
     - name: Restore dependencies
       run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
 
     - name: Run tests
       run: dotnet test --no-build --no-restore --verbosity normal
