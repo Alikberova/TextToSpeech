@@ -23,8 +23,8 @@ jobs:
 
     - name: Echo
       run: |
-        echo ${pwd}
-        echo ${ls}
+        echo $(pwd)
+        echo $(ls)
 
     - name: Build
       run: |
