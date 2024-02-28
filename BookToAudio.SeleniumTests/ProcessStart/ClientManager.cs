@@ -8,9 +8,9 @@ internal sealed class ClientManager
     
     public static void StartClient()
     {
-        ProcessStartInfo startInfo = new("cmd.exe")
+        ProcessStartInfo startInfo = new("ng")
         {
-            Arguments = "/c ng serve",
+            Arguments = "serve",
             UseShellExecute = false,
             WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ClientProjectName),
             CreateNoWindow = true,
