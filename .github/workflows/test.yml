@@ -16,12 +16,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+          
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+            
       - name: Restore dependencies
         run: dotnet restore
+        
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
 
@@ -30,12 +41,23 @@ jobs:
     needs: unit-tests
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+          
+      - name: Cache .NET packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+            
       - name: Restore dependencies
         run: dotnet restore
+        
       - name: Run integration tests
         run: dotnet test --no-restore --filter TestCategory=Integration
 
@@ -49,19 +71,26 @@ jobs:
           - 4444:4444
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '21'
-      - name: Build and serve Angular app
+          cache: 'npm'
+          
+      - name: Install and build Angular app
         run: |
           cd BookToAudio.Web
           npm install
           npm run build
           npm start &
+        env:
+          CI: true
+      
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+          
       - name: Run Selenium tests
         run: dotnet test --filter TestCategory=Selenium
