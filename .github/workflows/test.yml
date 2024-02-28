@@ -52,7 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '21'
       - name: Build and serve Angular app
         run: |
           cd BookToAudio.Web
