@@ -32,5 +32,8 @@ jobs:
         dotnet build --no-restore
         dotnet build --no-restore BookToAudio.Web
 
+    - name: Install Angular CLI
+      run: npm install -g @angular/cli
+
     - name: Run tests
       run: dotnet test --no-build --no-restore --verbosity normal
