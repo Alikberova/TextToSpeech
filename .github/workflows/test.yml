@@ -21,9 +21,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
           cache: true
-          cache-key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-dotnet-
+          cache-dependency-path: '**/package-lock.json'
       - name: Restore dependencies
         run: dotnet restore
       - name: Run unit tests
@@ -39,9 +37,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
           cache: true
-          cache-key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-dotnet-
+          cache-dependency-path: '**/package-lock.json'
       - name: Restore dependencies
         run: dotnet restore
       - name: Run integration tests
@@ -72,8 +68,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
           cache: true
-          cache-key: ${{ runner.os }}-dotnet-${{ hashFiles('**/*.csproj') }}
-          cache-restore-keys: |
-            ${{ runner.os }}-dotnet-
+          cache-dependency-path: '**/package-lock.json'
       - name: Run Selenium tests
         run: dotnet test --filter TestCategory=Selenium
