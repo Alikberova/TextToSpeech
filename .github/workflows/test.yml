@@ -26,20 +26,10 @@ jobs:
         echo ${pwd}
         echo ${ls}
 
-    - name: Tmp build
-      run: |
-        dotnet build --no-restore BookToAudio.Core
-        dotnet build --no-restore BookToAudio.SeleniumTests
-        dotnet build --no-restore BookToAudio.Web
-        dotnet build --no-restore BookToAudio.RealTime
-        dotnet build --no-restore BookToAudio.Infra
-        dotnet build --no-restore BookToAudio.TestingInfra
-        dotnet build --no-restore BookToAudio.Api
-        dotnet build --no-restore BookToAudio.IntegrationTests
-        dotnet build --no-restore BookToAudio.UnitTests
-
     - name: Build
-      run: dotnet build --no-restore
+      run: |
+        dotnet build --no-restore
+        dotnet build --no-restore BookToAudio.Web
 
     - name: Run tests
       run: dotnet test --no-build --no-restore --verbosity normal
