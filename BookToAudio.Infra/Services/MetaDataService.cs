@@ -15,7 +15,7 @@ public class MetaDataService(IOptions<JwtConfig> jwtConfigOptions) : IMetaDataSe
     public void AddMetaData(string pathFile, string title)
     {
         var file = TagLib.File.Create(pathFile);
-        
+
         file.Tag.Title = title;
         file.Tag.Comment = $"Website: {_jwtConfig.Issuer}";
         file.Save();

@@ -5,12 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>0489380f-7fed-43e7-b774-a8589d824f1c</UserSecretsId>
+	<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

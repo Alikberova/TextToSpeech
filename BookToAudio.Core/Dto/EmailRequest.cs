@@ -2,7 +2,7 @@
 
 public sealed class EmailRequest
 {
-    public string Name { get; set; }
-    public string UserEmail { get; set; }
-    public string Message { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string UserEmail { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
 }
