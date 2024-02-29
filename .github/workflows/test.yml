@@ -47,7 +47,5 @@ jobs:
         run: |
           cd BookToAudio.Web
           npm install
-          npm run build
-          npm start &
       - name: Run Selenium tests
         run: dotnet test --filter TestCategory=Selenium
