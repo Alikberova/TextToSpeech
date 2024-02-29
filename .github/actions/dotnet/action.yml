@@ -13,3 +13,4 @@ runs:
     
     - name: Restore dependencies
       run: dotnet restore
+      shell: bash
