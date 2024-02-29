@@ -1,0 +1,44 @@
+mat-card {
+    margin: 20px 18vw;
+    padding: 50px 50px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); //todo mixin
+}
+
+mat-card-title {
+    font-size: 1.5rem;
+}
+
+mat-card-subtitle {
+    margin: 0.7rem;
+}
+
+h2 {
+    margin-top: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+@media screen and (max-width: 768px) {
+    mat-card {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    mat-card-title {
+        font-size: 1.3rem;
+    }
+
+    mat-card-subtitle {
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+}

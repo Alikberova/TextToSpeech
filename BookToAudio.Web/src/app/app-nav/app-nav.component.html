@@ -1,16 +1,20 @@
 <mat-toolbar color="primary">
-  <span>Your Logo Here</span>
-  
-  <!-- Menu items -->
-  <span class="menu-items">
-    <button mat-button *ngFor="let item of menu">{{item}}</button>
 
-    <!-- Add profile dropdown menu -->
-    <button mat-button [matMenuTriggerFor]="profileMenu">My Profile</button>
+  <div class="logo-container" (click)="redirectToHome()">
+    <span class="logo-text">text to speech</span>
+    <div class="logo-stripe"></div>
+    <span class="slogan-text">everything to speech</span>
+  </div>
+
+  <span class="menu-items">
+    <button mat-button *ngFor="let item of menu" [routerLink]="item.route">{{item.name}}</button>
+
+    <button mat-button *ngIf="!isLoggedIn" (click)="redirectToLogin()" hidden>Login</button>
+    <button mat-button [matMenuTriggerFor]="profileMenu" *ngIf="isLoggedIn">Profile</button>
     <mat-menu #profileMenu="matMenu">
       <button mat-menu-item>Profile</button>
       <button mat-menu-item>Settings</button>
-      <button mat-menu-item>Logout</button>
+      <button mat-menu-item (click)="logoutUser()">Logout</button>
     </mat-menu>
   </span>
 </mat-toolbar>

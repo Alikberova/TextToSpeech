@@ -1,3 +1,5 @@
+@import "colors";
+
 mat-toolbar {
   justify-content: space-between;
   position: fixed;
@@ -14,4 +16,33 @@ mat-toolbar {
 
 :host {
   display: block;
+}
+
+.logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.logo-text {
+  letter-spacing: 3.1px;
+  line-height: 1.4;
+  font-family: 'Hammersmith One', sans-serif;
+  font-size: 18px;
+}
+
+.slogan-text {
+  letter-spacing: 1.6px;
+  line-height: 1.4;
+  font-family: 'Fira Sans Condensed', sans-serif;
+  font-size: 16px;
+}
+
+.logo-stripe {
+  width: 100%;
+  height: 2px;
+  background: $white;
 }

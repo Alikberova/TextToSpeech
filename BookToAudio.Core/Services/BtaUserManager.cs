@@ -1,9 +1,10 @@
 ﻿using BookToAudio.Core.Entities;
+using BookToAudio.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookToAudio.Core.Services;
 
-public class BtaUserManager
+public sealed class BtaUserManager : IBtaUserManager
 {
     private readonly UserManager<User> _userManager;
 
@@ -73,6 +74,6 @@ public class BtaUserManager
     }
 }
 
-public class IdentityOperationException(string message) : Exception(message)
+internal sealed class IdentityOperationException(string message) : Exception(message)
 {
 }
