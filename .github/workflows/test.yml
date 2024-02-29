@@ -48,6 +48,6 @@ jobs:
       - name: Install dependencies
         run: |
           cd BookToAudio.Web
-          npm install
+          npm ci
       - name: Run Selenium tests
         run: dotnet test --filter TestCategory=Selenium
