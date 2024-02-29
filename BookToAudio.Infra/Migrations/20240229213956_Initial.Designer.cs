@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookToAudio.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240102200244_Add_Table_AudioFile")]
-    partial class Add_Table_AudioFile
+    [Migration("20240229213956_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -46,37 +46,12 @@ namespace BookToAudio.Infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("AudioFiles");
-                });
-
-            modelBuilder.Entity("BookToAudio.Core.Entities.TtsConversion", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ResponseFormat")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Speed")
-                        .HasColumnType("double precision");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Voice")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.ToTable("TtsConversions");
+                    b.ToTable("AudioFiles");
                 });
 
             modelBuilder.Entity("BookToAudio.Core.Entities.User", b =>
