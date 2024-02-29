@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: alikberova/booktoaudio/.github/actions/dotnet@dev
+      - uses: alikberova/booktoaudio/.github/actions/dotnet@ci2
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
 
