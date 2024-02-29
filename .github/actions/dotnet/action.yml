@@ -1,0 +1,16 @@
+name: 'Setup .NET with Caching'
+description: 'Setup .NET SDK, cache, and restore dependencies'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        cache: true
+        cache-dependency-path: '**/package-lock.json'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      shell: bash

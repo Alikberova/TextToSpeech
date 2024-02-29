@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - dev
-      - tests-2
   pull_request:
     branches:
       - master
@@ -16,12 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Restore dependencies
-        run: dotnet restore
+      - uses: ./.github/actions/dotnet
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
 
@@ -30,12 +24,7 @@ jobs:
     needs: unit-tests
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Restore dependencies
-        run: dotnet restore
+      - uses: ./.github/actions/dotnet
       - name: Run integration tests
         run: dotnet test --no-restore --filter TestCategory=Integration
 
@@ -49,6 +38,7 @@ jobs:
           - 4444:4444
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/dotnet
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -59,9 +49,5 @@ jobs:
           npm install
           npm run build
           npm start &
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
       - name: Run Selenium tests
         run: dotnet test --filter TestCategory=Selenium
