@@ -1,14 +1,17 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ConfigConstants } from '../constants/config-constants';
 import { SpeechRequest } from '../models/text-to-speech';
 import { Observable } from 'rxjs';
+import { ConfigService } from '../services/config-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpeechClient {
-  private apiUrl = `${ConfigConstants.BaseApiUrl}/speech`;
+  private configService = inject(ConfigService);
+  
+  private apiUrl = `${this.configService.apiUrl}/speech`;
 
   constructor(private http: HttpClient) {}
 

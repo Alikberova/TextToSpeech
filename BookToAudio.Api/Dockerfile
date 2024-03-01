@@ -12,7 +12,7 @@ WORKDIR /src
 # Re-declare ARG here because ARGs are not available across stages
 ARG API_NAME
 COPY . .
-RUN dotnet restore "${API_NAME}/${API_NAME}.csproj"
+RUN dotnet restore "${API_NAME}"
 
 WORKDIR "/src/${API_NAME}"
 RUN dotnet publish --no-restore -c Release -o /app/publish

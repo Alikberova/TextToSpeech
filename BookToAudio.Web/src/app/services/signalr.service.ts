@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { ConfigConstants } from '../constants/config-constants';
+import { ConfigService } from './config-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SignalRService {
+  private configService = inject(ConfigService);
   private hubConnection!: signalR.HubConnection;
 
   startConnection = () => {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${ConfigConstants.BaseUrl}/audioHub`)
+      .withUrl(`${this.configService.baseUrl}/audioHub`)
       .build();
 
     this.hubConnection
