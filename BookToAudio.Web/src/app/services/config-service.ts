@@ -28,7 +28,7 @@ export class ConfigService {
   }
 
   //We're going to use this function to read the config.
-  readConfig(): AppConfig {
+  getConfig(): AppConfig {
     return this.configuration;
   }
 
