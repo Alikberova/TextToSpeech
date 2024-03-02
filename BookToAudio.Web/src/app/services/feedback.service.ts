@@ -1,15 +1,16 @@
-import {  Injectable } from "@angular/core";
+import {  Injectable, inject } from "@angular/core";
 import { FeedbackRequest } from "../models/feedback"
 import { HttpClient } from "@angular/common/http";
-import { ConfigConstants } from '../constants/config-constants';
+import { ConfigService } from "./config-service";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class FeedbackService {
+  private configService = inject(ConfigService);
 
-  private apiUrl = `${ConfigConstants.BaseApiUrl}/email`;
+  private apiUrl = `${this.configService.apiUrl}/email`;
 
   constructor(private http: HttpClient) { }
 

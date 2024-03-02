@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
+import { ConfigService } from '../services/config-service';
 
 
 @Component({
@@ -28,6 +29,8 @@ import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
 })
 
 export class TtsFormComponent implements OnInit {
+  private configService = inject(ConfigService);
+  
   constructor(
     private speechClient: SpeechClient,
     private errorHandler: ErrorHandlerService,
@@ -167,9 +170,9 @@ export class TtsFormComponent implements OnInit {
   }
 
   private setDownloadData(audioFileId: string) {
-    const apiUrl = `${ConfigConstants.BaseApiUrl}/audio`;
     const fileNameWithoutExtension = this.textToSpeech.file!.name.replace(/\.[^/.]+$/, '');
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
+    const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
   }
 
