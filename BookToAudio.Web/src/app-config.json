@@ -1,4 +1,4 @@
 {
-    "baseUrl": "http://111.11.11",
+    "baseUrl": "https://localhost:7057",
     "apiEndpoint": "/api"
 }

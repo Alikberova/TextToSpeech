@@ -3,7 +3,7 @@ namespace BookToAudio.SeleniumTests.TtsFormTests;
 internal sealed class Tests: BaseClass
 {
     [Test]
-    [TestCase("http://localhost:4200/tts-form")]
+    [TestCase("http://localhost:4000/tts-form")]
     public void  TtsFormPageTests(string url)
     {
         driver.Navigate().GoToUrl(url);

@@ -40,7 +40,7 @@ builder.Services.AddServices();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins("http://localhost:4000") //todo config
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
