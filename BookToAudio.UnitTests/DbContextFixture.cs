@@ -12,7 +12,7 @@ public class DbContextFixture : IDisposable
     public DbContextFixture()
     {
         var config = new ConfigurationBuilder()
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: false, reloadOnChange: true)
+            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
             .Build();
         var connectionString = config.GetConnectionString("DefaultConnection");
 
