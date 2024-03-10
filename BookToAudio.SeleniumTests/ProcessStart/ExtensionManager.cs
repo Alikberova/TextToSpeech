@@ -50,10 +50,16 @@ internal sealed class ExtensionManager
     {
         foreach (var proc in process)
         {
-            if (proc != null && !proc.HasExited)
+            try
             {
-                proc.Kill(true);
-                proc.Dispose();
+                if (proc != null && !proc.HasExited)
+                {
+                    proc.Kill(true);
+                    proc.Dispose();
+                }
+            }
+            catch (InvalidOperationException)
+            {
             }
         }
     }

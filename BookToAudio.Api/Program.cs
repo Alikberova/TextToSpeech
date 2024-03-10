@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Reflection;
 using System.Text;
+using static System.Environment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,14 +20,15 @@ var isDevelopment = HostingEnvironment.IsDevelopment();
 
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true);
 
-var logPath = builder.Configuration[ConfigConstants.LogPath];
+var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
 
-var nameLogFile = "log_.txt";
+
+var logFile = Path.Combine(appDataPath, "Logs", "log_.txt");
 
 builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File(Path.Combine(logPath!, nameLogFile), rollingInterval: RollingInterval.Hour));
+    .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -58,6 +60,13 @@ builder.Services.AddIdentity<User, IdentityRole>()
     .AddDefaultTokenProviders();
 
 AddAuthentication(builder);
+
+var openAiKey = builder.Configuration[ConfigConstants.OpenAiApiKey];
+
+if (openAiKey != null)
+{
+    SetEnvironmentVariable(ConfigConstants.OpenAiApiKey, builder.Configuration[ConfigConstants.OpenAiApiKey]);
+}
 
 var app = builder.Build();
 

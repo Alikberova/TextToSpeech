@@ -12,7 +12,7 @@ internal sealed class ServerManager
         {
             Arguments = "run -c Debug --launch-profile https",
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ServerProjectName),
+            WorkingDirectory = ExtensionManager.GetProjectDirectory(Constants.ServerProjectName),
             CreateNoWindow = true,
         };
 

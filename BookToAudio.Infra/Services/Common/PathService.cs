@@ -5,7 +5,7 @@ namespace BookToAudio.Infra.Services.Common;
 
 public interface IPathService
 {
-    string CreateFileStorageFilePath(string fileName);
+    string GetFileStorageFilePath(string fileName);
     string GetFileStoragePath();
 }
 
@@ -18,14 +18,14 @@ public sealed class PathService : IPathService
         _configuration = configuration;
     }
 
-    public string CreateFileStorageFilePath(string fileName)
+    public string GetFileStorageFilePath(string fileName)
     {
         return Path.Combine(GetFileStoragePath(), fileName);
     }
 
     public string GetFileStoragePath()
     {
-        return _configuration.GetValue<string>(ConfigConstants.FileStoragePath) ??
-            throw new ArgumentNullException(ConfigConstants.FileStoragePath);
+        return Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
+            SharedConstants.AppStorage);
     }
 }

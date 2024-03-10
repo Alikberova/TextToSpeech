@@ -8,11 +8,15 @@ internal sealed class ClientManager
     
     public static void StartClient()
     {
-        ProcessStartInfo startInfo = new("ng")
+        var isWindows = Environment.OSVersion.ToString().Contains("Windows"); //Microsoft Windows NT 10.0.19045.0
+        var fileName = isWindows ? "cmd" : "ng";
+        var arguments = $"serve --port {Constants.ClientPort}";
+
+        ProcessStartInfo startInfo = new(fileName)
         {
-            Arguments = "serve",
+            Arguments = isWindows ? "/c ng " + arguments : arguments,
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ClientProjectName),
+            WorkingDirectory = ExtensionManager.GetProjectDirectory(Constants.ClientProjectName),
             CreateNoWindow = true,
         };
 
