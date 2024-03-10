@@ -19,7 +19,6 @@ jobs:
         uses: ./.github/actions/dotnet
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
-       
 
   integration-tests:
     runs-on: ubuntu-latest
