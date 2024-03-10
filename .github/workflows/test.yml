@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - dev
+      - feat1
   pull_request:
     branches:
       - master
@@ -15,9 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: name1 for .NET
+        run: echo "it's command virtual" $(ls)
       - uses: ./.github/actions/dotnet
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
+       
 
   integration-tests:
     runs-on: ubuntu-latest
