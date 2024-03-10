@@ -28,4 +28,18 @@ public sealed class PathService : IPathService
         return Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
             SharedConstants.AppStorage);
     }
+
+    public static string GetProjectDirectory(string projectName)
+    {
+        var path = Directory.GetCurrentDirectory();
+
+        while (path != null && !Directory.Exists(Path.Combine(path, projectName)))
+        {
+            path = Directory.GetParent(path)?.FullName;
+        }
+
+        path = Path.Combine(path!, projectName);
+
+        return path;
+    }
 }

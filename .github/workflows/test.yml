@@ -10,6 +10,9 @@ on:
       - master
       - dev
 
+env:
+  environment: staging
+
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -17,6 +20,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup NET
         uses: ./.github/actions/dotnet
+      - name: Echo env file secret name
+        run: echo ${{ format('{0}_env_file', env.environment) }}
+      - name: Fill env file
+        run: |
+          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
       - name: Run unit tests
         run: dotnet test --no-restore --filter BookToAudio.UnitTests
 
@@ -26,6 +34,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup NET
         uses: ./.github/actions/dotnet
+      - name: Fill env file
+        run: |
+          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
       - name: Run integration tests
         run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
 
@@ -50,5 +61,8 @@ jobs:
         run: |
           cd BookToAudio.Web
           npm ci
+      - name: Fill env file
+        run: |
+          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
       - name: Run Selenium tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests

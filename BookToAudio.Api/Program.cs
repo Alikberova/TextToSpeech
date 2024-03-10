@@ -4,7 +4,9 @@ using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
+using BookToAudio.Infra.Services.Common;
 using BookToAudio.RealTime;
+using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +14,20 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Reflection;
 using System.Text;
-using static System.Environment;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var isDevelopment = HostingEnvironment.IsDevelopment();
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true);
+var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
+var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".env");
+
+DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
+
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
-
 
 var logFile = Path.Combine(appDataPath, "Logs", "log_.txt");
 
@@ -60,13 +66,6 @@ builder.Services.AddIdentity<User, IdentityRole>()
     .AddDefaultTokenProviders();
 
 AddAuthentication(builder);
-
-var openAiKey = builder.Configuration[ConfigConstants.OpenAiApiKey];
-
-if (openAiKey != null)
-{
-    SetEnvironmentVariable(ConfigConstants.OpenAiApiKey, builder.Configuration[ConfigConstants.OpenAiApiKey]);
-}
 
 var app = builder.Build();
 

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using BookToAudio.Core.Config;
+using BookToAudio.Infra.Services.Common;
+using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
@@ -16,7 +18,7 @@ internal sealed class ClientManager
         {
             Arguments = isWindows ? "/c ng " + arguments : arguments,
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetProjectDirectory(Constants.ClientProjectName),
+            WorkingDirectory = PathService.GetProjectDirectory(SharedConstants.ClientProjectName),
             CreateNoWindow = true,
         };
 
