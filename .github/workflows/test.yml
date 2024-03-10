@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/dotnet
+      - name: Setup NET
+        uses: ./.github/actions/dotnet
       - name: Run unit tests
         run: dotnet test --no-restore --filter TestCategory=Unit
 
@@ -23,7 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/dotnet
+      - name: Setup NET
+        uses: ./.github/actions/dotnet
       - name: Run integration tests
         run: dotnet test --no-restore --filter TestCategory=Integration
 
@@ -36,7 +38,8 @@ jobs:
           - 4444:4444
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/dotnet
+      - name: Setup NET
+        uses: ./.github/actions/dotnet
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
