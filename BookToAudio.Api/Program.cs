@@ -24,7 +24,8 @@ var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".
 
 DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true)
+var isWindows = Environment.OSVersion.ToString().Contains("Windows");
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment && !isWindows, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
