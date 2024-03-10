@@ -8,7 +8,7 @@ internal sealed class ClientManager
     
     public static void StartClient()
     {
-        var isWindows = Environment.OSVersion.ToString().Contains("Windows"); //Microsoft Windows NT 10.0.19045.0
+        var isWindows = Environment.OSVersion.ToString().Contains("Windows");
         var fileName = isWindows ? "cmd" : "ng";
         var arguments = $"serve --port {Constants.ClientPort}";
 
