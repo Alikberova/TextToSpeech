@@ -52,7 +52,10 @@ internal sealed class TtsFormLogic
 
     public void RemoveDownloadFile()
     {
-        string downloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads";
+        string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+
+        Console.WriteLine("downloadPath: " + downloadPath);
+
         string downloadFile = Path.Combine(downloadPath, "TextTestAudioBook.mp3");
 
         FileAssert.Exists(downloadFile, "File does not exist");
