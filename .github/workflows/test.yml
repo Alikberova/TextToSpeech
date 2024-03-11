@@ -53,7 +53,8 @@ jobs:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: BookToAudio.Web/package-lock.json
-      - uses: browser-actions/setup-chrome@latest
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
       - run: chrome --version
       - name: Install Angular CLI
         run: npm install -g @angular/cli
