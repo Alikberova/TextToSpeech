@@ -2,7 +2,7 @@
 
 namespace BookToAudio.SeleniumTests;
 
-internal sealed class ConstantsTests //todo rename Constants
+internal sealed class ConstantsTests //todo rename Constants, namespace fix
 {
     public const string Localhost = "localhost";
     public const int ClientPort = 4000;

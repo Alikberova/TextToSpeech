@@ -11,6 +11,7 @@ public class DbContextFixture : IDisposable
 
     public DbContextFixture()
     {
+        //config is not used for now; when used, need to make fix in the test.yml
         var config = new ConfigurationBuilder()
             .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
             .Build();
