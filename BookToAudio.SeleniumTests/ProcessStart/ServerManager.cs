@@ -13,7 +13,7 @@ internal sealed class ServerManager
         string projectDirectory = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
         ProcessStartInfo startInfo = new("dotnet")
         {
-            Arguments = "run --no-build --no-restore -c Debug --launch-profile https",
+            Arguments = "run -c Debug --launch-profile https",
             UseShellExecute = false,
             WorkingDirectory = projectDirectory,
             CreateNoWindow = true,
