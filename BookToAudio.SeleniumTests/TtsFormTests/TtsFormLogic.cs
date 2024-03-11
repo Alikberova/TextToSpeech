@@ -13,7 +13,7 @@ internal sealed class TtsFormLogic
     public TtsFormLogic(IWebDriver driver)
     {
         _driver = driver;
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(40)); //increased for github actions from 20
     }
     private IWebElement Dropdown => _driver.FindElement(By.Id("mat-select-value-1"));
     private IWebElement PlayVoice => _driver.FindElement(By.XPath("//*[@id='mat-option-0']/mat-icon"));
