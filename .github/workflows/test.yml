@@ -57,6 +57,8 @@ jobs:
           node-version: '21'
           cache: 'npm'
           cache-dependency-path: BookToAudio.Web/package-lock.json
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
       - name: Install dependencies
         run: |
           cd BookToAudio.Web
