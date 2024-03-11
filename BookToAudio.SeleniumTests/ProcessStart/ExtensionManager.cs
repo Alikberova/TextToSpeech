@@ -7,7 +7,7 @@ internal sealed class ExtensionManager
 {
     public static bool IsPortAvailable(string ip, int port)
     {
-        const int tries = 120;
+        const int tries = 90;
         TcpClient client = new ();
 
         for (int i = 0; i <= tries; i++)

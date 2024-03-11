@@ -16,6 +16,10 @@ public static class ConfigurationExtension
         var isDevelopment = HostingEnvironment.IsDevelopment();
         var isRemote = HostingEnvironment.IsRemote();
 
+        Console.WriteLine("isDevelopment: " + isDevelopment);
+        Console.WriteLine("isRemote: " + isRemote);
+        Console.WriteLine("Environment.CurrentDirectory: " + Environment.CurrentDirectory);
+
         DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
 
         return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: isRemote, reloadOnChange: true)
