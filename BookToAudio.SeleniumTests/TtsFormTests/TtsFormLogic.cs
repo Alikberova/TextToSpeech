@@ -13,8 +13,9 @@ internal sealed class TtsFormLogic
     public TtsFormLogic(IWebDriver driver)
     {
         _driver = driver;
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(40)); //increased for github actions from 20
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
     }
+
     private IWebElement Dropdown => _driver.FindElement(By.Id("mat-select-value-1"));
     private IWebElement PlayVoice => _driver.FindElement(By.XPath("//*[@id='mat-option-0']/mat-icon"));
     private IWebElement PauseVoice => _driver.FindElement(By.Id("pause"));
@@ -52,11 +53,8 @@ internal sealed class TtsFormLogic
 
     public void RemoveDownloadFile()
     {
-        string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-
-        Console.WriteLine("downloadPath: " + downloadPath);
-
-        string downloadFile = Path.Combine(downloadPath, "TextTestAudioBook.mp3");
+        string downloadFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads", "TextTestAudioBook.mp3");
 
         FileAssert.Exists(downloadFile, "File does not exist");
         File.Delete(downloadFile);

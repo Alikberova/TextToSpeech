@@ -8,38 +8,11 @@ internal sealed class ServerManager
 {
     public static Process _process = null!;
     
-    public static void StartServer1()
-    {
-        string projectDirectory = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
-        ProcessStartInfo startInfo = new("dotnet")
-        {
-            Arguments = "run -c Debug --launch-profile https",
-            UseShellExecute = false,
-            WorkingDirectory = projectDirectory,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-
-        _process = new() { StartInfo = startInfo };
-        _process.Start();
-
-        // Capture and log the output and error.
-        string output = _process.StandardOutput.ReadToEnd();
-        string error = _process.StandardError.ReadToEnd();
-
-        Console.WriteLine($"Output: {output}");
-        if (!string.IsNullOrEmpty(error))
-        {
-            Console.WriteLine($"Error: {error}");
-        }
-    }
-
     public static void StartServer()
     {
         ProcessStartInfo startInfo = new ("dotnet")
         {
-            Arguments = "run -c Debug --launch-profile https",
+            Arguments = "run --no-restore -c Debug --launch-profile https",
             UseShellExecute = false,
             WorkingDirectory = PathService.GetProjectDirectory(SharedConstants.ServerProjectName),
             CreateNoWindow = true,
