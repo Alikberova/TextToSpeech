@@ -98,9 +98,9 @@ public sealed class SpeechService : ISpeechService
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
-
             _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
+
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
         }
         catch (Exception ex)
         {

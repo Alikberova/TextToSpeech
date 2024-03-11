@@ -24,19 +24,6 @@ builder.Host.UseSerilog((context, config) =>
     .WriteTo.Console()
     .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
 
-///
-var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
-var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".env");
-
-var isDevelopment = HostingEnvironment.IsDevelopment();
-var isRemote = apiDir.StartsWith("/home/runner") || apiDir.StartsWith("/usr");
-
-Console.WriteLine($"apiDir: {apiDir}");
-Console.WriteLine($"remoteEnvFilePath: {remoteEnvFilePath}");
-Console.WriteLine($"isDevelopment: {isDevelopment}");
-Console.WriteLine($"isRemote: {isRemote}");
-///
-
 builder.Configuration.SetConfig();
 
 builder.Services.AddControllers();
