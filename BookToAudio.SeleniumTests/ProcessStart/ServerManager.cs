@@ -8,7 +8,7 @@ internal sealed class ServerManager
 {
     public static Process _process = null!;
     
-    public static void StartServer()
+    public static void StartServer1()
     {
         string projectDirectory = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
         ProcessStartInfo startInfo = new("dotnet")
@@ -35,7 +35,7 @@ internal sealed class ServerManager
         }
     }
 
-    public static void StartServer1()
+    public static void StartServer()
     {
         ProcessStartInfo startInfo = new ("dotnet")
         {
