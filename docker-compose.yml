@@ -1,0 +1,22 @@
+services:
+  booktoaudioapi:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+      args:
+        API_NAME: BookToAudio.Api
+    image: alikberova/booktoaudio.api:latest
+    env_file: docker/api.env
+    container_name: booktoaudio_api
+    ports:
+      - "7058:7057"
+
+  booktoaudioweb:
+    build:
+      context: BookToAudio.Web
+      dockerfile: ../docker/web.Dockerfile
+    image: alikberova/booktoaudio.web:latest
+    env_file: docker/web.env
+    container_name: booktoaudio_web
+    ports:
+      - "4000:80"

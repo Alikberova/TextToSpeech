@@ -1,0 +1,15 @@
+# https://stackoverflow.com/questions/38946683/how-to-test-dockerignore-file
+#https://localhost:7057/api/users
+#http://localhost:7057/api/users
+#http://localhost:7058/api/users
+*Test*/
+BookToAudio.Web
+*/bin
+*/obj
+.git*
+docker*
+*.nupkg
+.vs
+*/Migrations
+*.md
+.editorconfig
