@@ -26,6 +26,9 @@ internal class BaseClass
             options.AddArgument("--headless=new");
         }
 
+        options.AddArgument("--ignore-certificate-error");
+        options.AddArgument("--ignore-ssl-errors");
+
         driver = new ChromeDriver(options);
         driver.Manage().Window.Maximize();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);

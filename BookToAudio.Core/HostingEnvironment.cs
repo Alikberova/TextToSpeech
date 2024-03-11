@@ -11,6 +11,8 @@ public static class HostingEnvironment
 
     public static bool IsRemote()
     {
-        return Environment.CurrentDirectory.StartsWith("/home/runner") || Environment.CurrentDirectory.StartsWith("/usr");
+        return Environment.CurrentDirectory.StartsWith("/home/runner") ||
+            Environment.CurrentDirectory.StartsWith("/usr") ||
+            Environment.CurrentDirectory.StartsWith("/mnt");
     }
 }
