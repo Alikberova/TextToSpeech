@@ -80,7 +80,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
         var audioFilePath = factory.Services.GetRequiredService<IPathService>()
-            .GetFileStorageFilePath($"{audioFileId}.mp3");
+            .CreateFileStorageFilePath($"{audioFileId}.mp3");
 
         //Assert
 

@@ -12,7 +12,7 @@ internal sealed class ClientManager
     {
         var isWindows = Environment.OSVersion.ToString().Contains("Windows");
         var fileName = isWindows ? "cmd" : "ng";
-        var arguments = $"serve --port {Constants.ClientPort}";
+        var arguments = $"serve --port {ConstantsTests.ClientPort}";
 
         ProcessStartInfo startInfo = new(fileName)
         {

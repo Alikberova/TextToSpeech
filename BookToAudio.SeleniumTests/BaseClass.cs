@@ -16,8 +16,8 @@ internal class BaseClass
         ServerManager.StartServer();
         ClientManager.StartClient();
 
-        Assert.That(ExtensionManager.IsPortAvailable(Constants.Localhost, Constants.ClientPort), Is.True, "Local port is not responding");
-        Assert.That(ExtensionManager.IsPortAvailable(Constants.Localhost, Constants.ServerPort), Is.True, "Local port is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ClientPort), Is.True, "Local port is not responding");
+        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ServerPort), Is.True, "Local port is not responding");
 
         var options = new ChromeOptions();
 

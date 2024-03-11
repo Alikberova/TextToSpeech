@@ -18,7 +18,7 @@ public sealed class AudioController : ControllerBase
     [HttpGet("downloadmp3/{fileId}/{fileName}")]
     public IActionResult DownloadMp3(string fileId, string fileName)
     {
-        string filePath = _pathService.GetFileStorageFilePath($"{fileId}.mp3");
+        string filePath = _pathService.CreateFileStorageFilePath($"{fileId}.mp3");
 
         if (!System.IO.File.Exists(filePath))
         {
@@ -39,7 +39,7 @@ public sealed class AudioController : ControllerBase
     [Route("streammp3/{fileId}")]
     public async Task<IActionResult> StreamMp3(string fileId)
     {
-        string filePath = _pathService.GetFileStorageFilePath($"{fileId}.mp3");
+        string filePath = _pathService.CreateFileStorageFilePath($"{fileId}.mp3");
 
         if (!System.IO.File.Exists(filePath))
         {
