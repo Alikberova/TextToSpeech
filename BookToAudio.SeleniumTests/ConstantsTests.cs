@@ -1,4 +1,6 @@
-﻿namespace BookToAudio.SeleniumTests;
+﻿using BookToAudio.Core.Config;
+
+namespace BookToAudio.SeleniumTests;
 
 internal sealed class ConstantsTests //todo rename Constants
 {
