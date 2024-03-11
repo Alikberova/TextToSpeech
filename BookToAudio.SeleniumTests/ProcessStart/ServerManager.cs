@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using BookToAudio.Core.Config;
+using BookToAudio.Infra.Services.Common;
+using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
@@ -10,9 +12,9 @@ internal sealed class ServerManager
     {
         ProcessStartInfo startInfo = new ("dotnet")
         {
-            Arguments = "run -c Debug --launch-profile https",
+            Arguments = "run --no-restore -c Debug --launch-profile https",
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ServerProjectName),
+            WorkingDirectory = PathService.GetProjectDirectory(SharedConstants.ServerProjectName),
             CreateNoWindow = true,
         };
 

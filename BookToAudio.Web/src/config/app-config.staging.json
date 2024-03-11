@@ -1,0 +1,4 @@
+{
+    "baseUrl": "http://localhost:7058",
+    "apiEndpoint": "/api"
+}

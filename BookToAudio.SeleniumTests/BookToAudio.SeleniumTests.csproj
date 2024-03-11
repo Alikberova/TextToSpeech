@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BookToAudio.TestingInfra\BookToAudio.TestingInfra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="TestData\TextTestAudioBook.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
