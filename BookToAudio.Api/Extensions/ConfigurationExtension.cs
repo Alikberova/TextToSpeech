@@ -18,7 +18,7 @@ public static class ConfigurationExtension
 
         DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
 
-        return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment && !isRemote, reloadOnChange: true)
+        return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: isRemote, reloadOnChange: true)
             .AddEnvironmentVariables();
     }
 }
