@@ -14,7 +14,7 @@ public static class ConfigurationExtension
         var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".env");
 
         var isDevelopment = HostingEnvironment.IsDevelopment();
-        var isRemote = apiDir.StartsWith("/home/runner") || apiDir.StartsWith("/usr");
+        var isRemote = HostingEnvironment.IsRemote();
 
         DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
 

@@ -1,4 +1,5 @@
-﻿using BookToAudio.SeleniumTests.ProcessStart;
+﻿using BookToAudio.Core;
+using BookToAudio.SeleniumTests.ProcessStart;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
@@ -18,7 +19,14 @@ internal class BaseClass
         Assert.That(ExtensionManager.IsPortAvailable(Constants.Localhost, Constants.ClientPort), Is.True, "Local port is not responding");
         Assert.That(ExtensionManager.IsPortAvailable(Constants.Localhost, Constants.ServerPort), Is.True, "Local port is not responding");
 
-        driver = new ChromeDriver();
+        var options = new ChromeOptions();
+
+        if (HostingEnvironment.IsRemote())
+        {
+            options.AddArgument("--headless=new");
+        }
+
+        driver = new ChromeDriver(options);
         driver.Manage().Window.Maximize();
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
     }
