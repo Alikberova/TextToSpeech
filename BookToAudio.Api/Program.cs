@@ -1,31 +1,19 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
-using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
-using BookToAudio.Infra.Services.Common;
 using BookToAudio.RealTime;
-using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isDevelopment = HostingEnvironment.IsDevelopment();
-
-var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
-var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".env");
-
-DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { remoteEnvFilePath }));
-
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true)
-    .AddEnvironmentVariables();
+builder.Configuration.SetConfig();
 
 var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
 
