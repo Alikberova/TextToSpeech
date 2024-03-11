@@ -28,6 +28,8 @@ internal class BaseClass
 
         options.AddArgument("--ignore-certificate-error");
         options.AddArgument("--ignore-ssl-errors");
+        options.AddArgument("--no-sandbox");
+        options.AddArgument("--disable-dev-shm-usage");
 
         driver = new ChromeDriver(options);
         driver.Manage().Window.Maximize();
