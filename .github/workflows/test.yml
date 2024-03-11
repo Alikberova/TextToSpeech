@@ -5,11 +5,12 @@ on:
     branches:
       - master
       - dev
+      - dev-3
   pull_request:
     branches:
       - master
       - dev
-
+      - dev-3
 env:
   environment: staging
 
