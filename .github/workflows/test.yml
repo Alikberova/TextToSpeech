@@ -58,5 +58,8 @@ jobs:
         run: |
           cd BookToAudio.Web
           npm ci
+      - name: Fill env file
+        run: |
+          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
       - name: Run Selenium tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
