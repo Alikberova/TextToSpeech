@@ -1,8 +1,10 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
+using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
+using BookToAudio.Infra.Services.Common;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -13,8 +15,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.SetConfig();
-
 var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
 
 var logFile = Path.Combine(appDataPath, "Logs", "log_.txt");
@@ -23,6 +23,21 @@ builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
     .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
+
+///
+var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
+var remoteEnvFilePath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), ".env");
+
+var isDevelopment = HostingEnvironment.IsDevelopment();
+var isRemote = apiDir.StartsWith("/home/runner") || apiDir.StartsWith("/usr");
+
+Console.WriteLine($"apiDir: {apiDir}");
+Console.WriteLine($"remoteEnvFilePath: {remoteEnvFilePath}");
+Console.WriteLine($"isDevelopment: {isDevelopment}");
+Console.WriteLine($"isRemote: {isRemote}");
+///
+
+builder.Configuration.SetConfig();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
