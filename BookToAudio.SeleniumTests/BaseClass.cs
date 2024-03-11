@@ -26,7 +26,7 @@ internal class BaseClass
             options.AddArgument("--headless=new");
         }
 
-        options.AddArgument("--ignore-certificate-error");
+        options.AddArgument("--ignore-certificate-errors");
         options.AddArgument("--ignore-ssl-errors");
         options.AddArgument("--no-sandbox");
         options.AddArgument("--disable-dev-shm-usage");
