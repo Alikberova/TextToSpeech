@@ -23,4 +23,6 @@ RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
+RUN apt-get update && apt-get install -y vim
+
 ENTRYPOINT ["/entrypoint.sh"]
