@@ -13,6 +13,6 @@ public static class HostingEnvironment
     {
         return Environment.CurrentDirectory.StartsWith("/home/runner") ||
             Environment.CurrentDirectory.StartsWith("/usr") ||
-            Environment.CurrentDirectory.StartsWith("/mnt");
+            Environment.CurrentDirectory.StartsWith("/app");
     }
 }
