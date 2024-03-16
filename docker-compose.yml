@@ -11,7 +11,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
     container_name: booktoaudio_api
     ports:
-      - "7058:7057"
+      - "7057:7057"
 
   booktoaudioweb:
     build:
@@ -22,4 +22,4 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
     container_name: booktoaudio_web
     ports:
-      - "4000:80"
+      - "80:80"

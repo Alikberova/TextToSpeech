@@ -36,7 +36,7 @@ builder.Services.AddServices();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins("http://localhost:4000") //todo config
+        builder => builder.WithOrigins("http://localhost:4000", "http://texttospeech.duckdns.org")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
