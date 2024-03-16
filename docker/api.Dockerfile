@@ -25,7 +25,7 @@ USER nonroot
 
 FROM base AS final
 WORKDIR /app
-RUN apt-get update && apt-get install -y vim
+RUN apk add --update vim
 # Re-declare ARG and set it as an ENV variable for use at runtime
 ARG API_NAME
 ENV API_NAME=$API_NAME
