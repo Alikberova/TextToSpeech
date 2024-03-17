@@ -1,4 +1,4 @@
-name: Execute deployment
+name: CD
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      environment: staging
+      environment: staging #todo try Staging
 
     steps:
     - uses: actions/checkout@v4

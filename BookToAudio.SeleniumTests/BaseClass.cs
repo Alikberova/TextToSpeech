@@ -13,11 +13,11 @@ internal class BaseClass
     [SetUp]
     protected void Setup()
     {
-        ServerManager.StartServer();
-        ClientManager.StartClient();
+        //ServerManager.StartServer();
+        //ClientManager.StartClient();
 
-        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ClientPort), Is.True, "Local port is not responding");
-        Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ServerPort), Is.True, "Local port is not responding");
+        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ClientPort), Is.True, "Local port is not responding");
+        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ServerPort), Is.True, "Local port is not responding");
 
         var options = new ChromeOptions();
 

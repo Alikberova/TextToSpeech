@@ -15,12 +15,12 @@ public static class ConfigurationExtension
         var isDevelopment = HostingEnvironment.IsDevelopment();
         var isRemote = HostingEnvironment.IsRemote();
 
-        if (!isDocker)
-        {
-            var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
-            envPath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), envPath);
-            DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { envPath }));
-        }
+        //if (!isDocker)
+        //{
+        //    var apiDir = PathService.GetProjectDirectory(SharedConstants.ServerProjectName);
+        //    envPath = Path.Combine(Directory.GetParent(apiDir)!.ToString(), envPath);
+        //    DotEnv.Load(options: new DotEnvOptions(ignoreExceptions: isDevelopment, envFilePaths: new[] { envPath }));
+        //}
 
         Console.WriteLine("envPath: " + envPath);
         Console.WriteLine("isDevelopment: " + isDevelopment);
