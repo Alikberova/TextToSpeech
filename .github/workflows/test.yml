@@ -14,7 +14,7 @@ on:
       - dev-3
 env:
   environment: Development
-  image_tag_suffix: _test
+  image_tag_version: test
 
 jobs:
   tests:
@@ -52,13 +52,18 @@ jobs:
       # - name: Build Docker Compose services
       #   run: |
       #     docker compose build
+
+      - name: Pull Docker images for cache (if exist)
+        run: |
+          docker pull alikberova/booktoaudio.api${{ env.image_tag_version }}:latest || true
+          docker pull alikberova/booktoaudio.web${{ env.image_tag_version }}:latest || true
   
       - name: Build and start containers
         run: |
           export DOCKER_BUILDKIT=1
-          IMAGE_TAG_SUFFIX=${{ env.image_tag_suffix }} docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1
+          IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1
           docker compose push
-          docker-compose up -d
+          IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker-compose up -d
 
       - name: Restore dependencies
         run: dotnet restore
