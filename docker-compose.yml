@@ -7,7 +7,7 @@ services:
       #   - alikberova/booktoaudio.api:latest
       args:
         API_NAME: BookToAudio.Api
-    image: alikberova/booktoaudio.api:latest
+    image: alikberova/booktoaudio.api${IMAGE_TAG_SUFFIX}:latest
     env_file: .env
     container_name: booktoaudio_api
     ports:
@@ -19,7 +19,7 @@ services:
       dockerfile: ../docker/web.Dockerfile
       # cache_from:
       #   - alikberova/booktoaudio.web:latest
-    image: alikberova/booktoaudio.web:latest
+    image: alikberova/booktoaudio.web${IMAGE_TAG_SUFFIX}:latest
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
     container_name: booktoaudio_web

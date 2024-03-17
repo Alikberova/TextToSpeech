@@ -14,6 +14,7 @@ on:
       - dev-3
 env:
   environment: Development
+  image_tag_suffix: _test
 
 jobs:
   tests:
@@ -55,7 +56,8 @@ jobs:
       - name: Build and start containers
         run: |
           export DOCKER_BUILDKIT=1
-          docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1
+          IMAGE_TAG_SUFFIX=${{ env.image_tag_suffix }} docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1
+          docker compose push
           docker-compose up -d
 
       - name: Restore dependencies
