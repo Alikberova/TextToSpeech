@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-      # cache_from:
-      #   - alikberova/booktoaudio.api:latest
+      cache_from:
+        - alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
       args:
         API_NAME: BookToAudio.Api
         IMAGE_TAG_VERSION: latest
@@ -18,8 +18,8 @@ services:
     build:
       context: BookToAudio.Web
       dockerfile: ../docker/web.Dockerfile
-      # cache_from:
-      #   - alikberova/booktoaudio.web:latest
+      cache_from:
+        - alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
