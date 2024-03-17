@@ -57,6 +57,7 @@ jobs:
       - name: Build and start containers
         run: |
           export DOCKER_BUILDKIT=1
+          export IMAGE_TAG_VERSION=${{ env.image_tag_version }}
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
           docker compose push
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
