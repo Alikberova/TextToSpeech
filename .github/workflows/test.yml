@@ -56,7 +56,7 @@ jobs:
         run: |
           export DOCKER_BUILDKIT=1
           docker-compose build --build-arg BUILDKIT_INLINE_CACHE=1
-          docker-compose up -d
+  # docker-compose up -d
 
       - name: Restore dependencies
         run: dotnet restore
