@@ -16,7 +16,7 @@ env:
   environment: Development
 
 jobs:
-  unit-tests:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +37,10 @@ jobs:
       - name: Build Docker Compose services
         run: |
           docker compose build
+
+      - name: Restore tests
+        run: dotnet restore
+        shell: bash
 
       - name: Run unit tests
         run: dotnet test --no-restore --filter BookToAudio.UnitTests
