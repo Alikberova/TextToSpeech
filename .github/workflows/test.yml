@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore --no-cache
         shell: bash
 
       - name: Run unit tests
@@ -72,8 +72,8 @@ jobs:
           docker compose push
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@latest
+      # - name: Install Chrome
+      #   uses: browser-actions/setup-chrome@latest
 
       - name: Run Selenium tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests

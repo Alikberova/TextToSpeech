@@ -7,7 +7,6 @@ services:
         - alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
       args:
         API_NAME: BookToAudio.Api
-        IMAGE_TAG_VERSION: latest
     image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
     env_file: .env
     container_name: booktoaudio_api
@@ -23,7 +22,6 @@ services:
     image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
-      IMAGE_TAG_VERSION: latest
     container_name: booktoaudio_web
     ports:
-      - "${ANGULAR_PORT}:80" # ANGULAR_PORT should be the same as in selenium tests
+      - "${ANGULAR_PORT}:80" # for tests ANGULAR_PORT should be the same as in selenium tests
