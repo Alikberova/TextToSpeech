@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
+      cache_from:
+        - alikberova/booktoaudio.api:latest
       args:
         API_NAME: BookToAudio.Api
     image: alikberova/booktoaudio.api:latest
@@ -15,6 +17,8 @@ services:
     build:
       context: BookToAudio.Web
       dockerfile: ../docker/web.Dockerfile
+      cache_from:
+        - alikberova/booktoaudio.web:latest
     image: alikberova/booktoaudio.web:latest
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
