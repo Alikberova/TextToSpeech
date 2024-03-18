@@ -13,16 +13,14 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!; //todo use user folder if AppDataPath is not set, remove from appsettings
+builder.Configuration.SetConfig();
 
-var logFile = Path.Combine(appDataPath, "Logs", "log_.txt");
+var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "Logs", "log_.txt");
 
 builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
     .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
-
-builder.Configuration.SetConfig();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -36,7 +34,7 @@ builder.Services.AddServices();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins("http://localhost:4000", "http://texttospeech.duckdns.org")
+        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}", "http://texttospeech.duckdns.org")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
