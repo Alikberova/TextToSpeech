@@ -27,7 +27,7 @@ export class SnackbarService {
   
   private show(message: string, config: MatSnackBarConfig, action?: string | undefined) {
     action ??= 'Close';
-    config.duration ??= 4000;
+    config.duration ??= 5000;
     this.snackBar.open(message, action, config!);
   }
 }

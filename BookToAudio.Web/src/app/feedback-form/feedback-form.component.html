@@ -3,7 +3,7 @@
     <mat-card-title>Feedback Form</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <form [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()">
+    <form [formGroup]="feedbackForm" #formDirective="ngForm" (ngSubmit)="submitFeedback()">
       <mat-form-field appearance="fill">
         <mat-label>Your Name</mat-label>
         <input matInput placeholder="Enter your name" formControlName="name" name="name" required>
