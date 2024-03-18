@@ -21,7 +21,7 @@ internal class BaseClass
 
         var options = new ChromeOptions();
 
-        if (HostingEnvironment.IsRemote())
+        if (!HostingEnvironment.IsWindows())
         {
             options.AddArgument("--headless=new");
             options.AddArgument("--ignore-certificate-errors");

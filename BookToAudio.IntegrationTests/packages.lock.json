@@ -63,11 +63,6 @@
           "System.Diagnostics.EventLog": "6.0.0"
         }
       },
-      "dotenv.net": {
-        "type": "Transitive",
-        "resolved": "3.1.3",
-        "contentHash": "gzksGrozUM/6OzBL2M99EINDLB5vhZScnRw5/oYaKx0O4PWusCBzzq9JCofhP8nL3uoli6V7SLmrwpF/PTj8XQ=="
-      },
       "MailKit": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -921,8 +916,7 @@
           "Microsoft.AspNetCore.Mvc.Testing": "[8.0.2, )",
           "Microsoft.AspNetCore.OpenApi": "[8.0.2, )",
           "Serilog.AspNetCore": "[8.0.1, )",
-          "Swashbuckle.AspNetCore": "[6.5.0, )",
-          "dotenv.net": "[3.1.3, )"
+          "Swashbuckle.AspNetCore": "[6.5.0, )"
         }
       },
       "booktoaudio.core": {

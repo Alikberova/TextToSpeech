@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      environment: staging #todo try Staging
+      environment: Staging
 
     steps:
     - uses: actions/checkout@v4
