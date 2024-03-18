@@ -1,0 +1,11 @@
+*Test*/
+BookToAudio.Web
+*/bin
+*/obj
+.git*
+docker*
+*.nupkg
+.vs
+*/Migrations
+*.md
+.editorconfig

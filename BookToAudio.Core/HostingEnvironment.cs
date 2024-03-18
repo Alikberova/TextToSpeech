@@ -9,10 +9,8 @@ public static class HostingEnvironment
         return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development;
     }
 
-    public static bool IsRemote()
+    public static bool IsWindows()
     {
-        return Environment.CurrentDirectory.StartsWith("/home/runner") ||
-            Environment.CurrentDirectory.StartsWith("/usr") ||
-            Environment.CurrentDirectory.StartsWith("/mnt");
+        return Environment.OSVersion.ToString().Contains("Windows");
     }
 }
