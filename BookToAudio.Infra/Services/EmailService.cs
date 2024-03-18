@@ -18,13 +18,13 @@ public sealed class EmailService : IEmailService
     public void SendEmail(Core.Dto.EmailRequest request)
     {
         var email = new MimeMessage();  
-        email.From.Add(new MailboxAddress("User", _emailConfig.EmailFrom));
+        email.From.Add(new MailboxAddress(request.Name, _emailConfig.EmailFrom));
         email.To.Add(new MailboxAddress("Admin", _emailConfig.EmailTo));
 
-        email.Subject = request.UserEmail;
+        email.Subject = "BookToAudio";
         email.Body = new TextPart(MimeKit.Text.TextFormat.Text)
         {
-            Text = $"Message from {request.Name}:\n {request.Message}"
+            Text = $"Message from {request.UserEmail}:\n{request.Message}"
         };
 
         using var smtp = new SmtpClient();
