@@ -16,7 +16,7 @@ public static class ConfigurationExtension
         Console.WriteLine("isRemote: " + isWindows);
         Console.WriteLine("Environment.CurrentDirectory: " + Environment.CurrentDirectory);
 
-        if (configurationBuilder[ConfigConstants.AppDataPath] is null)
+        if (string.IsNullOrWhiteSpace(configurationBuilder[ConfigConstants.AppDataPath]))
         {
             configurationBuilder[ConfigConstants.AppDataPath] = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         }
