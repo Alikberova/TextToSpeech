@@ -1,6 +1,5 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
-using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
@@ -10,23 +9,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isDevelopment = HostingEnvironment.IsDevelopment();
+builder.Configuration.SetConfig();
 
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true);
-
-var logPath = builder.Configuration[ConfigConstants.LogPath];
-
-var nameLogFile = "log_.txt";
+var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "Logs", "log_.txt");
 
 builder.Host.UseSerilog((context, config) =>
     config.MinimumLevel.Debug()
     .WriteTo.Console()
-    .WriteTo.File(Path.Combine(logPath!, nameLogFile), rollingInterval: RollingInterval.Hour));
+    .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -40,7 +34,7 @@ builder.Services.AddServices();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins("http://localhost:4200")
+        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}", "http://texttospeech.duckdns.org")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());

@@ -3,7 +3,7 @@
 internal sealed class RegisterPageTests: BaseClass
 {
    // [Test]
-  //  [TestCase("http://localhost:4200/register")]
+  //  [TestCase("http://localhost:4000/register")]
     public void  RagisterTests(string url)
     {
         driver.Navigate().GoToUrl(url);

@@ -7,6 +7,7 @@ using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using static BookToAudio.Core.Enums;
 
 namespace BookToAudio.Infra.Services;
@@ -98,9 +99,18 @@ public sealed class SpeechService : ISpeechService
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+            try
+            {
+                _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
+            }
+            catch (Exception ex)
+            {
+                Debugger.Break();
+                _logger.LogError(ex, "An error in AddMetaData");
+                //todo fix tests
+            }
 
-            _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
         }
         catch (Exception ex)
         {

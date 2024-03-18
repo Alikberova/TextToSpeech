@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using BookToAudio.Core.Config;
+using System.Diagnostics;
 
 namespace BookToAudio.SeleniumTests.ProcessStart;
 
@@ -8,11 +9,12 @@ internal sealed class ClientManager
     
     public static void StartClient()
     {
+        // todo if thhis method is not used, remove reference to TestingInfra
         ProcessStartInfo startInfo = new("ng")
         {
             Arguments = "serve",
             UseShellExecute = false,
-            WorkingDirectory = ExtensionManager.GetProjectDirectory(ConstantsTests.ClientProjectName),
+            WorkingDirectory = ExtensionManager.GetProjectDirectory(SharedConstants.ClientProjectName),
             CreateNoWindow = true,
         };
 

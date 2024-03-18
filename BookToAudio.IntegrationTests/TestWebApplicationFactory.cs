@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace BookToAudio.IntegrationTests;
 
@@ -28,6 +29,8 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development); //todo check if needed; added for 1st version of test.yml
+
         base.ConfigureWebHost(builder);
 
         builder.ConfigureTestServices(services =>
