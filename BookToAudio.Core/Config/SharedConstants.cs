@@ -7,4 +7,6 @@ public static class SharedConstants
 
     public static readonly string ClientProjectName = $"{AppName}.Web";
     public static readonly string ServerProjectName = $"{AppName}.Api";
+
+    public const int ClientPort = 4000;
 }
