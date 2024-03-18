@@ -13,7 +13,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!;
+var appDataPath = builder.Configuration[ConfigConstants.AppDataPath]!; //todo use user folder if AppDataPath is not set, remove from appsettings
 
 var logFile = Path.Combine(appDataPath, "Logs", "log_.txt");
 

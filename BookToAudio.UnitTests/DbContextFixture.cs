@@ -14,6 +14,7 @@ public class DbContextFixture : IDisposable
         //config is not used for now; when used, need to make fix in the test.yml
         var config = new ConfigurationBuilder()
             .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
+            //todo check if can change optional: true; was added for 1st version of test.yml
             .Build();
         var connectionString = config.GetConnectionString("DefaultConnection");
 
