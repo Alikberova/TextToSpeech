@@ -1,4 +1,6 @@
-﻿using OpenAI;
+﻿using BookToAudio.Core.Config;
+using Microsoft.Extensions.Configuration;
+using OpenAI;
 using OpenAI.Audio;
 using OpenAI.Models;
 
@@ -6,12 +8,19 @@ namespace BookToAudio.Core.Services.Interfaces.Ai;
 
 public sealed class OpenAiService : IOpenAiService
 {
+    private IConfiguration _configuration;
+
+    public OpenAiService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string model = "tts-1",
         SpeechVoice voice = SpeechVoice.Alloy,
         float speed = 1)
     {
-        OpenAIClient client = new(OpenAIAuthentication.LoadFromEnv());
+        OpenAIClient client = new(_configuration[ConfigConstants.OpenAiApiKey]);
 
         // Check if there's only one chunk, then just process it
         if (textChunks.Count == 1)

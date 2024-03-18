@@ -1,12 +1,11 @@
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
-internal sealed class Tests: BaseClass
+internal sealed class Tests : BaseClass
 {
     [Test]
-    [TestCase("http://localhost:4000/tts-form")]
-    public void  TtsFormPageTests(string url)
+    public void TtsFormPageTests()
     {
-        driver.Navigate().GoToUrl(url);
+        driver.Navigate().GoToUrl($"http://localhost:{ConstantsTests.ClientPort}/tts-form");
 
         var ttsFormLogic = new TtsFormLogic(driver);
         ttsFormLogic.SelectVoice();
