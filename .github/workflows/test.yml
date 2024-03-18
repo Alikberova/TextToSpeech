@@ -1,4 +1,4 @@
-name: CI
+name: Tests execution
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
       - master
       - dev
       - dev-3
-      - deploy
   pull_request:
     branches:
       - master
@@ -72,9 +71,5 @@ jobs:
           docker compose push
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
-      # - name: Install Chrome
-      #   uses: browser-actions/setup-chrome@latest
-
       - name: Run Selenium tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
-        #lala
