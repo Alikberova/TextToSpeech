@@ -1,6 +1,6 @@
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
-internal sealed class Tests : BaseClass
+internal sealed class TtsFormTests : BaseClass
 {
     [Test]
     public void TtsFormPageTests()
@@ -12,6 +12,6 @@ internal sealed class Tests : BaseClass
         ttsFormLogic.UploadFile();
         ttsFormLogic.Submit();
         ttsFormLogic.DownloadAudio();
-        ttsFormLogic.RemoveDownloadedFile();
+        TtsFormLogic.RemoveDownloadedFile();
     }
 }
