@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\TextTestAudioBook.txt">
+    <None Update="TestData\Sample.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

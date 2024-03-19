@@ -6,8 +6,8 @@ internal sealed class RegisterPageTests: BaseClass
   //  [TestCase("http://localhost:4000/register")]
     public void  RagisterTests(string url)
     {
-        driver.Navigate().GoToUrl(url);
-        var registerPage = new RegisterLogic(driver);
+        _driver.Navigate().GoToUrl(url);
+        var registerPage = new RegisterLogic(_driver);
         string name = "selenium@ua.test";
         string password = "Selenium_test";
         registerPage.RegisterUser(name, password);
