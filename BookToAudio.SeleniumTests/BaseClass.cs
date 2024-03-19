@@ -1,24 +1,20 @@
 ﻿using BookToAudio.Core;
-using BookToAudio.SeleniumTests.ProcessStart;
+using BookToAudio.Core.Config;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
 namespace BookToAudio.SeleniumTests;
 
 [TestFixture]
 internal class BaseClass
 {
-    protected IWebDriver driver;
-   
+    protected IWebDriver _driver;
+    protected WebDriverWait _wait;
+
     [SetUp]
     protected void Setup()
     {
-        //ServerManager.StartServer();
-        //ClientManager.StartClient();
-
-        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ClientPort), Is.True, "Local port is not responding");
-        //Assert.That(ExtensionManager.IsPortAvailable(ConstantsTests.Localhost, ConstantsTests.ServerPort), Is.True, "Local port is not responding");
-
         var options = new ChromeOptions();
 
         if (!HostingEnvironment.IsWindows())
@@ -30,20 +26,22 @@ internal class BaseClass
             options.AddArgument("--disable-dev-shm-usage");
         }
 
-        driver = new ChromeDriver(options);
-        driver.Manage().Window.Maximize();
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
+        _driver = new ChromeDriver(options);
+        _driver.Manage().Window.Maximize();
+        _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
+
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+
+        _driver.Navigate().GoToUrl($"http://localhost:{SharedConstants.ClientPort}");
     }
 
     [TearDown]
-    protected void Cleanup()
+    protected virtual void Cleanup()
     {
-        ExtensionManager.StopProcess(ServerManager._process, ClientManager._process);
-
-        if (driver is not null)
+        if (_driver is not null)
         {
-            driver.Quit();
-            driver.Dispose();
+            _driver.Quit();
+            _driver.Dispose();
         }
     }
 }

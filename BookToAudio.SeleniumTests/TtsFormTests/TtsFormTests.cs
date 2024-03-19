@@ -1,5 +1,3 @@
-using BookToAudio.Core.Config;
-
 namespace BookToAudio.SeleniumTests.TtsFormTests;
 
 internal sealed class Tests : BaseClass
@@ -7,13 +5,13 @@ internal sealed class Tests : BaseClass
     [Test]
     public void TtsFormPageTests()
     {
-        driver.Navigate().GoToUrl($"http://localhost:{SharedConstants.ClientPort}/tts-form");
+        var ttsFormLogic = new TtsFormLogic(_driver, _wait);
 
-        var ttsFormLogic = new TtsFormLogic(driver);
+        ttsFormLogic.ClickMainMenuButton();
         ttsFormLogic.SelectVoice();
-        ttsFormLogic.SelectTextFile();
-        ttsFormLogic.SubmitFormBtn();
-        ttsFormLogic.DownloadAudioFile();
-        ttsFormLogic.RemoveDownloadFile();
+        ttsFormLogic.UploadFile();
+        ttsFormLogic.Submit();
+        ttsFormLogic.DownloadAudio();
+        ttsFormLogic.RemoveDownloadedFile();
     }
 }
