@@ -62,7 +62,7 @@ internal sealed class TtsFormLogic
         Thread.Sleep(500);
     }
 
-    public void RemoveDownloadedFile()
+    public static void RemoveDownloadedFile()
     {
         string downloadFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             "Downloads", "Sample.mp3");

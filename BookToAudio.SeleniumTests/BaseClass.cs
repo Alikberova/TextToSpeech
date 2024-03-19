@@ -30,7 +30,7 @@ internal class BaseClass
         _driver.Manage().Window.Maximize();
         _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
 
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(20));
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
 
         _driver.Navigate().GoToUrl($"http://localhost:{SharedConstants.ClientPort}");
     }
