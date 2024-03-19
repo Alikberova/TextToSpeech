@@ -36,7 +36,7 @@ internal class BaseClass
     }
 
     [TearDown]
-    protected virtual void Cleanup()
+    protected void Cleanup()
     {
         if (_driver is not null)
         {
