@@ -1,4 +1,3 @@
-using BookToAudio.UnitTests.TestData;
 using Xunit;
 
 namespace BookToAudio.UnitTests;
@@ -12,7 +11,6 @@ public class MockGenerator : IClassFixture<DbContextFixture>
         _dbContext = dbContext;
     }
 
-    [Fact]
     public void GenerateTestData()
     {
         //var userFactory = new UserFactory();
