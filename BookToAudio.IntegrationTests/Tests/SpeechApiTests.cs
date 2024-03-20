@@ -44,7 +44,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task CreateSpeech_ReturnsMp3()
+    public async Task Test_CreateSpeech_ReturnsMp3()
     {
         // Arrange
 
