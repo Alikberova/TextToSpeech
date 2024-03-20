@@ -52,8 +52,8 @@
       },
       "Bogus": {
         "type": "Transitive",
-        "resolved": "35.5.0",
-        "contentHash": "iCXszbIvvxgfb01bPe/s3R6pQSKX6rpcQWqM7wqDt+lsMogR6fkSWBwqOxLpdXmMB7mgZNNk2hm2M1shoIiekA=="
+        "resolved": "35.4.0",
+        "contentHash": "XdUvztqAXJb3CI0+/fJrB4K7p8bOlnmhplibMCDpl4vHG/NRDjG9qionxYf9DKk7cbVfMTUfSkQ7hcxKBdO0Dg=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
@@ -528,7 +528,7 @@
       "booktoaudio.testinginfra": {
         "type": "Project",
         "dependencies": {
-          "Bogus": "[35.5.0, )",
+          "Bogus": "[35.4.0, )",
           "BookToAudio.Infra": "[1.0.0, )",
           "Moq": "[4.20.70, )"
         }
