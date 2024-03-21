@@ -20,10 +20,6 @@ COPY --from=build /src/dist/book-to-audio.web/browser /usr/share/nginx/html
 COPY entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
-RUN mkdir -p /usr/nginx/certs/ && \
-    cp /etc/letsencrypt/live/texttospeech.duckdns.org/* /usr/nginx/certs/ && \
-    chmod 644 /usr/nginx/certs/*
-
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
