@@ -1,4 +1,4 @@
 {
-    "baseUrl": "http://texttospeech.duckdns.org",
+    "baseUrl": "https://texttospeech.duckdns.org",
     "apiEndpoint": "/api"
 }
