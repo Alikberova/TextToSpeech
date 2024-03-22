@@ -24,7 +24,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
     container_name: booktoaudio_web
     ports:
-      - "${ANGULAR_PORT}:443/tcp" # for tests ANGULAR_PORT should be the same as in selenium tests
+      - "${ANGULAR_PORT}:${ANGULAR_PORT}" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
       - "/etc/letsencrypt/live/texttospeech.duckdns.org/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "/etc/letsencrypt/live/texttospeech.duckdns.org/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
