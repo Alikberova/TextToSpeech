@@ -41,3 +41,5 @@ services:
     container_name: booktoaudio_web
     ports:
       - "${ANGULAR_PORT}:${ANGULAR_PORT}" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
+    volumes:
+      - ./BookToAudio.Web/entrypoint.sh:/entrypoint.sh
