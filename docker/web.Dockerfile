@@ -10,18 +10,12 @@ COPY . /src
 # Build the Angular app
 RUN npm run build
 
-# Stage 2: Serve the app with Nginx
-FROM nginx:latest
-
 # Copy the build output to replace the default Nginx contents
 COPY --from=build /src/dist/book-to-audio.web/browser /usr/share/nginx/html
 
 # Fix and copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
-
-# Copy the Nginx configuration
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # RUN bash -c "apt-get update && apt-get install -y vim"
 
