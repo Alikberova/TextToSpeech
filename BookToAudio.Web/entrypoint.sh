@@ -9,5 +9,5 @@ if [[ $ENVIRONMENT = "Production" ]]; then
    cp /usr/share/nginx/html/config/app-config.prod.json /usr/share/nginx/html/app-config.json
 fi
 
-# Start Nginx in the foreground
-nginx -g 'daemon off;'
+# Copy Angular build output to the Nginx container
+docker cp booktoaudioweb:/usr/share/nginx/html/ ./certbot/www/
