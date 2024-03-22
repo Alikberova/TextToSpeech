@@ -1,4 +1,4 @@
-FROM node:lts-alpine as base
+FROM node:lts-alpine as build
 
 WORKDIR /src
 COPY package.json /src/package.json
@@ -11,7 +11,7 @@ COPY . /src
 RUN npm run build
 
 # Copy the build output to replace the default Nginx contents
-COPY --from=build /src/dist/book-to-audio.web/browser /usr/share/nginx/html
+# COPY --from=build /src/dist/book-to-audio.web/browser /usr/share/nginx/html
 
 # Fix and copy the entrypoint script
 COPY entrypoint.sh /entrypoint.sh
