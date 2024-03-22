@@ -1,4 +1,4 @@
-FROM node:lts-alpine as build
+FROM node:lts-alpine as base
 
 WORKDIR /src
 COPY package.json /src/package.json
