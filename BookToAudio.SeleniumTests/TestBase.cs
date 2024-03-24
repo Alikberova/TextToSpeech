@@ -44,15 +44,24 @@ public class TestBase : IDisposable
 
     public void Dispose()
     {
-        if (Driver is not null)
-        {
-            Driver.Quit();
-            Driver.Dispose();
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        if (Directory.Exists(DownloadDirectory))
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            Directory.Delete(DownloadDirectory, true);
+            if (Driver is not null)
+            {
+                Driver.Quit();
+                Driver.Dispose();
+            }
+
+            if (Directory.Exists(DownloadDirectory))
+            {
+                Directory.Delete(DownloadDirectory, true);
+            }
         }
     }
 }
