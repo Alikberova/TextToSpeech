@@ -10,8 +10,10 @@ COPY . /src
 # Build the Angular app
 RUN npm run build
 
-# Fix and copy the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+# COPY "/config/${ENVIRONMENT}-app-config.json" "/usr/share/nginx/html/app-config.json"
 
-ENTRYPOINT ["/entrypoint.sh"]
+# # Fix and copy the entrypoint script
+# COPY entrypoint.sh /entrypoint.sh
+# RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+
+# ENTRYPOINT ["/entrypoint.sh"]
