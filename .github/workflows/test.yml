@@ -67,7 +67,7 @@ jobs:
         env:
          path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/etc/nginx/certs
         run: |
-          apt-get update && apt install mkcert libnss3-tools -y &&
+          sudo apt-get update && sudo apt install mkcert libnss3-tools -y &&
           mkcert -key-file ${{ env.path }}/privkey.pem \
           -cert-file ${{ env.path }}/fullchain.pem \
           localhost 127.0.0.1 ::1
