@@ -65,7 +65,7 @@ jobs:
 
       - name: Create SSL certificate
         env:
-         path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/etc/nginx/certs
+         path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
         run: |
           sudo apt-get update && sudo apt install mkcert libnss3-tools -y &&
           mkcert -key-file ${{ env.path }}/privkey.pem \
