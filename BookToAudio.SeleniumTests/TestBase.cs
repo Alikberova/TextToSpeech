@@ -25,12 +25,12 @@ public class TestBase : IDisposable
         if (!HostingEnvironment.IsWindows())
         {
             options.AddArgument("--headless=new");
-            options.AddArgument("--ignore-certificate-errors");
-            options.AddArgument("--ignore-ssl-errors");
-            options.AddArgument("--no-sandbox");
-            options.AddArgument("--disable-dev-shm-usage");
         }
 
+        options.AddArgument("--ignore-certificate-errors");
+        options.AddArgument("--ignore-ssl-errors");
+        options.AddArgument("--no-sandbox");
+        options.AddArgument("--disable-dev-shm-usage");
         options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
 
         Driver = new ChromeDriver(options);
@@ -39,7 +39,7 @@ public class TestBase : IDisposable
 
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
-        Driver.Navigate().GoToUrl($"http://localhost:{SharedConstants.ClientPort}");
+        Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
     }
 
     public void Dispose()
