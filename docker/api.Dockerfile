@@ -24,8 +24,12 @@ RUN adduser -u 5678 --disabled-password --gecos "" --home /app nonroot && chown 
 USER nonroot
 
 FROM base AS final
+
 WORKDIR /app
-# RUN bash -c "apt-get update && apt-get install -y vim" # or nano
+
+# Install Nano
+RUN apk update && apk add nano
+
 # Re-declare ARG and set it as an ENV variable for use at runtime
 ARG API_NAME
 ENV API_NAME=$API_NAME

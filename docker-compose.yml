@@ -1,5 +1,5 @@
 services:
-  booktoaudioapi:
+  api:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
@@ -9,11 +9,11 @@ services:
         API_NAME: BookToAudio.Api
     image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
     env_file: .env
-    container_name: booktoaudio_api
+    container_name: apic
     ports:
       - "7057:7057"
 
-  booktoaudioweb:
+  web:
     build:
       context: BookToAudio.Web
       dockerfile: ../docker/web.Dockerfile
@@ -22,9 +22,9 @@ services:
     image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
-    container_name: booktoaudio_web
+    container_name: webc
     ports:
-      - "${ANGULAR_PORT}:${ANGULAR_PORT}" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
+      - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
-      - "/etc/letsencrypt/live/texttospeech.duckdns.org/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
-      - "/etc/letsencrypt/live/texttospeech.duckdns.org/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
+      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"

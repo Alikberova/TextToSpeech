@@ -34,7 +34,9 @@ builder.Services.AddServices();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}", "https://texttospeech.duckdns.org")
+        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}",
+        $"https://localhost:{SharedConstants.ClientPort}",
+        "https://texttospeech.duckdns.org")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
