@@ -6,7 +6,6 @@ RUN npm install
 
 # Copy the rest of the source code
 COPY . /src
-
 # Build the Angular app
 RUN npm run build
 
@@ -23,6 +22,7 @@ RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# RUN bash -c "apt-get update && apt-get install -y vim"
+# Install Nano
+RUN bash -c "apt-get update && apt-get install nano -y"
 
 ENTRYPOINT ["/entrypoint.sh"]

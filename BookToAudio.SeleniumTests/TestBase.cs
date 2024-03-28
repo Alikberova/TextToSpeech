@@ -25,12 +25,12 @@ public class TestBase : IDisposable
         if (!HostingEnvironment.IsWindows())
         {
             options.AddArgument("--headless=new");
-            options.AddArgument("--ignore-certificate-errors");
-            options.AddArgument("--ignore-ssl-errors");
-            options.AddArgument("--no-sandbox");
-            options.AddArgument("--disable-dev-shm-usage");
         }
 
+        options.AddArgument("--ignore-certificate-errors");
+        options.AddArgument("--ignore-ssl-errors");
+        options.AddArgument("--no-sandbox");
+        options.AddArgument("--disable-dev-shm-usage");
         options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
 
         Driver = new ChromeDriver(options);
@@ -39,20 +39,29 @@ public class TestBase : IDisposable
 
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
-        Driver.Navigate().GoToUrl($"http://localhost:{SharedConstants.ClientPort}");
+        Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
     }
 
     public void Dispose()
     {
-        if (Driver is not null)
-        {
-            Driver.Quit();
-            Driver.Dispose();
-        }
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        if (Directory.Exists(DownloadDirectory))
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            Directory.Delete(DownloadDirectory, true);
+            if (Driver is not null)
+            {
+                Driver.Quit();
+                Driver.Dispose();
+            }
+
+            if (Directory.Exists(DownloadDirectory))
+            {
+                Directory.Delete(DownloadDirectory, true);
+            }
         }
     }
 }
