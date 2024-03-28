@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Echo env file name
+        run: echo ${{ format('{0}_env_file', env.environment) }}
     
       - name: Fill env file
         run: |
@@ -62,6 +65,15 @@ jobs:
         run: |
           docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
+
+      - name: Create SSL certificate
+        env:
+         path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
+        run: |
+          sudo apt-get update && sudo apt install mkcert libnss3-tools -y &&
+          mkcert -key-file ${{ env.path }}/privkey.pem \
+          -cert-file ${{ env.path }}/fullchain.pem \
+          localhost 127.0.0.1 ::1
   
       - name: Build and start containers
         run: |
