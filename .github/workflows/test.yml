@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Echo env file name
+        run: echo ${{ format('{0}_env_file', env.environment) }}
     
       - name: Fill env file
         run: |
