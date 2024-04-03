@@ -39,4 +39,8 @@ export class ConfigService {
   get apiUrl(): string {
     return `${this.configuration.baseUrl}${this.configuration.apiEndpoint}`;
   }
+
+  get serverLoggingUrl(): string {
+    return this.configuration.serverLoggingUrl;
+  }
 }
