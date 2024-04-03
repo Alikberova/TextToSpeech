@@ -12,6 +12,7 @@ public sealed record Log
     public int LineNumber { get; init; }
     public int ColumnNumber { get; init; }
     public LogLevel MappedLogLevel => MapLogLevel(Level);
+
     private static LogLevel MapLogLevel(int logLevel) =>
         logLevel switch
         {
