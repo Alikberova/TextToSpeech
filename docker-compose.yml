@@ -9,7 +9,7 @@ services:
         API_NAME: BookToAudio.Api
     image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
     env_file: .env
-    container_name: apic
+    container_name: api
     ports:
       - "7057:7057"
 
@@ -22,7 +22,7 @@ services:
     image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
-    container_name: webc
+    container_name: web
     ports:
       - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
