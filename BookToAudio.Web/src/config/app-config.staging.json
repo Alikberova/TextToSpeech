@@ -1,5 +1,5 @@
 {
-    "baseUrl": "https://texttospeech.duckdns.org",
+    "baseUrl": "http://texttospeech.duckdns.org",
     "serverLoggingUrl": "http://localhost:7057/log",
     "apiEndpoint": "/api"
 }
