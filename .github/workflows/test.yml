@@ -5,12 +5,10 @@ on:
     branches:
       - master
       - dev
-      - dev-3
   pull_request:
     branches:
       - master
       - dev
-      - dev-3
 env:
   environment: Development
   image_tag_version: test
@@ -49,7 +47,7 @@ jobs:
       - name: Run unit tests
         run: dotnet test --no-restore --filter BookToAudio.UnitTests
 
-      - name: Run integration tests #todo run with real api on master
+      - name: Run integration tests
         run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
 
       - name: Log in to Docker Hub
@@ -66,14 +64,12 @@ jobs:
           docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
 
-      - name: Create SSL certificate
+      - name: Create SSL certificate from secrets
         env:
          path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
         run: |
-          sudo apt-get update && sudo apt install mkcert libnss3-tools -y &&
-          mkcert -key-file ${{ env.path }}/privkey.pem \
-          -cert-file ${{ env.path }}/fullchain.pem \
-          localhost 127.0.0.1 ::1
+          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.path }}/privkey.pem
+          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.path }}/fullchain.pem
   
       - name: Build and start containers
         run: |
