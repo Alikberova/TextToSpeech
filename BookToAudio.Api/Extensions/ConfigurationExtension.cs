@@ -10,10 +10,8 @@ public static class ConfigurationExtension
     {
         //todo remove Console.WriteLine
         var isDevelopment = HostingEnvironment.IsDevelopment();
-        var isWindows = HostingEnvironment.IsWindows();
 
         Console.WriteLine("isDevelopment: " + isDevelopment);
-        Console.WriteLine("isRemote: " + isWindows);
         Console.WriteLine("Environment.CurrentDirectory: " + Environment.CurrentDirectory);
 
         if (string.IsNullOrWhiteSpace(configurationBuilder[ConfigConstants.AppDataPath]))
@@ -21,7 +19,7 @@ public static class ConfigurationExtension
             configurationBuilder[ConfigConstants.AppDataPath] = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         }
 
-        return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isWindows, reloadOnChange: true)
+        return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: !isDevelopment, reloadOnChange: true)
             .AddEnvironmentVariables();
     }
 }
