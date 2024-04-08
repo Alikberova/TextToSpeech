@@ -5,6 +5,7 @@
 
 **/.env
 *.pem
+*.p12
 
 # User-specific files
 *.rsuser

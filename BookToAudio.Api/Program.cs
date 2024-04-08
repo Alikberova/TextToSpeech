@@ -1,5 +1,6 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
+using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
@@ -9,18 +10,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.SetConfig();
 
-var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "Logs", "log_.txt");
-
-builder.Host.UseSerilog((context, config) =>
-    config.MinimumLevel.Debug()
-    .WriteTo.Console()
-    .WriteTo.File(logFile, rollingInterval: RollingInterval.Hour));
+ConfigureLogging(builder);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -101,6 +98,38 @@ static void AddAuthentication(WebApplicationBuilder builder)
                 IssuerSigningKey = symmetricKey
             };
         });
+}
+
+static void ConfigureLogging(WebApplicationBuilder builder)
+{
+    var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "Logs", "log_.txt");
+
+    builder.Host.UseSerilog((context, loggerConfig) =>
+    {
+        loggerConfig.MinimumLevel.Debug()
+            .WriteTo.Console()
+            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day);
+
+        if (HostingEnvironment.IsDevelopment())
+        {
+            return;
+        }
+
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
+        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
+
+        var elasticConfig = builder.Configuration.GetRequiredSection(ConfigConstants.Elasticsearch).Get<ElasticsearchConfig>()!;
+
+        var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
+        {
+            AutoRegisterTemplate = true,
+            IndexFormat = indexFormat
+        };
+
+        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
+            .Enrich.WithProperty("Environment", environment)
+            .ReadFrom.Configuration(builder.Configuration);
+    });
 }
 
 public partial class Program { }

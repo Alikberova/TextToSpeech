@@ -6,4 +6,5 @@ public sealed class ConfigConstants
     public const string EmailConfig = "EmailConfig";
     public const string AppDataPath = "AppDataPath";
     public const string OpenAiApiKey = "OPENAI_API_KEY";
+    public const string Elasticsearch = "Elasticsearch";
 }

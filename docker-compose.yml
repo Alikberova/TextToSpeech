@@ -12,6 +12,8 @@ services:
     container_name: api
     ports:
       - "7057:7057"
+    networks:
+      - elk
 
   web:
     build:
@@ -28,3 +30,11 @@ services:
     volumes:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+    networks:
+      - elk
+
+#docker network create elk
+
+networks:
+  elk:
+    external: true
