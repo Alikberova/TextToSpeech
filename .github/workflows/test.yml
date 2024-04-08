@@ -83,8 +83,7 @@ jobs:
       - name: Run Selenium tests
         id: seleniumTests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
-        continue-on-error: true
 
       - name: Show backend logs
         run: docker container logs api
-        if: steps.seleniumTests.outcome == 'failure'
+        if: ${{ failure() && steps.seleniumTests.conclusion == 'failure' }}
