@@ -13,7 +13,7 @@ services:
     ports:
       - "7057:7057"
     networks:
-      - elk
+      - proxy_elk
 
   web:
     build:
@@ -31,10 +31,9 @@ services:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     networks:
-      - elk
-
-#docker network create elk
+      - proxy_elk
 
 networks:
-  elk:
+  proxy_elk:
     external: true
+    name: elk
