@@ -81,4 +81,9 @@ jobs:
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
       - name: Run Selenium tests
+        id: seleniumTests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
+
+      - name: Log backend container
+        run: docker container logs api
+        if: steps.seleniumTests.outcome == 'failure'
