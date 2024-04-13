@@ -1,8 +1,6 @@
 name: Elasticsearch deployment
 
 on:
-  push:
-    branches: [ "elk"]
   workflow_dispatch:
 
 jobs:
