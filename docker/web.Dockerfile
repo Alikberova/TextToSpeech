@@ -1,7 +1,7 @@
 FROM node:lts-alpine as build
 
 WORKDIR /src
-COPY package.json /src/package.json
+COPY package*.json /src/
 RUN npm install
 
 # Copy the rest of the source code

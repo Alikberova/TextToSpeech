@@ -15,7 +15,7 @@ public sealed class EmailController : ControllerBase
     }
 
     [HttpPost]
-    public void  SendMessage([FromBody] EmailRequest request)
+    public void Send([FromBody] EmailRequest request)
     {
         _emailService.SendEmail(request);
     }
