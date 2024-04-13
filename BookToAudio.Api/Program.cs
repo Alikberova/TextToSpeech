@@ -102,19 +102,10 @@ static void AddAuthentication(WebApplicationBuilder builder)
 
 static void ConfigureLogging(WebApplicationBuilder builder)
 {
-    var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "Logs", "log_.txt");
+    var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "logs", "log_.txt");
 
     builder.Host.UseSerilog((context, loggerConfig) =>
     {
-        loggerConfig.MinimumLevel.Debug()
-            .WriteTo.Console()
-            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day);
-
-        if (HostingEnvironment.IsDevelopment())
-        {
-            return;
-        }
-
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
         var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
 
@@ -123,10 +114,17 @@ static void ConfigureLogging(WebApplicationBuilder builder)
         var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
         {
             AutoRegisterTemplate = true,
-            IndexFormat = indexFormat
+            IndexFormat = indexFormat,
+            ModifyConnectionSettings = conn =>
+            {
+                return conn.BasicAuthentication(elasticConfig.Username, elasticConfig.Password);
+            }
         };
 
-        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
+        loggerConfig.Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
+            .WriteTo.Elasticsearch(elasticSinkOptions)
             .Enrich.WithProperty("Environment", environment)
             .ReadFrom.Configuration(builder.Configuration);
     });

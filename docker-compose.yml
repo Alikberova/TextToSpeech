@@ -14,6 +14,8 @@ services:
       - "7057:7057"
     networks:
       - proxy_elk
+    volumes:
+      - /${HOME}/logs:/${AppDataPath}/logs
 
   web:
     build:
