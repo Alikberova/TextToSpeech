@@ -49,7 +49,6 @@ volumes:
   ls_data:
   kb_data:
 
-#todo elk delete
 #openssl req -x509 -newkey rsa:4096 -keyout elk-config/ssl/key.pem -out elk-config/ssl/cert.pem -days 365
 #openssl pkcs12 -export -out elk-config/ssl/keystore.p12 -inkey elk-config/ssl/key.pem -in elk-config/ssl/cert.pem
 #elasticsearch-certutil cert --pem --in elk-config/ssl/keystore.p12 --out elk-config/ssl/elastic-certificates.p12
