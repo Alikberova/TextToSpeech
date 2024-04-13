@@ -1,6 +1,5 @@
 using BookToAudio.Api.Extensions;
 using BookToAudio.Api.Middleware;
-using BookToAudio.Core;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
