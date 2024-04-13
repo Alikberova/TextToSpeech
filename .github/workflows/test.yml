@@ -77,7 +77,13 @@ jobs:
           export IMAGE_TAG_VERSION=${{ env.image_tag_version }}
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
           docker compose push
+          docker network create elk
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
       - name: Run Selenium tests
+        id: selenium_tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
+
+      - name: Show backend logs
+        run: docker container logs api
+        if: ${{ failure() && steps.selenium_tests.conclusion == 'failure' }}
