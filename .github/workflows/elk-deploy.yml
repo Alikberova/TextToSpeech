@@ -20,7 +20,7 @@ jobs:
 
     - name: Fill env file
       run: |
-        echo "${{ secrets.Elasticsearch__Password}}" > .env
+        echo "Elasticsearch__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
 
     - name: Copy files to server
       uses: appleboy/scp-action@master
@@ -41,4 +41,4 @@ jobs:
           cd /usr/elk
           docker compose -f docker-compose-elk.yml build
           docker compose -f docker-compose-elk.yml down || true
-          docker compose -f docker-compose-elk.yml up --force-recreate
+          docker compose -f docker-compose-elk.yml up -d --force-recreate
