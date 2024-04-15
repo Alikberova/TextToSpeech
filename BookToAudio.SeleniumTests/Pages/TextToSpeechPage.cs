@@ -47,6 +47,7 @@ internal sealed class TextToSpeechPage: BasePage
         _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(DownloadButtonId)));
         Thread.Sleep(500);
         DownloadBtn.Click();
+        _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));
         Thread.Sleep(500);
     }
 }
