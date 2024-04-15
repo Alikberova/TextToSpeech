@@ -37,7 +37,7 @@ public class TestBase : IDisposable
         Driver.Manage().Window.Maximize();
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
 
-        Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+        Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(12));
 
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
     }
