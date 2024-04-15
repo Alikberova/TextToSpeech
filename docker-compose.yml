@@ -20,7 +20,7 @@ services:
       - proxy_elk
     volumes:
       - /${HOME}/logs:/${AppDataPath}/logs
-      - "${CERTS_PATH}/:${CERTS_PATH}/"
+      - "${CERTS_PATH}:${CERTS_PATH}"
 
   web:
     build:

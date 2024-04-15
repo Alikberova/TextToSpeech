@@ -85,5 +85,5 @@ jobs:
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
 
       - name: Show backend logs
-        run: docker container logs api
+        run: docker logs api
         if: ${{ failure() && steps.selenium_tests.conclusion == 'failure' }}
