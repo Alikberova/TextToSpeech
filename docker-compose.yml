@@ -9,13 +9,18 @@ services:
         API_NAME: BookToAudio.Api
     image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
     env_file: .env
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "${CERTS_PATH}/fullchain.pem"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "${CERTS_PATH}/privkey.pem"
+      ASPNETCORE_URLS: "https://+"
     container_name: api
     ports:
-      - "7057:7057"
+      - "7057:443"
     networks:
       - proxy_elk
     volumes:
       - /${HOME}/logs:/${AppDataPath}/logs
+      - "${CERTS_PATH}/:${CERTS_PATH}/"
 
   web:
     build:
@@ -24,8 +29,8 @@ services:
       cache_from:
         - alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
     image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
-    # environment:
-    #   ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
     container_name: web
     ports:
       - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
