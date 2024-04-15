@@ -11,6 +11,7 @@ on:
       - dev
 env:
   environment: Development
+  cert-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
   image_tag_version: test
 
 jobs:
@@ -25,6 +26,7 @@ jobs:
       - name: Fill env file
         run: |
           echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
+          echo "CERTS_PATH=${{ env.cert-path }}" >> .env
 
       - name: Import environment variables from a env file 
         uses: falti/dotenv-action@v1.1
@@ -65,11 +67,9 @@ jobs:
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
 
       - name: Create SSL certificate from secrets
-        env:
-         path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
         run: |
-          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.path }}/privkey.pem
-          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.path }}/fullchain.pem
+          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.cert-path }}/privkey.pem
+          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.cert-path }}/fullchain.pem
   
       - name: Build and start containers
         run: |
