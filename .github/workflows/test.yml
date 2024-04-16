@@ -80,6 +80,7 @@ jobs:
       - name: Run integration tests
         run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
 
+        # api docker container needs additional time to start, so moved docker related things to the top
       - name: Run Selenium tests
         id: selenium_tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests

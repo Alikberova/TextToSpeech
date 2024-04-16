@@ -35,8 +35,7 @@ services:
     ports:
       - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
-      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
-      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+      - "${CERTS_PATH}/:/etc/nginx/certs/:ro"
     networks:
       - proxy_elk
 
