@@ -10,8 +10,8 @@ services:
     image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
     env_file: .env
     environment:
-      ASPNETCORE_Kestrel__Certificates__Default__Path: "${CERTS_PATH}/fullchain.pem"
-      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "${CERTS_PATH}/privkey.pem"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
       ASPNETCORE_URLS: "https://+"
     container_name: api
     ports:
@@ -19,8 +19,8 @@ services:
     networks:
       - proxy_elk
     volumes:
-      - /${HOME}/logs:/${AppDataPath}/logs
-      - /"${CERTS_PATH}/:/${CERTS_PATH}"
+      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
+      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
 
   web:
     build:
@@ -35,9 +35,8 @@ services:
     ports:
       - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
-      - "/${CERTS_PATH}/:/etc/nginx/certs"
-      # - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
-      # - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
+      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     networks:
       - proxy_elk
 
