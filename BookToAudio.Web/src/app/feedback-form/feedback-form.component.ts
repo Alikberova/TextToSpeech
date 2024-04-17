@@ -16,21 +16,23 @@ import { SnackbarService } from '../shared-ui/snackbar-service';
   templateUrl: './feedback-form.component.html',
   styleUrl: './feedback-form.component.scss'
 })
+
 export class FeedbackFormComponent {
   feedbackForm: FormGroup;
   @ViewChild('formDirective') private formDirective!: NgForm;
+  isSubmitted = false;
 
   constructor(private feedbackService: FeedbackService, private snackbarService: SnackbarService) {
     this.feedbackForm = new FormGroup({
-      userEmail: new FormControl("", [ValidationService.validationEmail, Validators.required]),
-      name: new FormControl("", Validators.required),
-      message: new FormControl("", Validators.required),
+      userEmail: new FormControl("", [Validators.email]),
+      name: new FormControl(""),
+      message: new FormControl(""),
     });
   }
 
   submitFeedback() {
     if (this.feedbackForm.valid) {
-     const feedback = this.feedbackForm.value;
+      const feedback = this.feedbackForm.value;
       this.feedbackService.feedbackMessageSend(feedback).subscribe({
         next: _ => {
           this.snackbarService.showSuccess("Your feedback was sent. Thanks!")

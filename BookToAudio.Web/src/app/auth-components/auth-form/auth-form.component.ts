@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,7 +19,7 @@ export class AuthFormComponent {
 
   constructor() {
     this.authForm = new FormGroup({
-      userName: new FormControl("", ValidationService.validationEmail),
+      userName: new FormControl("", Validators.email),
       password: new FormControl("", ValidationService.matchRequiredPassword)
     })
   }

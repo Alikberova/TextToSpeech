@@ -6,24 +6,24 @@
     <form [formGroup]="feedbackForm" #formDirective="ngForm" (ngSubmit)="submitFeedback()">
       <mat-form-field appearance="fill">
         <mat-label>Your Name</mat-label>
-        <input matInput placeholder="Enter your name" formControlName="name" name="name" required>
+        <input matInput placeholder="Enter your name" formControlName="name" name="name" [required]="isSubmitted">
         <mat-error *ngIf="feedbackForm.get('name')?.hasError('required')">Please enter your name</mat-error>
       </mat-form-field>
-
+    
       <mat-form-field appearance="fill">
         <mat-label>Your Email</mat-label>
-        <input matInput type="email" placeholder="Enter your email" formControlName="userEmail" name="userEmail">
-        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('required')">Please enter email</mat-error>
-        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('invalid')">Please enter a correct email</mat-error>
+        <input matInput type="email" placeholder="Enter your email" formControlName="userEmail" name="userEmail" [required]="isSubmitted">
+        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('required')">Please enter your email</mat-error>
+        <mat-error *ngIf="feedbackForm.get('userEmail')?.hasError('email')">Please enter a correct email</mat-error>
       </mat-form-field>
-
+    
       <mat-form-field appearance="fill">
         <mat-label>Your Feedback</mat-label>
-        <textarea matInput placeholder="Enter your feedback" formControlName="message" name="message" required></textarea>
+        <textarea matInput placeholder="Enter your feedback" formControlName="message" name="message" [required]="isSubmitted"></textarea>
         <mat-error *ngIf="feedbackForm.get('message')?.hasError('required')">Please enter message</mat-error>
       </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit">Submit</button>
+    
+      <button mat-raised-button color="primary" type="submit" (click)="isSubmitted = true">Submit</button>
     </form>
   </mat-card-content>
 </mat-card>
