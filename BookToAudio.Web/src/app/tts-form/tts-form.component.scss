@@ -60,3 +60,13 @@
   pointer-events: none;
   opacity: 0.5;
 }
+
+.mat-information {
+  display: flex;
+  align-items: center;
+  color: lighten(desaturate($primary, 15%),10%); //second option #607D8B
+}
+
+.mat-information mat-icon {
+  margin-right: 8px;
+}

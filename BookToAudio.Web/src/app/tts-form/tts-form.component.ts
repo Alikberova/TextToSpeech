@@ -51,6 +51,8 @@ export class TtsFormComponent implements OnInit {
   isSpeechReady = false;
   audioDownloadUrl = '';
 
+  acceptableFileTypes = ['.pdf', '.txt'];
+  isFileValid = false;
   maxLengthInput = 100000;
   warnedMaxInputLength = false;
 
@@ -68,11 +70,22 @@ export class TtsFormComponent implements OnInit {
 
   onFileSelected(event: Event) {
     this.isSpeechReady = false;
+    this.warnedMaxInputLength = false;
     const target = event.target as HTMLInputElement;
-    if (target.files && target.files.length > 0) {
-      this.textToSpeech.file = target.files[0];
+    if (!target.files || target.files.length == 0) {
+      return;
     }
-    this.validateInputLength();
+    if (!this.acceptableFileTypes.some(type => target.files![0].name.endsWith(type))) {
+      this.snackBarService.showError("Oops! 🙈 Looks like I can't work my magic on this file type. Stick with PDFs or text files for the best results, okay? 🚀");
+      return;
+    }
+    if (target.files[0].size > this.maxLengthInput) {
+      this.clearFileSelection();
+      this.warnedMaxInputLength = true;
+      return;
+    }
+    this.textToSpeech.file = target.files[0];
+    this.isFileValid = true;
   }
 
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
@@ -118,20 +131,20 @@ export class TtsFormComponent implements OnInit {
       .catch((error) => console.log('error to in playAudio.', error));
     }
     
-      this.audio.onended = () => {
+    this.audio.onended = () => {
       this.isPlaying = false;
       this.currentlyPlayingVoice = null;
-      }
+    }
   }
 
   pauseAudio(event: MouseEvent) {
     event.stopPropagation();
       
-       this.audio!.pause();
-       this.isPaused = true;
-       this.isPlaying = false;
+    this.audio!.pause();
+    this.isPaused = true;
+    this.isPlaying = false;
   }
-  
+
 
   stopPropagation(event: MouseEvent){
     event.stopPropagation();
@@ -173,14 +186,5 @@ export class TtsFormComponent implements OnInit {
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
-  }
-
-  validateInputLength(){
-    if (this.textToSpeech.file !== undefined && this.textToSpeech.file.size > this.maxLengthInput){
-        this.clearFileSelection();
-      this.warnedMaxInputLength = true;
-      return;
-    }
-    this.warnedMaxInputLength = false;
   }
 }
