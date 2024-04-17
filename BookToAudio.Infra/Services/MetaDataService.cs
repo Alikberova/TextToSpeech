@@ -10,7 +10,7 @@ public interface IMetaDataService
 
 public class MetaDataService(IOptions<JwtConfig> jwtConfigOptions) : IMetaDataService
 {
-    private readonly JwtConfig _jwtConfig = jwtConfigOptions.Value;
+    private readonly JwtConfig _jwtConfig = jwtConfigOptions.Value; //todo remove
 
     public void AddMetaData(string pathFile, string title)
     {

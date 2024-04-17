@@ -3,7 +3,6 @@ import { AuthFormComponent } from '../auth-form/auth-form.component';
 import { UserClient } from '../../http-clients/user-client';
 import { AuthService } from '../../services/auth/auth.service';
 import { Router } from '@angular/router';
-import { ErrorHandlerService } from '../../services/error-handler-service';
 import { RoutesConstants } from '../../constants/route-constants';
 
 @Component({
@@ -15,7 +14,7 @@ import { RoutesConstants } from '../../constants/route-constants';
 })
 export class LoginComponent {
   constructor(private userClient: UserClient, private authService: AuthService,
-    private router: Router, private errorHandler: ErrorHandlerService) {}
+    private router: Router) {}
 
   title = 'Login';
   buttonLabel = 'Sign In';
@@ -23,8 +22,7 @@ export class LoginComponent {
   onFormSubmitted(credentials: { userName: string; password: string }): void {
     this.userClient.loginUser(credentials)
     .subscribe({
-      next: (response) => this.handleAuthenticationSuccess(response.token),
-      error: (e) => this.errorHandler.handleHttpError(e)
+      next: (response) => this.handleAuthenticationSuccess(response.token)
     })
   }
 

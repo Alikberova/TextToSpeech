@@ -6,10 +6,8 @@ import { SpeechRequest } from '../models/text-to-speech';
 import { SpeechClient } from '../http-clients/speech-client';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ErrorHandlerService } from '../services/error-handler-service';
 import { SignalRService } from '../services/signalr.service';
 import { SpeechVoice } from '../models/speech-voice.enum';
-import { ConfigConstants } from '../constants/config-constants';
 import { ViewChild, ElementRef } from '@angular/core';
 import { SnackbarService } from '../shared-ui/snackbar-service';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,7 +31,6 @@ export class TtsFormComponent implements OnInit {
   
   constructor(
     private speechClient: SpeechClient,
-    private errorHandler: ErrorHandlerService,
     private signalRService: SignalRService,
     private snackBarService: SnackbarService
   ) {}
@@ -112,7 +109,6 @@ export class TtsFormComponent implements OnInit {
       next: (blob) => this.playAudio(blob),
       error: (err) => {
         this.currentlyPlayingVoice = null;
-        this.errorHandler.handleHttpError(err);
       }
     })}
   }
@@ -161,10 +157,8 @@ export class TtsFormComponent implements OnInit {
     this.isLoading = true;
 
     this.speechClient.createSpeech(this.textToSpeech).subscribe({
-      error: (error) => {
-        console.error(error);
+      error: () => {
         this.isLoading = false;
-        this.errorHandler.handleHttpError(error);
       }
     });
   }

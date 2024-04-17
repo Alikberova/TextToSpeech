@@ -5,7 +5,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FeedbackService } from '../services/feedback.service';
-import { ValidationService } from '../services/validation.service';
 import { CommonModule } from '@angular/common';
 import { SnackbarService } from '../shared-ui/snackbar-service';
 
@@ -38,10 +37,6 @@ export class FeedbackFormComponent {
           this.snackbarService.showSuccess("Your feedback was sent. Thanks!")
           this.feedbackForm.reset();
           this.formDirective.resetForm();
-        },
-        error: err => {
-          console.log(err)
-          this.snackbarService.showError("Oops. Some error occurred, couldn't process your request. Try to reload the page", undefined, 10000)
         }
       });
     }
