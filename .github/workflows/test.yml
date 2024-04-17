@@ -11,6 +11,7 @@ on:
       - dev
 env:
   environment: Development
+  certs-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
   image_tag_version: test
 
 jobs:
@@ -25,30 +26,13 @@ jobs:
       - name: Fill env file
         run: |
           echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
+          echo "CERTS_PATH=${{ env.certs-path }}" >> .env
 
       - name: Import environment variables from a env file 
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true
           mask-variables: true  
-
-      - name: Cache NuGet Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Restore dependencies
-        run: dotnet restore --no-cache
-        shell: bash
-
-      - name: Run unit tests
-        run: dotnet test --no-restore --filter BookToAudio.UnitTests
-
-      - name: Run integration tests
-        run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -65,11 +49,9 @@ jobs:
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
 
       - name: Create SSL certificate from secrets
-        env:
-         path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
         run: |
-          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.path }}/privkey.pem
-          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.path }}/fullchain.pem
+          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
+          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
   
       - name: Build and start containers
         run: |
@@ -80,10 +62,29 @@ jobs:
           docker network create elk
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
+      - name: Cache NuGet Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+  
+      - name: Restore dependencies
+        run: dotnet restore --no-cache
+        shell: bash
+
+      - name: Run unit tests
+        run: dotnet test --no-restore --filter BookToAudio.UnitTests
+
+      - name: Run integration tests
+        run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
+
+        # api docker container needs additional time to start, so moved docker related things to the top
       - name: Run Selenium tests
         id: selenium_tests
         run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
 
       - name: Show backend logs
-        run: docker container logs api
+        run: docker logs api
         if: ${{ failure() && steps.selenium_tests.conclusion == 'failure' }}
