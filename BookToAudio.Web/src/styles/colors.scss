@@ -18,6 +18,6 @@ $footer-background-color: $dark-gray;
 $heading-color: $dark-gray;
 $link-color: $color-electric-indigo;
 
-$snackbar-color--success: $tertiary;
-$snackbar-color--success-action: #f8b7b7;
-$snackbar-color--error: #490404; //#cf4848
+$snackbar-color--success: #008080; //$tertiary;
+$snackbar-color--success-action: #f8b7b7; //todo didn't work
+$snackbar-color--error: #d3491f; //#cf4848, E91E63; initial: FF5722 > d3491f bc3b14
