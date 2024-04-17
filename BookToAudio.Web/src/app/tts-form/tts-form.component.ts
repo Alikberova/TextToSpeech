@@ -157,12 +157,11 @@ export class TtsFormComponent implements OnInit {
   }
 
   private handleAudioStatusUpdate(fileId: string, status: string) {
-    console.log(`Status of file ${fileId} updated to ${status}`, new Date());
-    if (status !== 'Completed') {
-      this.snackBarService.showError(`An error occurred while creating speech. Audio file status is ${status}`);
+    this.isLoading = false;
+      if (status !== 'Completed') {
+        this.snackBarService.showError("Oopsie-daisy! Our talking robot hit a snag creating your speech. Let's try again!");
       return;
     }
-    this.isLoading = false;
     this.isSpeechReady = true;
     this.setDownloadData(fileId);
     this.clearFileSelection();
