@@ -10,7 +10,6 @@ export const errorInterceptor: HttpInterceptorFn = (request, next) => {
   const snackbarService = inject(SnackbarService);
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
-      debugger;
       logger.error(error);
       snackbarService.showError("Oops! Something went wobbly. We're on it!")
       return throwError(() => new Error('Unhandled exception ocurred'));
