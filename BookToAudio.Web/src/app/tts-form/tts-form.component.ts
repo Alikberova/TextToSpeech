@@ -17,7 +17,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
 import { ConfigService } from '../services/config-service';
 
-
 @Component({
   selector: 'app-tts-form',
   standalone: true,
@@ -40,23 +39,21 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
-  @ViewChild('fileInput') fileInput!: ElementRef;
-
   voices = Object.values(SpeechVoice).filter(key => isNaN(Number(key)));
   models = ['tts-1', 'tts-1-hd'];
+  acceptableFileTypes = ['.pdf', '.txt'];
+  maxLengthInput = 100000;
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  audio: HTMLAudioElement | null = null;
   isLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
-
-  acceptableFileTypes = ['.pdf', '.txt'];
   isFileValid = false;
-  maxLengthInput = 100000;
   warnedMaxInputLength = false;
-
-  private audio: HTMLAudioElement | null = null;
-  isPlaying = false; 
   currentlyLoadingAudio = false;
   currentlyPlayingVoice: string | null = null;
+  isPlaying = false; 
   isPaused = false;
 
   textToSpeech: SpeechRequest = {
@@ -77,7 +74,7 @@ export class TtsFormComponent implements OnInit {
       return;
     }
     if (target.files[0].size > this.maxLengthInput) {
-      this.clearFileSelection();
+      // this.fileInput.nativeElement.value = '';
       this.warnedMaxInputLength = true;
       return;
     }
@@ -91,42 +88,37 @@ export class TtsFormComponent implements OnInit {
       this.audio.play();
       this.isPaused = false
     }
-    else{
-    this.currentlyLoadingAudio = true;
-    this.currentlyPlayingVoice = voice;
+    else {
+      this.currentlyLoadingAudio = true;
+      this.currentlyPlayingVoice = voice;
       if (this.audio) {
         this.audio.pause();
         URL.revokeObjectURL(this.audio.currentSrc)
       }
-    this.isPaused = false;
-    const request: SpeechRequest = {
-      model: this.textToSpeech.model,
-      voice: SpeechVoice[voice as keyof typeof SpeechVoice],
-      speed: speed,
-      input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles.',
-    };
-    this.speechClient.getSpeechSample(request).subscribe({
-      next: (blob) => this.playAudio(blob),
-      error: (err) => {
-        this.currentlyPlayingVoice = null;
-      }
-    })}
+      this.isPaused = false;
+      const request: SpeechRequest = {
+        model: this.textToSpeech.model,
+        voice: SpeechVoice[voice as keyof typeof SpeechVoice],
+        speed: speed,
+        input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles.',
+      };
+      this.speechClient.getSpeechSample(request).subscribe({
+        next: (blob) => this.playAudio(blob),
+        error: () => {
+          this.reset();
+        }
+      })
+    }
   }
 
   playAudio(blob: Blob) {
     this.audio = new Audio();
     const url = URL.createObjectURL(blob);
     this.audio.src = url;
-    this.audio
     this.audio.load();
     this.audio.oncanplay = () => {
-      this.audio!
-      .play().then(()=>{
-        this.currentlyLoadingAudio = false;
-      })
-      .catch((error) => console.log('error to in playAudio.', error));
+      this.audio!.play();
     }
-    
     this.audio.onended = () => {
       this.isPlaying = false;
       this.currentlyPlayingVoice = null;
@@ -141,24 +133,12 @@ export class TtsFormComponent implements OnInit {
     this.isPlaying = false;
   }
 
-
-  stopPropagation(event: MouseEvent){
-    event.stopPropagation();
-  }
-
-  clearFileSelection() {
-    this.textToSpeech.file = null!;
-    if (this.fileInput && this.fileInput.nativeElement) {
-      this.fileInput.nativeElement.value = '';
-    }
-  }
-
   onSubmit() {
     this.isLoading = true;
 
     this.speechClient.createSpeech(this.textToSpeech).subscribe({
       error: () => {
-        this.isLoading = false;
+        this.reset();
       }
     });
   }
@@ -171,7 +151,7 @@ export class TtsFormComponent implements OnInit {
     }
     this.isSpeechReady = true;
     this.setDownloadData(fileId);
-    this.clearFileSelection();
+    this.fileInput.nativeElement.value = '';
     this.snackBarService.showSuccess('The audio file is ready, you can download it');
   }
 
@@ -180,5 +160,24 @@ export class TtsFormComponent implements OnInit {
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
+  }
+
+  private reset() {
+    this.textToSpeech = {
+      model: this.models[0],
+      voice: SpeechVoice[Object.keys(SpeechVoice)[0] as keyof typeof SpeechVoice],
+      speed: 1,
+    };
+    this.audio = null;
+    this.isLoading = false;
+    this.isSpeechReady = false;
+    this.audioDownloadUrl = '';
+    this.isFileValid = false;
+    this.warnedMaxInputLength = false;
+    this.currentlyLoadingAudio = false;
+    this.currentlyPlayingVoice = null;
+    this.isPlaying = false; 
+    this.isPaused = false;
+    this.fileInput.nativeElement.value = '';
   }
 }

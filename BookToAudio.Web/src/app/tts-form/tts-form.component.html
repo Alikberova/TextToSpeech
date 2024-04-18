@@ -7,7 +7,7 @@
         <mat-icon [ngClass]="{'disabled': currentlyLoadingAudio}" class="play-icon" *ngIf="!isPlaying && currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
         <mat-icon class="play-icon pause" *ngIf="!isPlaying && currentlyPlayingVoice === voice && isPaused" (click)="playVoiceSample($event, voice.toString(), textToSpeech.speed!)" [attr.aria-label]="'Pause voice sample'">play_circle</mat-icon>
         <mat-icon class="play-icon" id="pause" *ngIf="!currentlyLoadingAudio && currentlyPlayingVoice === voice && !isPaused" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
-        <mat-icon class="play-icon" *ngIf="currentlyLoadingAudio && currentlyPlayingVoice === voice" [attr.aria-label]="'Voice sample is loading'" (click)="stopPropagation($event)">downloading</mat-icon>
+        <mat-icon class="play-icon" *ngIf="currentlyLoadingAudio && currentlyPlayingVoice === voice" [attr.aria-label]="'Voice sample is loading'" (click)="$event.stopPropagation()">downloading</mat-icon>
       </mat-option>
     </mat-select>
   </mat-form-field>
@@ -18,13 +18,13 @@
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept="{{ acceptableFileTypes.join(',') }}"
            aria-label="Upload File"/>
     <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxLengthInput | FormatMaxInputLengthPipe}} characters </mat-error>
-    <div class="mat-information">
+    <div *ngIf="!textToSpeech.file" class="mat-information">
       <mat-icon>info</mat-icon>
       <span>Ready to turn your PDFs and TXTs into speech! Just drop them here</span>
     </div>
     <div>
       <span *ngIf="textToSpeech.file">{{ textToSpeech.file.name }}</span>
-      <button mat-button *ngIf="textToSpeech.file" (click)="clearFileSelection()" color="warn"
+      <button mat-button *ngIf="textToSpeech.file" (click)="fileInput.value=''" color="warn"
               aria-label="Clear selected file">
         <mat-icon>clear</mat-icon>
       </button>
