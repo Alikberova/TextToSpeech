@@ -80,3 +80,4 @@ jobs:
       - name: Log Backend Logs (if Selenium tests failed)
         if: matrix.name == 'Selenium Tests' && failure()
         run: docker logs api
+        
