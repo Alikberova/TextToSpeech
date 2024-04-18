@@ -81,5 +81,5 @@ jobs:
         run: ${{ matrix.command }}
 
       - name: Log Backend Logs (if Selenium tests failed)
-        # if: matrix.name == 'Selenium Tests' && failure()
+        if: matrix.name == 'Selenium Tests' && failure()
         run: docker logs api
