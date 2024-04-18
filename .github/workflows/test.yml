@@ -22,12 +22,13 @@ jobs:
     strategy:
       matrix:
         include:
+          - name: Selenium Tests
+            command: dotnet test --no-restore --filter BookToAudio.SeleniumTests
           - name: Unit Tests
             command: dotnet test --no-restore --filter BookToAudio.UnitTests
           - name: Integration Tests
             command: dotnet test --no-restore --filter BookToAudio.IntegrationTests
-          - name: Selenium Tests
-            command: dotnet test --no-restore --filter BookToAudio.SeleniumTests
+
     steps:
       - uses: actions/checkout@v4
       
@@ -52,9 +53,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx
+        if: matrix.name == 'Selenium Tests'
         uses: docker/setup-buildx-action@v3  
 
       - name: Build and start containers
+        if: matrix.name == 'Selenium Tests'
         run: |
           docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
@@ -80,4 +83,3 @@ jobs:
       - name: Log Backend Logs (if Selenium tests failed)
         if: matrix.name == 'Selenium Tests' && failure()
         run: docker logs api
-        
