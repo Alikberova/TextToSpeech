@@ -2,10 +2,8 @@ import { Component } from '@angular/core';
 import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { Router } from '@angular/router';
 import { UserClient } from '../../http-clients/user-client';
-import { AuthService } from '../../services/auth/auth.service';
 import {User} from '../../models/user'
 import { SnackbarService } from '../../shared-ui/snackbar-service';
-import { ErrorHandlerService } from '../../services/error-handler-service';
 import { RoutesConstants } from '../../constants/route-constants';
 
 @Component({
@@ -17,9 +15,7 @@ import { RoutesConstants } from '../../constants/route-constants';
 })
 
 export class RegisterComponent {
-  constructor(private userClient: UserClient, private authService: AuthService,
-    private router: Router, private snackbarService: SnackbarService,
-    private errorHandler: ErrorHandlerService) {}
+  constructor(private userClient: UserClient, private router: Router, private snackbarService: SnackbarService) {}
 
   title = 'Register';
   buttonLabel = 'Sign Up';
@@ -43,8 +39,7 @@ export class RegisterComponent {
     };
 
     this.userClient.register(user).subscribe({
-      next: () => this.router.navigate([RoutesConstants.home]),
-      error: (err) => this.errorHandler.handleHttpError(err)
+      next: () => this.router.navigate([RoutesConstants.home])
     });
   }
 

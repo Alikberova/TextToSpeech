@@ -11,7 +11,7 @@ export const errorInterceptor: HttpInterceptorFn = (request, next) => {
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error(error);
-      snackbarService.showError("Oops. Unknown error occurred")
+      snackbarService.showError("Oops! Something went wobbly. We're on it!")
       return throwError(() => new Error('Unhandled exception ocurred'));
     })
   );
