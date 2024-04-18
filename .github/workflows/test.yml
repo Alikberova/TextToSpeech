@@ -1,32 +1,43 @@
-name: Tests execution
+name: Tests Execution
 
 on:
   push:
     branches:
       - master
       - dev
+      - test1
   pull_request:
     branches:
       - master
       - dev
+
 env:
   environment: Development
   certs-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
-  image_tag_version: test
+  image_tag_version: ${{ github.ref_name }} 
 
 jobs:
-  tests:
+  build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: Unit Tests
+            command: dotnet test --no-restore --filter BookToAudio.UnitTests
+          - name: Integration Tests
+            command: dotnet test --no-restore --filter BookToAudio.IntegrationTests
+          - name: Selenium Tests
+            command: dotnet test --no-restore --filter BookToAudio.SeleniumTests
     steps:
       - uses: actions/checkout@v4
-
-      - name: Echo env file name
-        run: echo ${{ format('{0}_env_file', env.environment) }}
-    
-      - name: Fill env file
+      
+      - name: Fill env file and SSL certificate from secrets
         run: |
+          echo Env file is ${{ format('{0}_env_file', env.environment) }}
           echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
           echo "CERTS_PATH=${{ env.certs-path }}" >> .env
+          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
+          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
 
       - name: Import environment variables from a env file 
         uses: falti/dotenv-action@v1.1
@@ -41,20 +52,12 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3  
 
-      - name: Pull Docker images for cache (if exist)
+      - name: Build and start containers
         run: |
           docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
-
-      - name: Create SSL certificate from secrets
-        run: |
-          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
-          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
-  
-      - name: Build and start containers
-        run: |
           export DOCKER_BUILDKIT=1
           export IMAGE_TAG_VERSION=${{ env.image_tag_version }}
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
@@ -67,24 +70,13 @@ jobs:
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-  
+
       - name: Restore dependencies
         run: dotnet restore --no-cache
-        shell: bash
 
-      - name: Run unit tests
-        run: dotnet test --no-restore --filter BookToAudio.UnitTests
+      - name: Run Tests
+        run: ${{ matrix.command }}
 
-      - name: Run integration tests
-        run: dotnet test --no-restore --filter BookToAudio.IntegrationTests
-
-        # api docker container needs additional time to start, so moved docker related things to the top
-      - name: Run Selenium tests
-        id: selenium_tests
-        run: dotnet test --no-restore --filter BookToAudio.SeleniumTests
-
-      - name: Show backend logs
+      - name: Log Backend Logs (if Selenium tests failed)
+        if: matrix.name == 'Selenium Tests' && failure()
         run: docker logs api
-        if: ${{ failure() && steps.selenium_tests.conclusion == 'failure' }}
