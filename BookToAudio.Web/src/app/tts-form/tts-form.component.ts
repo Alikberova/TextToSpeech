@@ -40,22 +40,20 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
-  @ViewChild('fileInput') fileInput!: ElementRef;
-
   voices = Object.values(SpeechVoice).filter(key => isNaN(Number(key)));
   models = ['tts-1', 'tts-1-hd'];
-  isLoading = false;
+  acceptableFileTypes = ['.pdf', '.txt'];
+  maxLengthInput = 100000;
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  isTextConversionLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
-
-  acceptableFileTypes = ['.pdf', '.txt'];
   isFileValid = false;
-  maxLengthInput = 100000;
   warnedMaxInputLength = false;
-
   private audio: HTMLAudioElement | null = null;
   isPlaying = false; 
-  currentlyLoadingAudio = false;
+  isSampleLoading = false;
   currentlyPlayingVoice: string | null = null;
   isPaused = false;
 
@@ -91,8 +89,8 @@ export class TtsFormComponent implements OnInit {
       this.audio.play();
       this.isPaused = false
     }
-    else{
-    this.currentlyLoadingAudio = true;
+    else {
+    this.isSampleLoading = true;
     this.currentlyPlayingVoice = voice;
       if (this.audio) {
         this.audio.pause();
@@ -107,8 +105,9 @@ export class TtsFormComponent implements OnInit {
     };
     this.speechClient.getSpeechSample(request).subscribe({
       next: (blob) => this.playAudio(blob),
-      error: (err) => {
+      error: () => {
         this.currentlyPlayingVoice = null;
+        this.isSampleLoading = false;
       }
     })}
   }
@@ -122,9 +121,8 @@ export class TtsFormComponent implements OnInit {
     this.audio.oncanplay = () => {
       this.audio!
       .play().then(()=>{
-        this.currentlyLoadingAudio = false;
-      })
-      .catch((error) => console.log('error to in playAudio.', error));
+        this.isSampleLoading = false;
+      });
     }
     
     this.audio.onended = () => {
@@ -154,17 +152,17 @@ export class TtsFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.isLoading = true;
+    this.isTextConversionLoading = true;
 
     this.speechClient.createSpeech(this.textToSpeech).subscribe({
       error: () => {
-        this.isLoading = false;
+        this.isTextConversionLoading = false;
       }
     });
   }
 
   private handleAudioStatusUpdate(fileId: string, status: string) {
-    this.isLoading = false;
+    this.isTextConversionLoading = false;
       if (status !== 'Completed') {
         this.snackBarService.showError("Oopsie-daisy! Our talking robot hit a snag creating your speech. Let's try again!");
       return;
