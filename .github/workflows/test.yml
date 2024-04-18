@@ -53,11 +53,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx
-        # if: matrix.name == 'Selenium Tests'
+        if: matrix.name == 'Selenium Tests'
         uses: docker/setup-buildx-action@v3  
 
       - name: Build and start containers
-        # if: matrix.name == 'Selenium Tests'
+        if: matrix.name == 'Selenium Tests'
         run: |
           docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
           docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
