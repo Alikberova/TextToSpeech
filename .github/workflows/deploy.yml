@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       environment: Staging
-      branch: ${{ github.head_ref || github.ref_name }} 
 
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +23,7 @@ jobs:
     - name: Fill env file
       run: |
         echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
-        echo IMAGE_TAG_VERSION="${{ env.branch }}" >> .env
+        echo IMAGE_TAG_VERSION="${{ env.environment }}" >> .env
 
     - name: Build and Push Docker Compose services
       run: |
