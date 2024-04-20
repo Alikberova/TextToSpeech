@@ -16,7 +16,6 @@ EXPOSE 80
 EXPOSE 443
 
 #todo health endpoint
-RUN apk add curl
 HEALTHCHECK CMD curl --fail http://localhost:7057/${API_NAME} || exit 1
 
 # Create a new user named nonroot with a specific UID and no password with home /app dir, and change the ownership of the /app to this user 
@@ -27,8 +26,8 @@ FROM base AS final
 
 WORKDIR /app
 
-# Install Nano
-RUN apk update && apk add nano
+# Install apps for debugging purposes
+RUN apk update && apk add nano && apk add curl
 
 # Re-declare ARG and set it as an ENV variable for use at runtime
 ARG API_NAME
