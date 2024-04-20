@@ -17,6 +17,12 @@ $container-width: 90%;
     width: $container-width;
     max-width: 600px;
     margin-bottom: 2rem; 
+    @media (max-width: 768px) {
+        max-width: 400px;
+    }
+    @media (max-width: 600px) {
+        max-width: 300px;
+    }
 }
 
 h2 {
@@ -54,7 +60,7 @@ li {
         height: 200px;
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 600px) {
         height: 100px;
     }
 }
