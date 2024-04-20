@@ -47,25 +47,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # - name: Build and start containers for tests
-      #   if: matrix.test_type == 'Selenium'
-      #   run: |
-      #     docker pull alikberova/booktoaudio.api:${{ env.image_tag_version }} || true
-      #     docker pull alikberova/booktoaudio.web:${{ env.image_tag_version }} || true
-      #     export DOCKER_BUILDKIT=1
-      #     export IMAGE_TAG_VERSION=${{ env.image_tag_version }}
-      #     IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
-      #     docker compose push
-      #     docker network create elk
-      #     IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
-
-
       - name: Build and start containers for tests
         if: matrix.test_type == 'Selenium'
         run: |
           export DOCKER_BUILDKIT=1
           export IMAGE_TAG_VERSION=${{ env.image_tag_version }}
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
+          docker compose push
           docker network create elk
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
@@ -80,6 +68,7 @@ jobs:
 
       - name: Run Tests
         run: dotnet test --no-restore --filter BookToAudio.${{ matrix.test_type }}Tests
+        
       - name: Log Backend Logs (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
         run: docker logs api
