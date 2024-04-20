@@ -14,7 +14,7 @@ on:
 env:
   environment: Development
   certs-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
-  image_tag_version: ${{ github.ref_name }} 
+  image_tag_version: ${{ github.ref_name }}1
 
 jobs:
   tests:
