@@ -5,7 +5,6 @@ on:
     branches:
       - master
       - dev
-      - test1
   pull_request:
     branches:
       - master
@@ -14,7 +13,7 @@ on:
 env:
   environment: Development
   certs-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
-  image_tag_version: ${{ github.ref_name }}1
+  image_tag_version: ${{ github.ref_name }}
 
 jobs:
   tests:
@@ -68,7 +67,7 @@ jobs:
 
       - name: Run Tests
         run: dotnet test --no-restore --filter BookToAudio.${{ matrix.test_type }}Tests
-        
+
       - name: Log Backend Logs (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
         run: docker logs api
