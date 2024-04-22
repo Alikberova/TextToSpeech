@@ -17,6 +17,12 @@ $container-width: 90%;
     width: $container-width;
     max-width: 600px;
     margin-bottom: 2rem; 
+    @media screen and (max-width: 900px) {
+        max-width: 75vw;
+    }
+    @media screen and (max-width: 768px) {
+        max-width: 65vw;
+    }
 }
 
 h2 {
@@ -54,7 +60,7 @@ li {
         height: 200px;
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 600px) {
         height: 100px;
     }
 }
