@@ -1,9 +1,8 @@
-import { SpeechVoice } from "./speech-voice.enum";
-
 export interface SpeechRequest {
+  ttsApi: string;
   model: string;
   speed?: number;
-  voice?: SpeechVoice;
+  voice?: string;
   input?: string;
   file?: File;
 }

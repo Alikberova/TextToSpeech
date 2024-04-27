@@ -9,6 +9,7 @@ using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.Api.Services;
+using BookToAudio.Infra.Services.Ai.Narakeet;
 
 namespace BookToAudio.Api.Extensions;
 
@@ -21,12 +22,14 @@ internal static class ServicesDiExtension
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IOpenAiService, OpenAiService>();
+        services.AddScoped<ITtsService, OpenAiService>();
+        services.AddScoped<ITtsService, NarakeetService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
+        services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

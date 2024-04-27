@@ -7,7 +7,6 @@ import { SpeechClient } from '../http-clients/speech-client';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SignalRService } from '../services/signalr.service';
-import { SpeechVoice } from '../models/speech-voice.enum';
 import { ViewChild, ElementRef } from '@angular/core';
 import { SnackbarService } from '../shared-ui/snackbar-service';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,8 +39,9 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
-  voices = Object.values(SpeechVoice).filter(key => isNaN(Number(key)));
+  voices = [ 'Alloy', 'Echo', 'Fable', 'Onyx', 'Nova', 'Shimmer' ];
   models = ['tts-1', 'tts-1-hd'];
+  ttsApis = ['OpenAI', 'Narakeet'];
   acceptableFileTypes = ['.pdf', '.txt'];
   maxLengthInput = 100000;
 
@@ -58,8 +58,9 @@ export class TtsFormComponent implements OnInit {
   isPaused = false;
 
   textToSpeech: SpeechRequest = {
+    ttsApi: this.ttsApis[0],
     model: this.models[0],
-    voice: SpeechVoice[Object.keys(SpeechVoice)[0] as keyof typeof SpeechVoice],
+    voice: this.voices[0],
     speed: 1,
   };
 
@@ -98,8 +99,9 @@ export class TtsFormComponent implements OnInit {
       }
     this.isPaused = false;
     const request: SpeechRequest = {
+      ttsApi: this.textToSpeech.ttsApi,
       model: this.textToSpeech.model,
-      voice: SpeechVoice[voice as keyof typeof SpeechVoice],
+      voice: voice,
       speed: speed,
       input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles.',
     };
@@ -116,7 +118,6 @@ export class TtsFormComponent implements OnInit {
     this.audio = new Audio();
     const url = URL.createObjectURL(blob);
     this.audio.src = url;
-    this.audio
     this.audio.load();
     this.audio.oncanplay = () => {
       this.audio!
@@ -138,7 +139,6 @@ export class TtsFormComponent implements OnInit {
     this.isPaused = true;
     this.isPlaying = false;
   }
-
 
   stopPropagation(event: MouseEvent){
     event.stopPropagation();

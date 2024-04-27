@@ -2,10 +2,11 @@
 
 namespace BookToAudio.Core.Services.Interfaces;
 
-public interface IOpenAiService
+public interface ITtsService
 {
+    int MaxInputLength { get; init; }
     Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
-        string model = "tts-1",
-        SpeechVoice voice = SpeechVoice.Alloy,
-        float speed = 1);
+        string voice,
+        double speed = 1,
+        string? model = null);
 }

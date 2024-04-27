@@ -3,18 +3,22 @@ using Moq;
 
 namespace BookToAudio.TestingInfra.Mocks;
 
-public class OpenAiServiceMock
+internal static class ITtsServiceMock
 {
-    public static Mock<IOpenAiService> Get()
+    public static Mock<ITtsService> Get()
     {
-        var mockOpenAiService = new Mock<IOpenAiService>();
+        var mockOpenAiService = new Mock<ITtsService>();
+
+        mockOpenAiService.SetupGet(service =>
+            service.MaxInputLength)
+                .Returns(150);
 
         mockOpenAiService.Setup(service =>
             service.RequestSpeechChunksAsync(
                 It.IsAny<List<string>>(),
                 It.IsAny<string>(),
-                It.IsAny<OpenAI.Audio.SpeechVoice>(),
-                It.IsAny<float>()))
+                It.IsAny<double>(),
+                It.IsAny<string>()))
             .ReturnsAsync([new ReadOnlyMemory<byte>(CreateMockMp3Data())]);
 
         return mockOpenAiService;
