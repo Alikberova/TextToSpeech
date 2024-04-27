@@ -21,10 +21,6 @@ HEALTHCHECK CMD curl --fail http://localhost:7057/${API_NAME} || exit 1
 # Install apps for debugging purposes
 RUN apk update && apk add nano && apk add curl
 
-# Create a new user named nonroot with a specific UID and no password with home /app dir, and change the ownership of the /app to this user 
-RUN adduser -u 5678 --disabled-password --gecos "" --home /app nonroot && chown -R nonroot /app
-USER nonroot
-
 WORKDIR /app
 
 # Re-declare ARG and set it as an ENV variable for use at runtime
