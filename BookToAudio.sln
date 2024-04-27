@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.Core", "BookToAudio.Core\BookToAudio.Core.csproj", "{D87C615C-7DF7-48C8-A631-4CF5E2C50A55}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "TextToSpeech.Web", "BookToAudio.Web\TextToSpeech.Web.esproj", "{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "TextToSpeech.Web", "TextToSpeech.Web\TextToSpeech.Web.esproj", "{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}"
 EndProject
