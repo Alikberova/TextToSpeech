@@ -1,5 +1,5 @@
 {
-  "name": "book-to-audio.web",
+  "name": "text-to-speech.web",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

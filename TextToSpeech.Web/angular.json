@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/book-to-audio.web",
+            "outputPath": "dist/text-to-speech.web",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
