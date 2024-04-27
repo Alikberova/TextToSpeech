@@ -6,7 +6,7 @@ services:
       cache_from:
         - alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
       args:
-        API_NAME: BookToAudio.Api
+        API_NAME: TextToSpeech.Api
     image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
     env_file: .env
     environment:
