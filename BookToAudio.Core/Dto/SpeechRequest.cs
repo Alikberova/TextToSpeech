@@ -3,13 +3,13 @@ using OpenAI.Audio;
 
 namespace BookToAudio.Core.Dto;
 
-public sealed class SpeechRequest //todo change to init
+public sealed class SpeechRequest
 {
     public string TtsApi { get; init; } = string.Empty;
-    public string Voice { get; set; } = string.Empty;
-    public SpeechResponseFormat ResponseFormat { get; set; }
-    public double Speed { get; set; } = 1;
-    public IFormFile? File { get; set; }
-    public string? Input { get; set; }
-    public string? Model { get; set; }
+    public string Voice { get; init; } = string.Empty;
+    public SpeechResponseFormat ResponseFormat { get; init; }
+    public double Speed { get; init; } = 1;
+    public IFormFile? File { get; init; }
+    public string? Input { get; init; }
+    public string? Model { get; init; }
 }

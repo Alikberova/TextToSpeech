@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("WebCorsPolicy",
         builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}",
         $"https://localhost:{SharedConstants.ClientPort}",
-        "https://texttospeech.duckdns.org")
+        SharedConstants.Domain)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
@@ -110,7 +110,7 @@ static void ConfigureLogging(WebApplicationBuilder builder)
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
         var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
 
-        var elasticConfig = builder.Configuration.GetRequiredSection(ConfigConstants.Elasticsearch).Get<ElasticsearchConfig>()!;
+        var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig)).Get<ElasticsearchConfig>()!;
 
         var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
         {
