@@ -49,7 +49,6 @@ export class TtsFormComponent implements OnInit {
   isTextConversionLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
-  isFileValid = false;
   warnedMaxInputLength = false;
   private audio: HTMLAudioElement | null = null;
   isPlaying = false; 
@@ -65,23 +64,23 @@ export class TtsFormComponent implements OnInit {
   };
 
   onFileSelected(event: Event) {
-    this.isSpeechReady = false;
     this.warnedMaxInputLength = false;
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length == 0) {
       return;
     }
     if (!this.acceptableFileTypes.some(type => target.files![0].name.endsWith(type))) {
+      this.isSpeechReady = false;
       this.snackBarService.showError("Oops! 🙈 Looks like I can't work my magic on this file type. Stick with PDFs or text files for the best results, okay? 🚀");
       return;
     }
     if (target.files[0].size > this.maxLengthInput) {
       this.clearFileSelection();
       this.warnedMaxInputLength = true;
+      this.isSpeechReady = false;
       return;
     }
     this.textToSpeech.file = target.files[0];
-    this.isFileValid = true;
   }
 
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
@@ -89,21 +88,21 @@ export class TtsFormComponent implements OnInit {
     if (this.currentlyPlayingVoice === voice && this.audio){
       this.audio.play();
       this.isPaused = false
+      return;
     }
-    else {
     this.isSampleLoading = true;
     this.currentlyPlayingVoice = voice;
-      if (this.audio) {
-        this.audio.pause();
-        URL.revokeObjectURL(this.audio.currentSrc)
-      }
+    if (this.audio) {
+      this.audio.pause();
+      URL.revokeObjectURL(this.audio.currentSrc)
+    }
     this.isPaused = false;
     const request: SpeechRequest = {
       ttsApi: this.textToSpeech.ttsApi,
       model: this.textToSpeech.model,
       voice: voice,
       speed: speed,
-      input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles.',
+      input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!',
     };
     this.speechClient.getSpeechSample(request).subscribe({
       next: (blob) => this.playAudio(blob),
@@ -111,7 +110,7 @@ export class TtsFormComponent implements OnInit {
         this.currentlyPlayingVoice = null;
         this.isSampleLoading = false;
       }
-    })}
+    })
   }
 
   playAudio(blob: Blob) {
@@ -120,8 +119,7 @@ export class TtsFormComponent implements OnInit {
     this.audio.src = url;
     this.audio.load();
     this.audio.oncanplay = () => {
-      this.audio!
-      .play().then(()=>{
+      this.audio!.play().then(()=>{
         this.isSampleLoading = false;
       });
     }
@@ -134,7 +132,6 @@ export class TtsFormComponent implements OnInit {
 
   pauseAudio(event: MouseEvent) {
     event.stopPropagation();
-      
     this.audio!.pause();
     this.isPaused = true;
     this.isPlaying = false;
