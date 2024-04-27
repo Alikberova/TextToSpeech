@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "BookToAudio.Web": {
+    "TextToSpeech.Web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -73,10 +73,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "BookToAudio.Web:build:production"
+              "buildTarget": "TextToSpeech.Web:build:production"
             },
             "development": {
-              "buildTarget": "BookToAudio.Web:build:development"
+              "buildTarget": "TextToSpeech.Web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "BookToAudio.Web:build"
+            "buildTarget": "TextToSpeech.Web:build"
           }
         },
         "test": {

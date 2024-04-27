@@ -12,7 +12,7 @@ on:
 
 env:
   environment: Development
-  certs-path: /home/runner/work/BookToAudio/BookToAudio/BookToAudio.Web/nginx/certs
+  certs-path: /home/runner/work/BookToAudio/BookToAudio/TextToSpeech.Web/nginx/certs
   image_tag_version: ${{ github.head_ref || github.ref_name }} 
 
 jobs:

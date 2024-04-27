@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'BookToAudio.Web' title`, () => {
+  it(`should have the 'TextToSpeech.Web' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('BookToAudio.Web');
+    expect(app.title).toEqual('TextToSpeech.Web');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, BookToAudio.Web');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, TextToSpeech.Web');
   });
 });

@@ -8,7 +8,7 @@
     <!-- Command to create an optimized build of the project that's ready for publishing -->
     <ProductionBuildCommand>npm run build</ProductionBuildCommand>
     <!-- Folder where production build objects will be placed -->
-    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\BookToAudio.Web</BuildOutputFolder>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\TextToSpeech.Web</BuildOutputFolder>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' == 'Unix' " >
     <FrameworkPathOverride>/usr/local/share/dotnet/shared/Microsoft.NETCore.App/8.0.0/mscorlib.dll</FrameworkPathOverride>
