@@ -6,8 +6,10 @@ using OpenAI.Models;
 
 namespace BookToAudio.Core.Services.Interfaces.Ai;
 
-public sealed class OpenAiService : IOpenAiService
+public class OpenAiService : ITtsService
 {
+    public int MaxInputLength { get; init; } = 4096;
+
     private IConfiguration _configuration;
 
     public OpenAiService(IConfiguration configuration)
@@ -16,24 +18,30 @@ public sealed class OpenAiService : IOpenAiService
     }
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
-        string model = "tts-1",
-        SpeechVoice voice = SpeechVoice.Alloy,
-        float speed = 1)
+        string voice,
+        double speed = 1,
+        string? model = null)
     {
+        model ??= "tts-1";
+
+        var parsed = Enum.TryParse<SpeechVoice>(voice, out var voiceEnum);
+
+        if (!parsed)
+        {
+            throw new Exception("Cannot parse voice " + voice);
+        }
+
         OpenAIClient client = new(_configuration[ConfigConstants.OpenAiApiKey]);
 
         // Check if there's only one chunk, then just process it
         if (textChunks.Count == 1)
         {
-            return [await client.AudioEndpoint.CreateSpeechAsync(CreateRequest(textChunks.First(), model, voice, speed))];
+            return [await client.AudioEndpoint.CreateSpeechAsync(CreateRequest(textChunks.First(), model, voiceEnum, speed))];
         }
 
         // Create a task for each text chunk
         var tasks = textChunks.Select(chunk =>
-        {
-            var request = CreateRequest(chunk, model, voice, speed);
-            return client.AudioEndpoint.CreateSpeechAsync(CreateRequest(chunk, model, voice, speed));
-        });
+            client.AudioEndpoint.CreateSpeechAsync(CreateRequest(chunk, model, voiceEnum, speed)));
 
         // Await all tasks to complete
         ReadOnlyMemory<byte>[] results = await Task.WhenAll(tasks);
@@ -41,8 +49,8 @@ public sealed class OpenAiService : IOpenAiService
         return results;
     }
 
-    private static SpeechRequest CreateRequest(string input, string model, SpeechVoice voice, float speed)
+    private static SpeechRequest CreateRequest(string input, string model, SpeechVoice voice, double speed)
     {
-        return new SpeechRequest(input, new Model(model), voice, SpeechResponseFormat.MP3, speed);
+        return new SpeechRequest(input, new Model(model), voice, SpeechResponseFormat.MP3, Convert.ToSingle(speed));
     }
 }

@@ -42,6 +42,8 @@ builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigCon
 
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
 
+builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(ConfigConstants.NarakeetConfig));
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
 

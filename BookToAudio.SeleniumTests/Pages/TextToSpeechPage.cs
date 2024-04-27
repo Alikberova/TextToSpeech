@@ -44,7 +44,12 @@ internal sealed class TextToSpeechPage: BasePage
 
     public void DownloadFile()
     {
-        _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(DownloadButtonId)));
+        _wait.Until(driver =>
+        {
+            var elem = ExpectedConditions.ElementToBeClickable(By.Id(DownloadButtonId)).Invoke(driver);
+            return elem is not null && elem.GetAttribute("disabled") is not "true";
+        });
+
         Thread.Sleep(750);
         DownloadBtn.Click();
         _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));

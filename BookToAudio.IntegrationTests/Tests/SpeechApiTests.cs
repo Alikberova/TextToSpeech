@@ -1,5 +1,4 @@
-﻿using BookToAudio.Core.Services.Interfaces;
-using BookToAudio.Core.Services.Interfaces.Ai;
+﻿using BookToAudio.Core.Config;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.TestingInfra.DataGenerators;
 using BookToAudio.TestingInfra.Mocks;
@@ -22,13 +21,15 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
     private const string AudioMpeg = "audio/mpeg";
     private const string InvalidMp3Error = "Invalid MP3 file.";
 
-    [Fact]
-    public async Task GetVoiceSample_ReturnsMp3_RealApi()
+    [Theory]
+    [InlineData(SharedConstants.OpenAI)]
+    [InlineData(SharedConstants.Narakeet)]
+    public async Task GetVoiceSample_ReturnsMp3Sample(string ttsApi)
     {
         // Arrange
         var client = CreateFactory().CreateClient();
 
-        var httpContent = new StringContent(JsonConvert.SerializeObject(SpeechRequestGenerator.GenerateFakeSpeechRequest()),
+        var httpContent = new StringContent(JsonConvert.SerializeObject(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
             Encoding.UTF8, "application/json");
 
         // Act
@@ -43,8 +44,10 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         Assert.True(Mp3FileUtilities.IsMp3Valid(bytes), InvalidMp3Error);
     }
 
-    [Fact]
-    public async Task CreateSpeech_ReturnsMp3()
+    [Theory]
+    [InlineData(SharedConstants.OpenAI)]
+    [InlineData(SharedConstants.Narakeet)]
+    public async Task CreateSpeech_ReturnsMp3(string ttsApi)
     {
         // Arrange
 
@@ -68,8 +71,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         await hubConnection.StartAsync();
 
         // Act
-
-        var response = await client.PostAsync("/api/speech", GetFormData());
+        var response = await client.PostAsync("/api/speech", GetFormData(ttsApi));
 
         response.EnsureSuccessStatusCode();
 
@@ -101,14 +103,12 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         factory.ConfigureTestServices(services =>
         {
-            if (!factory.RunRealApiTests)
+            if (factory.RunRealApiTests)
             {
-                services.AddScoped(_ => OpenAiServiceMock.Get().Object);
+                return;
             }
-            else
-            {
-                services.AddScoped<IOpenAiService, OpenAiService>();
-            }
+
+            services.AddScoped(_ => ITtsServiceFactoryMock.Get().Object);
         });
 
         return factory;
@@ -132,9 +132,9 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
             }).Build();
     }
 
-    private static MultipartFormDataContent GetFormData()
+    private static MultipartFormDataContent GetFormData(string ttsApi)
     {
-        var speechRequest = SpeechRequestGenerator.GenerateFakeSpeechRequest(true);
+        var speechRequest = SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi, true);
 
         var fileContent = new StreamContent(speechRequest.File!.OpenReadStream());
         fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
@@ -145,6 +145,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var formData = new MultipartFormDataContent
         {
+            { new StringContent(speechRequest.TtsApi), nameof(speechRequest.TtsApi) },
             { new StringContent(speechRequest.Model!), nameof(speechRequest.Model) },
             { new StringContent(speechRequest.Voice.ToString()), nameof(speechRequest.Voice) },
             { new StringContent(speechRequest.Speed.ToString(CultureInfo.InvariantCulture)), nameof(speechRequest.Speed) },

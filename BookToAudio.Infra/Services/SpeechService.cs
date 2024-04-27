@@ -1,9 +1,9 @@
-﻿using BookToAudio.Core;
-using BookToAudio.Core.Entities;
+﻿using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
+using BookToAudio.Infra.Services.Interfaces;
 using BookToAudio.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,7 @@ namespace BookToAudio.Infra.Services;
 public sealed class SpeechService : ISpeechService
 {
     private readonly ITextProcessingService _textFileService;
-    private readonly IOpenAiService _openAiService;
+    private readonly ITtsServiceFactory _ttsServiceFactory;
     private readonly IAudioFileService _audioFileService;
     private readonly IPathService _pathService;
     private readonly FileProcessorFactory _fileProcessorFactory;
@@ -25,17 +25,17 @@ public sealed class SpeechService : ISpeechService
     private readonly IMetaDataService _metaDataService;
 
     public SpeechService(ITextProcessingService textFileService,
-        IOpenAiService openAiService,
+        ITtsServiceFactory ttsServiceFactory,
         IAudioFileService audioFileService,
         IPathService pathService,
         FileProcessorFactory fileProcessorFactory,
         IFileStorageService fileStorageService,
         IHubContext<AudioHub> hubContext,
         ILogger<SpeechService> logger,
-         IMetaDataService metaDataService)
+        IMetaDataService metaDataService)
     {
         _textFileService = textFileService;
-        _openAiService = openAiService;
+        _ttsServiceFactory = ttsServiceFactory;
         _audioFileService = audioFileService;
         _pathService = pathService;
         _fileProcessorFactory = fileProcessorFactory;
@@ -79,16 +79,11 @@ public sealed class SpeechService : ISpeechService
             // todo handle errors
             string fileText = await ExtractContent(request);
 
-            var maxLength = 4096;
+            var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
-            if (HostingEnvironment.IsDevelopment())
-            {
-                maxLength = 150;
-            }
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxInputLength);
 
-            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, maxLength);
-
-            var bytesCollection = await _openAiService.RequestSpeechChunksAsync(textChunks, request.Model, request.Voice, request.Speed);
+            var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
 
             var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
 
@@ -124,7 +119,7 @@ public sealed class SpeechService : ISpeechService
     private async Task<string> ExtractContent(Core.Dto.SpeechRequest request)
     {
         var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
-        throw new NotSupportedException("File type not supported");
+            throw new NotSupportedException("File type not supported");
 
         var fileText = await fileProcessor.ExtractContentAsync(request.File!);
         return fileText;
@@ -137,7 +132,8 @@ public sealed class SpeechService : ISpeechService
             throw new ArgumentException(nameof(request.Input));
         }
 
-        var bytesCollection = await _openAiService.RequestSpeechChunksAsync([request.Input], request.Model, request.Voice, request.Speed);
+        var bytesCollection = await _ttsServiceFactory.Get(request.TtsApi)
+            .RequestSpeechChunksAsync([request.Input], request.Voice, request.Speed, request.Model);
 
         if (bytesCollection.Length is not 1)
         {

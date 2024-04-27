@@ -21,6 +21,7 @@ export class SpeechClient {
     }
 
     const formData = new FormData();
+    formData.append('ttsApi', request.ttsApi!);
     formData.append('model', request.model!);
     if (request.input) {
       formData.append('input', request.input);
