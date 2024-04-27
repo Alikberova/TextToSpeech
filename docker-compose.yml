@@ -4,10 +4,10 @@ services:
       context: .
       dockerfile: docker/api.Dockerfile
       cache_from:
-        - alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
+        - alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
       args:
-        API_NAME: BookToAudio.Api
-    image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
+        API_NAME: TextToSpeech.Api
+    image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
     env_file: .env
     environment:
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
@@ -24,11 +24,11 @@ services:
 
   web:
     build:
-      context: BookToAudio.Web
+      context: TextToSpeech.Web
       dockerfile: ../docker/web.Dockerfile
       cache_from:
-        - alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
-    image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
+        - alikberova/texttospeech.web:${IMAGE_TAG_VERSION}
+    image: alikberova/texttospeech.web:${IMAGE_TAG_VERSION}
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
     container_name: web
