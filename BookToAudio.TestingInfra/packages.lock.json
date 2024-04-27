@@ -328,15 +328,11 @@
         "type": "Project",
         "dependencies": {
           "BookToAudio.Core": "[1.0.0, )",
-          "BookToAudio.RealTime": "[1.0.0, )",
           "MailKit": "[4.3.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.2, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )",
           "taglib-sharp-netstandard2.0": "[2.1.0, )"
         }
-      },
-      "booktoaudio.realtime": {
-        "type": "Project"
       }
     }
   }

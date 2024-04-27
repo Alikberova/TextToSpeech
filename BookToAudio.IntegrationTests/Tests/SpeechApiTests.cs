@@ -61,10 +61,9 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var spechStatusUpdated = new TaskCompletionSource<bool>();
 
-        //todo "AudioStatusUpdated" to const
         var status = string.Empty;
 
-        hubConnection.On<Guid, string>("AudioStatusUpdated", (fileId, updatedStatus) =>
+        hubConnection.On<Guid, string>(SharedConstants.AudioStatusUpdated, (fileId, updatedStatus) =>
         {
             status = updatedStatus;
             spechStatusUpdated.SetResult(true);
@@ -118,9 +117,8 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
     private static HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory)
     {
-        // todo audioHub to const
         return new HubConnectionBuilder()
-            .WithUrl($"{client.BaseAddress}audioHub", o =>
+            .WithUrl($"{client.BaseAddress!.OriginalString}{SharedConstants.AudioHubEndpoint}", o =>
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.SkipNegotiation = true;
