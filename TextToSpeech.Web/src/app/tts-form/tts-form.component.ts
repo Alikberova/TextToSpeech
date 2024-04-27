@@ -16,7 +16,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
 import { ConfigService } from '../services/config-service';
 
-
 @Component({
   selector: 'app-tts-form',
   standalone: true,
@@ -26,12 +25,12 @@ import { ConfigService } from '../services/config-service';
 })
 
 export class TtsFormComponent implements OnInit {
-  private configService = inject(ConfigService);
   
   constructor(
     private speechClient: SpeechClient,
     private signalRService: SignalRService,
-    private snackBarService: SnackbarService
+    private snackBarService: SnackbarService,
+    private configService: ConfigService
   ) {}
 
   ngOnInit(): void {
@@ -39,29 +38,26 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
-  voices = [ 'Alloy', 'Echo', 'Fable', 'Onyx', 'Nova', 'Shimmer' ];
-  models = ['tts-1', 'tts-1-hd'];
-  ttsApis = ['OpenAI', 'Narakeet'];
-  acceptableFileTypes = ['.pdf', '.txt'];
-  maxLengthInput = 100000;
+  readonly voices = [ 'Alloy', 'Echo', 'Fable', 'Onyx', 'Nova', 'Shimmer' ];
+  readonly models = ['tts-1', 'tts-1-hd'];
+  readonly ttsApis = ['OpenAI', 'Narakeet'];
+  readonly acceptableFileTypes = ['.pdf', '.txt'];
+  readonly maxLengthInput = 100000;
+
+  uploadedFile: File | undefined;
+  voiceSpeed = 1;
+  selectedVoice = this.voices[0];
 
   @ViewChild('fileInput') fileInput!: ElementRef;
   isTextConversionLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
   warnedMaxInputLength = false;
-  private audio: HTMLAudioElement | null = null;
   isPlaying = false; 
   isSampleLoading = false;
   currentlyPlayingVoice: string | null = null;
   isPaused = false;
-
-  textToSpeech: SpeechRequest = {
-    ttsApi: this.ttsApis[0],
-    model: this.models[0],
-    voice: this.voices[0],
-    speed: 1,
-  };
+  private audio: HTMLAudioElement | null = null;
 
   onFileSelected(event: Event) {
     this.warnedMaxInputLength = false;
@@ -80,7 +76,7 @@ export class TtsFormComponent implements OnInit {
       this.isSpeechReady = false;
       return;
     }
-    this.textToSpeech.file = target.files[0];
+    this.uploadedFile = target.files[0];
   }
 
   playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
@@ -98,8 +94,8 @@ export class TtsFormComponent implements OnInit {
     }
     this.isPaused = false;
     const request: SpeechRequest = {
-      ttsApi: this.textToSpeech.ttsApi,
-      model: this.textToSpeech.model,
+      ttsApi: this.ttsApis[0],
+      model: this.models[0],
       voice: voice,
       speed: speed,
       input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!',
@@ -115,8 +111,7 @@ export class TtsFormComponent implements OnInit {
 
   playAudio(blob: Blob) {
     this.audio = new Audio();
-    const url = URL.createObjectURL(blob);
-    this.audio.src = url;
+    this.audio.src = URL.createObjectURL(blob);
     this.audio.load();
     this.audio.oncanplay = () => {
       this.audio!.play().then(()=>{
@@ -137,12 +132,8 @@ export class TtsFormComponent implements OnInit {
     this.isPlaying = false;
   }
 
-  stopPropagation(event: MouseEvent){
-    event.stopPropagation();
-  }
-
   clearFileSelection() {
-    this.textToSpeech.file = null!;
+    this.uploadedFile = null!;
     if (this.fileInput && this.fileInput.nativeElement) {
       this.fileInput.nativeElement.value = '';
     }
@@ -151,7 +142,15 @@ export class TtsFormComponent implements OnInit {
   onSubmit() {
     this.isTextConversionLoading = true;
 
-    this.speechClient.createSpeech(this.textToSpeech).subscribe({
+    const speechRequest: SpeechRequest = {
+      ttsApi: this.ttsApis[0],
+      model: this.models[0],
+      voice: this.selectedVoice,
+      speed: this.voiceSpeed,
+      file: this.uploadedFile
+    };
+
+    this.speechClient.createSpeech(speechRequest).subscribe({
       error: () => {
         this.isTextConversionLoading = false;
       }
@@ -171,7 +170,7 @@ export class TtsFormComponent implements OnInit {
   }
 
   private setDownloadData(audioFileId: string) {
-    const fileNameWithoutExtension = this.textToSpeech.file!.name.replace(/\.[^/.]+$/, '');
+    const fileNameWithoutExtension = this.uploadedFile!.name.replace(/\.[^/.]+$/, '');
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
