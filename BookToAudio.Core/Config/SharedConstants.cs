@@ -4,7 +4,7 @@ public static class SharedConstants
 {
     public const string AppName = "BookToAudio";
     public const string AppStorage = "FileStorage";
-
+    public const string Domain = "https://texttospeech.duckdns.org";
     public const string OpenAI = "OpenAI";
     public const string Narakeet = "Narakeet";
 
