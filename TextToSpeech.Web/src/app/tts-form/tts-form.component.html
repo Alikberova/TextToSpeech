@@ -17,7 +17,7 @@
     [ngClass]="{'file-selected': uploadedFile}">Choose File</button>
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept="{{ acceptableFileTypes.join(',') }}"
            aria-label="Upload File"/>
-    <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxLengthInput | FormatMaxInputLengthPipe}} characters </mat-error>
+    <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxInputLength | FormatMaxInputLengthPipe}} characters </mat-error>
     <div class="mat-information" *ngIf="!uploadedFile">
       <mat-icon>info</mat-icon>
       <span>Ready to turn your PDFs and TXTs into speech! Just drop them here</span>

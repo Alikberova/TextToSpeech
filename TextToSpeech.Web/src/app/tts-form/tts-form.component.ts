@@ -42,7 +42,7 @@ export class TtsFormComponent implements OnInit {
   readonly models = ['tts-1', 'tts-1-hd'];
   readonly ttsApis = ['OpenAI', 'Narakeet'];
   readonly acceptableFileTypes = ['.pdf', '.txt'];
-  readonly maxLengthInput = 100000;
+  readonly maxInputLength = 100000;
 
   uploadedFile: File | undefined;
   voiceSpeed = 1;
@@ -70,7 +70,7 @@ export class TtsFormComponent implements OnInit {
       this.snackBarService.showError("Oops! 🙈 Looks like I can't work my magic on this file type. Stick with PDFs or text files for the best results, okay? 🚀");
       return;
     }
-    if (target.files[0].size > this.maxLengthInput) {
+    if (target.files[0].size > this.maxInputLength) {
       this.clearFileSelection();
       this.warnedMaxInputLength = true;
       this.isSpeechReady = false;
