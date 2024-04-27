@@ -21,19 +21,26 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
     private const string AudioMpeg = "audio/mpeg";
     private const string InvalidMp3Error = "Invalid MP3 file.";
 
+    private readonly TestWebApplicationFactory<Program> _factory;
+    private readonly HttpClient _client;
+
+    public SpeechApiTests()
+    {
+        _factory = CreateFactory();
+        _client = _factory.CreateClient();
+    }
+
     [Theory]
     [InlineData(SharedConstants.OpenAI)]
     [InlineData(SharedConstants.Narakeet)]
     public async Task GetVoiceSample_ReturnsMp3Sample(string ttsApi)
     {
         // Arrange
-        var client = CreateFactory().CreateClient();
-
         var httpContent = new StringContent(JsonConvert.SerializeObject(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
             Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync("/api/speech/sample", httpContent);
+        var response = await _client.PostAsync("/api/speech/sample", httpContent);
 
         response.EnsureSuccessStatusCode();
 
@@ -50,12 +57,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
     public async Task CreateSpeech_ReturnsMp3(string ttsApi)
     {
         // Arrange
-
-        var factory = CreateFactory();
-
-        var client = factory.CreateClient();
-
-        var hubConnection = BuildHubConnection(client, factory);
+        var hubConnection = BuildHubConnection(_client, _factory);
 
         var spechStatusUpdated = new TaskCompletionSource<bool>();
 
@@ -71,7 +73,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         await hubConnection.StartAsync();
 
         // Act
-        var response = await client.PostAsync("/api/speech", GetFormData(ttsApi));
+        var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
 
         response.EnsureSuccessStatusCode();
 
@@ -81,8 +83,8 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
-        var audioFilePath = factory.Services.GetRequiredService<IPathService>()
-            .CreateFileStorageFilePath($"{audioFileId}.mp3");
+        var audioFilePath = _factory.Services.GetRequiredService<IPathService>()
+            .GetFileStorageFilePath($"{audioFileId}.mp3");
 
         //Assert
 

@@ -87,7 +87,7 @@ public sealed class SpeechService : ISpeechService
 
             var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
 
-            var localFilePath = _pathService.CreateFileStorageFilePath($"{audioFile.Id}.mp3");
+            var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
 
             await File.WriteAllBytesAsync(localFilePath, bytes);
 
