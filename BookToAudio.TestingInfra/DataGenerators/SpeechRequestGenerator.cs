@@ -11,7 +11,7 @@ namespace BookToAudio.TestingInfra.DataGenerators;
 
 public class SpeechRequestGenerator
 {
-    public static SpeechRequest GenerateFakeSpeechRequest(string ttsApi = "", bool addFile = false)
+    public static SpeechRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {
         var faker = new Faker<SpeechRequest>()
             .RuleFor(o => o.Model, f => ttsApi is SharedConstants.OpenAI ? "tts-1" : string.Empty)

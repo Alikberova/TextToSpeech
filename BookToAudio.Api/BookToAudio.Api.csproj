@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookToAudio.Infra\BookToAudio.Infra.csproj" />
-    <ProjectReference Include="..\BookToAudio.RealTime\BookToAudio.RealTime.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,10 +1,11 @@
-﻿using BookToAudio.Core.Entities;
+﻿using BookToAudio.Core.Config;
+using BookToAudio.Core.Entities;
 using BookToAudio.Core.Services.Interfaces;
 using BookToAudio.Infra.Services.Common;
 using BookToAudio.Infra.Services.Factories;
 using BookToAudio.Infra.Services.FileProcessing;
 using BookToAudio.Infra.Services.Interfaces;
-using BookToAudio.RealTime;
+using BookToAudio.Infra.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -148,7 +149,7 @@ public sealed class SpeechService : ISpeechService
     /// </summary>
     private async Task UpdateAudioStatus(Guid audioFileId, string status)
     {
-        await _hubContext.Clients.All.SendAsync("AudioStatusUpdated", audioFileId.ToString(), status);
+        await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status);
     }
 
     // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.

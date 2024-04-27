@@ -15,19 +15,6 @@ public sealed class TextFileProcessor : IFileProcessor
 
     public bool CanProcess(string fileType) => fileType.Equals(".txt", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractContentAsync(string fileId)
-    {
-        //todo delete if not used
-        string filePath = Path.Combine(_pathService.GetFileStoragePath(), fileId);
-
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException("The file was not found.", fileId);
-        }
-
-        return await File.ReadAllTextAsync(filePath);
-    }
-
     public async Task<string> ExtractContentAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)

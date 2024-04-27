@@ -9,8 +9,6 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BookToAudio.Web", "BookToAu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.RealTime", "BookToAudio.RealTime\BookToAudio.RealTime.csproj", "{2E161E11-0B89-4F25-B25D-7CC8E882B1A8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.SeleniumTests", "BookToAudio.SeleniumTests\BookToAudio.SeleniumTests.csproj", "{553EB44A-2BF7-4D27-870F-D356C6366021}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookToAudio.TestingInfra", "BookToAudio.TestingInfra\BookToAudio.TestingInfra.csproj", "{5968434E-9D12-40B9-B90D-55ADD5465CF5}"
@@ -39,10 +37,6 @@ Global
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{07FC8C21-43D6-4E08-B6BF-D08D89FB39B8}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{2E161E11-0B89-4F25-B25D-7CC8E882B1A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E161E11-0B89-4F25-B25D-7CC8E882B1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E161E11-0B89-4F25-B25D-7CC8E882B1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E161E11-0B89-4F25-B25D-7CC8E882B1A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{553EB44A-2BF7-4D27-870F-D356C6366021}.Release|Any CPU.ActiveCfg = Release|Any CPU

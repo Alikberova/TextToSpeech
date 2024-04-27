@@ -3,7 +3,7 @@ using BookToAudio.Api.Middleware;
 using BookToAudio.Core.Config;
 using BookToAudio.Core.Entities;
 using BookToAudio.Infra;
-using BookToAudio.RealTime;
+using BookToAudio.Infra.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +71,7 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
-app.MapHub<AudioHub>("/audioHub");
+app.MapHub<AudioHub>(SharedConstants.AudioHubEndpoint);
 
 app.Run();
 
