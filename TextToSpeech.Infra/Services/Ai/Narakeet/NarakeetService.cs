@@ -2,20 +2,26 @@
 using TextToSpeech.Core.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using static TextToSpeech.Infra.Services.Ai.Narakeet.PollingApi;
+using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Core.Dto.Narakeet;
+using System.Net.Http.Json;
 
 namespace TextToSpeech.Infra.Services.Ai.Narakeet;
 
-public class NarakeetService : ITtsService
+public class NarakeetService : ITtsService, INarakeetService
 {
     public int MaxInputLength { get; init; } = 13000; //23 kb
 
     private readonly NarakeetConfig _narakeetConfig;
     private readonly HttpClient _httpClient;
+    private readonly IRedisCacheProvider _redisCacheProvider;
 
-    public NarakeetService(IOptions<NarakeetConfig> narakeetConfig)
+    public NarakeetService(IOptions<NarakeetConfig> narakeetConfig, IRedisCacheProvider redisCacheProvider)
     {
         _narakeetConfig = narakeetConfig.Value;
+        _redisCacheProvider = redisCacheProvider;
         _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("x-api-key", _narakeetConfig.ApiKey);
     }
 
     /// <summary>
@@ -36,11 +42,27 @@ public class NarakeetService : ITtsService
         return await Task.WhenAll(tasks);
     }
 
+    public async Task<List<VoiceResponse>?> GetAvailableVoices()
+    {
+        var cachedVoices = await _redisCacheProvider.GetCachedData<List<VoiceResponse>>("VoicesNarakeet");
+
+        if (cachedVoices is not null)
+        {
+            return cachedVoices;
+        }
+
+        var voices = await _httpClient.GetFromJsonAsync<List<VoiceResponse>>($"{_narakeetConfig.ApiUrl}/voices");
+
+        await _redisCacheProvider.SetCachedData("VoicesNarakeet", voices, TimeSpan.FromDays(7));
+
+        return voices;
+    }
+
     private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed)
     {
         PollingApi api = new(_narakeetConfig.ApiKey);
 
-        AudioTaskRequest request = new ("mp3", voice, text, speed);
+        AudioTaskRequest request = new("mp3", voice, text, speed);
 
         var buildTask = await api.RequestAudioTaskAsync(request);
 
@@ -56,6 +78,5 @@ public class NarakeetService : ITtsService
         response.EnsureSuccessStatusCode();
 
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
-
     }
 }

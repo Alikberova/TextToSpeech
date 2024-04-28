@@ -273,6 +273,23 @@
         "resolved": "7.7.2",
         "contentHash": "A6dbvNSwFLRndjkS3Se7kW4FRFlrFyDwY3BMndWpMaFPcLDkZPjFs1Guh2h9ohpzkD4f4CqjnrApaITdzkRBJA=="
       },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.8",
+        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "Transitive",
+        "resolved": "2.7.33",
+        "contentHash": "2kCX5fvhEE824a4Ab5Imyi8DRuGuTxyklXV01kegkRpsWJcPmO6+GAQ+HegKxvXAxlXZ8yaRspvWJ8t3mMClfQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        }
+      },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -291,6 +308,11 @@
           "Microsoft.IdentityModel.JsonWebTokens": "7.4.0",
           "Microsoft.IdentityModel.Tokens": "7.4.0"
         }
+      },
+      "System.IO.Pipelines": {
+        "type": "Transitive",
+        "resolved": "5.0.1",
+        "contentHash": "qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg=="
       },
       "System.Runtime.CompilerServices.Unsafe": {
         "type": "Transitive",
@@ -330,6 +352,7 @@
           "MailKit": "[4.3.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.2, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )",
+          "StackExchange.Redis": "[2.7.33, )",
           "TextToSpeech.Core": "[1.0.0, )",
           "taglib-sharp-netstandard2.0": "[2.1.0, )"
         }

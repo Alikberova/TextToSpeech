@@ -15,7 +15,7 @@ namespace TextToSpeech.Api.Extensions;
 
 internal static class ServicesDiExtension
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuthenticationService>();
 
@@ -23,7 +23,7 @@ internal static class ServicesDiExtension
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITtsService, OpenAiService>();
-        services.AddScoped<ITtsService, NarakeetService>();
+        services.AddScoped<INarakeetService, NarakeetService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
         services.AddScoped<IEmailService, EmailService>();
@@ -37,6 +37,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IPathService, PathService>();
         services.AddSingleton<FileProcessorFactory>();
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
+        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
 
         return services;
     }

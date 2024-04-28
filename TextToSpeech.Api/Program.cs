@@ -25,7 +25,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddServices();
+builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
