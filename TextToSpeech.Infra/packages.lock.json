@@ -44,6 +44,16 @@
           "Npgsql": "8.0.2"
         }
       },
+      "StackExchange.Redis": {
+        "type": "Direct",
+        "requested": "[2.7.33, )",
+        "resolved": "2.7.33",
+        "contentHash": "2kCX5fvhEE824a4Ab5Imyi8DRuGuTxyklXV01kegkRpsWJcPmO6+GAQ+HegKxvXAxlXZ8yaRspvWJ8t3mMClfQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        }
+      },
       "taglib-sharp-netstandard2.0": {
         "type": "Direct",
         "requested": "[2.1.0, )",
@@ -355,6 +365,14 @@
         "type": "Transitive",
         "resolved": "7.7.2",
         "contentHash": "A6dbvNSwFLRndjkS3Se7kW4FRFlrFyDwY3BMndWpMaFPcLDkZPjFs1Guh2h9ohpzkD4f4CqjnrApaITdzkRBJA=="
+      },
+      "Pipelines.Sockets.Unofficial": {
+        "type": "Transitive",
+        "resolved": "2.2.8",
+        "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+        "dependencies": {
+          "System.IO.Pipelines": "5.0.1"
+        }
       },
       "System.CodeDom": {
         "type": "Transitive",
