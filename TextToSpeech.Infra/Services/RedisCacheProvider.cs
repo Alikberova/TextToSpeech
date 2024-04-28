@@ -6,21 +6,32 @@ namespace TextToSpeech.Infra.Services;
 
 public class RedisCacheProvider : IRedisCacheProvider
 {
-    private readonly ConnectionMultiplexer _redisConnection;
+    private readonly ConnectionMultiplexer? _redisConnection;
 
     public RedisCacheProvider(string connectionString)
     {
-        _redisConnection = ConnectionMultiplexer.Connect(connectionString);
+        try
+        {
+            _redisConnection = ConnectionMultiplexer.Connect(connectionString);
+        }
+        catch (RedisConnectionException)
+        {
+        }
     }
 
     public async Task<T?> GetCachedData<T>(string key)
     {
+        if (_redisConnection is null)
+        {
+            return default;
+        }
+
         var db = _redisConnection.GetDatabase();
         var cachedData = await db.StringGetAsync(key);
 
         if (!cachedData.IsNullOrEmpty)
         {
-            return JsonSerializer.Deserialize<T>(cachedData);
+            return JsonSerializer.Deserialize<T>(cachedData!);
         }
 
         return default;
@@ -28,6 +39,11 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task SetCachedData<T>(string key, T data, TimeSpan expiry)
     {
+        if (_redisConnection is null)
+        {
+            return;
+
+        }
         var db = _redisConnection.GetDatabase();
         var serializedData = JsonSerializer.Serialize(data);
         await db.StringSetAsync(key, serializedData, expiry);
