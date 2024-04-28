@@ -15,7 +15,7 @@ services:
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
-      - ELASTIC_PASSWORD=${Elasticsearch__Password} 
+      - ELASTIC_PASSWORD=${ElasticsearchConfig__Password} 
     env_file: .env
     networks:
       - elk_nework
@@ -32,7 +32,7 @@ services:
       - server.host=0.0.0.0
       - elasticsearch.hosts=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${Elasticsearch__Password} 
+      - ELASTICSEARCH_PASSWORD=${ElasticsearchConfig__Password} 
     env_file: .env
     networks:
       - elk_nework
