@@ -73,6 +73,10 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 app.MapHub<AudioHub>(SharedConstants.AudioHubEndpoint);
 
+using var scope = app.Services.CreateScope();
+
+scope.ServiceProvider.GetRequiredService<DbInitializer>().Initialize();
+
 app.Run();
 
 static void AddAuthentication(WebApplicationBuilder builder)

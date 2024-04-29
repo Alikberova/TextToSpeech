@@ -6,6 +6,5 @@ TextToSpeech.Web
 docker*
 *.nupkg
 .vs
-*/Migrations
 *.md
 .editorconfig
