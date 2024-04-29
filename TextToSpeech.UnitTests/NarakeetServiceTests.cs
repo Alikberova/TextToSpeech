@@ -2,7 +2,7 @@
 using Moq;
 using System.Net;
 using TextToSpeech.Core.Dto.Narakeet;
-using TextToSpeech.Infra.Services.Ai.Narakeet;
+using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra.Services.Interfaces;
 using Xunit;
 using TextToSpeech.Infra.Constants;

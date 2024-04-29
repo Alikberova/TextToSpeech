@@ -2,9 +2,9 @@
 
 public class BuildTaskStatus
 {
-    public string message { get; set; } = string.Empty;
-    public int percent { get; set; }
-    public bool succeeded { get; set; }
-    public bool finished { get; set; }
-    public string result { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public int Percent { get; set; }
+    public bool Succeeded { get; set; }
+    public bool Finished { get; set; }
+    public string Result { get; set; } = string.Empty;
 }
