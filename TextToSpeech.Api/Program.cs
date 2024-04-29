@@ -13,7 +13,7 @@ using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Infra.Services.Interfaces;
 using Microsoft.Extensions.Options;
-using TextToSpeech.Infra.Services.Ai.Narakeet;
+using TextToSpeech.Infra.Services.Ai;
 
 var builder = WebApplication.CreateBuilder(args);
 

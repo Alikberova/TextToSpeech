@@ -2,7 +2,7 @@
 
 public class BuildTask
 {
-    public string statusUrl { get; set; } = string.Empty;
-    public string taskId { get; set; } = string.Empty;
-    public string requestId { get; set; } = string.Empty;
+    public string StatusUrl { get; set; } = string.Empty;
+    public string TaskId { get; set; } = string.Empty;
+    public string RequestId { get; set; } = string.Empty;
 }

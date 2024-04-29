@@ -9,7 +9,7 @@ using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Infra.Services.Factories;
 using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Api.Services;
-using TextToSpeech.Infra.Services.Ai.Narakeet;
+using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra;
 
 namespace TextToSpeech.Api.Extensions;

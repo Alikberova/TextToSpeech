@@ -6,11 +6,11 @@ using TextToSpeech.Infra.Constants;
 using System.Text.Json;
 using System.Text;
 
-namespace TextToSpeech.Infra.Services.Ai.Narakeet;
+namespace TextToSpeech.Infra.Services.Ai;
 
 public class NarakeetService : ITtsService, INarakeetService
 {
-    public int MaxInputLength { get; init; } = 13000; //23 kb //todo rename to Client
+    public int MaxInputLength { get; init; } = 13000; //23 kb
 
     private readonly HttpClient _httpClient;
     private readonly IRedisCacheProvider _redisCacheProvider;
@@ -69,12 +69,12 @@ public class NarakeetService : ITtsService, INarakeetService
 
         var taskResult = await PollUntilFinishedAsync(buildTask);
 
-        if (!taskResult.succeeded)
+        if (!taskResult.Succeeded)
         {
-            throw new Exception($"{nameof(NarakeetService)}: Error creating audio - {taskResult.message}");
+            throw new Exception($"{nameof(NarakeetService)}: Error creating audio - {taskResult.Message}");
         }
 
-        var response = await _httpClient.GetAsync(taskResult.result);
+        var response = await _httpClient.GetAsync(taskResult.Result);
 
         response.EnsureSuccessStatusCode();
 
@@ -100,11 +100,11 @@ public class NarakeetService : ITtsService, INarakeetService
     {
         while (true)
         {
-            var response = await _httpClient.GetAsync(buildTask.statusUrl);
+            var response = await _httpClient.GetAsync(buildTask.StatusUrl);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
-            if (buildTaskStatus.finished)
+            if (buildTaskStatus.Finished)
             {
                 return buildTaskStatus;
             }

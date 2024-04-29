@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Services.Interfaces.Ai;
 using TextToSpeech.Core.Services.Interfaces;
-using TextToSpeech.Infra.Services.Ai.Narakeet;
+using TextToSpeech.Infra.Services.Ai;
 using Microsoft.Extensions.DependencyInjection;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Infra.Services.Interfaces;
