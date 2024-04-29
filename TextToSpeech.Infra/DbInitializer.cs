@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TextToSpeech.Infra.Services.Interfaces;
 
 namespace TextToSpeech.Infra;
 
-public class DbInitializer
+public sealed class DbInitializer : IDbInitializer
 {
     private readonly AppDbContext _dbContext;
 
