@@ -25,7 +25,6 @@ internal static class ServicesDiExtension
         services.AddScoped<ITtsService, OpenAiService>();
         services.AddScoped<INarakeetService, NarakeetService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
-        services.AddScoped<IAudioFileRepositoryService, AudioFileRepositoryService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();

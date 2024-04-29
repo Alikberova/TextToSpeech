@@ -24,6 +24,14 @@ public sealed class AudioFileRepository : IAudioFileRepository
         return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Id == id);
     }
 
+    public async Task<AudioFile?> GetAudioFileAsync(string hash, string voice, string languageCode, double speed)
+    {
+        return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Hash == hash
+            && f.Voice == voice
+            && f.LanguageCode == languageCode
+            && f.Speed == speed);
+    }
+
     public async Task<List<AudioFile>> GetAllAudioFilesAsync()
     {
         return await _context.AudioFiles.ToListAsync();

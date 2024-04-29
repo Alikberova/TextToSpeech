@@ -63,7 +63,11 @@ namespace TextToSpeech.Infra.Migrations
                     Data = table.Column<byte[]>(type: "bytea", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    Hash = table.Column<string>(type: "text", nullable: false),
+                    Voice = table.Column<string>(type: "text", nullable: false),
+                    LanguageCode = table.Column<string>(type: "text", nullable: false),
+                    Speed = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {

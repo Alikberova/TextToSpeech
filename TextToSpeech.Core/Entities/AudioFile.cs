@@ -10,4 +10,8 @@ public sealed class AudioFile
     public DateTime CreatedAt { get; set; }
     public string Description { get; set; } = string.Empty;
     public Status Status { get; set; }
+    public string Hash { get; set; } = string.Empty;
+    public string Voice { get; set; } = string.Empty;
+    public string LanguageCode { get; set; } = string.Empty;
+    public double Speed { get; set; }
 }
