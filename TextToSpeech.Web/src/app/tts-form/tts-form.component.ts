@@ -98,6 +98,7 @@ export class TtsFormComponent implements OnInit {
       model: this.models[0],
       voice: voice,
       speed: speed,
+      languageCode: 'en-US',
       input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!',
     };
     this.speechClient.getSpeechSample(request).subscribe({
@@ -147,6 +148,7 @@ export class TtsFormComponent implements OnInit {
       model: this.models[0],
       voice: this.selectedVoice,
       speed: this.voiceSpeed,
+      languageCode: 'en-US',
       file: this.uploadedFile
     };
 

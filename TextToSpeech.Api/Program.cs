@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
+using TextToSpeech.Infra.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,10 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
 app.MapHub<AudioHub>(SharedConstants.AudioHubEndpoint);
+
+using var scope = app.Services.CreateScope();
+
+scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
 app.Run();
 

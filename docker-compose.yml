@@ -21,6 +21,9 @@ services:
     volumes:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+    depends_on:
+      - db
+      - redis
 
   web:
     build:
@@ -39,13 +42,31 @@ services:
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     networks:
       - proxy_elk
+    depends_on:
+      - api
 
   redis:
     image: redis:alpine
+    container_name: redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - proxy_elk
+
+  db:
+    image: postgres:alpine
+    container_name: db
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db:/var/lib/postgresql/data
+    networks:
+      - proxy_elk
 
 networks:
   proxy_elk:
@@ -54,3 +75,4 @@ networks:
 
 volumes:
   redis_data:
+  db:

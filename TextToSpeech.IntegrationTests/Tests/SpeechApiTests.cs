@@ -12,6 +12,9 @@ using System.Net.Http.Headers;
 using System.Text;
 
 using static TextToSpeech.Core.Enums;
+using Moq;
+using TextToSpeech.Core.Repositories;
+using TextToSpeech.Infra.Services.Interfaces;
 
 namespace TextToSpeech.IntegrationTests.Tests;
 
@@ -110,6 +113,8 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
             }
 
             services.AddScoped(_ => ITtsServiceFactoryMock.Get().Object);
+            services.AddScoped(_ => new Mock<IAudioFileRepository>().Object);
+            services.AddScoped(_ => new Mock<IDbInitializer>().Object);
         });
 
         return factory;

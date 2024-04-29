@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TextToSpeech.Core.Enums;
+using System.Text;
+using System.Security.Cryptography;
+using TextToSpeech.Core.Repositories;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -24,6 +27,7 @@ public sealed class SpeechService : ISpeechService
     private readonly IHubContext<AudioHub> _hubContext;
     private readonly ILogger<SpeechService> _logger;
     private readonly IMetaDataService _metaDataService;
+    private readonly IAudioFileRepository _audioFileRepository;
 
     public SpeechService(ITextProcessingService textFileService,
         ITtsServiceFactory ttsServiceFactory,
@@ -33,7 +37,8 @@ public sealed class SpeechService : ISpeechService
         IFileStorageService fileStorageService,
         IHubContext<AudioHub> hubContext,
         ILogger<SpeechService> logger,
-        IMetaDataService metaDataService)
+        IMetaDataService metaDataService,
+        IAudioFileRepository audioFileRepository)
     {
         _textFileService = textFileService;
         _ttsServiceFactory = ttsServiceFactory;
@@ -44,6 +49,7 @@ public sealed class SpeechService : ISpeechService
         _hubContext = hubContext;
         _logger = logger;
         _metaDataService = metaDataService;
+        _audioFileRepository = audioFileRepository;
     }
 
     /// <summary>
@@ -117,20 +123,20 @@ public sealed class SpeechService : ISpeechService
         }
     }
 
-    private async Task<string> ExtractContent(Core.Dto.SpeechRequest request)
-    {
-        var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
-            throw new NotSupportedException("File type not supported");
-
-        var fileText = await fileProcessor.ExtractContentAsync(request.File!);
-        return fileText;
-    }
-
     public async Task<MemoryStream> CreateSpeechSample(Core.Dto.SpeechRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Input))
         {
             throw new ArgumentException(nameof(request.Input));
+        }
+
+        var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(request.Input)));
+
+        var audioFile = await _audioFileRepository.GetAudioFileAsync(hash, request.Voice, request.LanguageCode, request.Speed);
+
+        if (audioFile is not null)
+        {
+            return new MemoryStream(audioFile.Data);
         }
 
         var bytesCollection = await _ttsServiceFactory.Get(request.TtsApi)
@@ -141,7 +147,33 @@ public sealed class SpeechService : ISpeechService
             throw new Exception($"Bytes collection length is not as expected - expected  1, got: {bytesCollection.Length}");
         }
 
-        return new MemoryStream(bytesCollection[0].ToArray());
+        var bytes = bytesCollection[0].ToArray();
+
+        audioFile = new()
+        {
+            Id = Guid.NewGuid(),
+            Data = bytes,
+            CreatedAt = DateTime.UtcNow,
+            Description = $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
+            Status = Status.Completed,
+            Hash = hash,
+            Voice = request.Voice,
+            LanguageCode = request.LanguageCode,
+            Speed = request.Speed
+        };
+
+        await _audioFileRepository.AddAudioFileAsync(audioFile);
+
+        return new MemoryStream(bytes);
+    }
+
+    private async Task<string> ExtractContent(Core.Dto.SpeechRequest request)
+    {
+        var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
+            throw new NotSupportedException("File type not supported");
+
+        var fileText = await fileProcessor.ExtractContentAsync(request.File!);
+        return fileText;
     }
 
     /// <summary>
@@ -151,6 +183,5 @@ public sealed class SpeechService : ISpeechService
     {
         await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status);
     }
-
     // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.
 }
