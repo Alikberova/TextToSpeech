@@ -1,0 +1,15 @@
+<mat-form-field>
+    <mat-label>{{ label }}</mat-label>
+    <mat-select [(ngModel)]="selectedOption" name="option">
+        <ng-container *ngFor="let option of options; let i = index">
+            <mat-option [value]="option">
+                <mat-icon
+                    *ngIf="matIcon"
+                    (click)="onIconClick($event)"
+                    [attr.data-index]="i">{{ getMatIconName(option) }}
+                </mat-icon>
+                {{ option }}
+            </mat-option>
+        </ng-container>
+    </mat-select>
+</mat-form-field>

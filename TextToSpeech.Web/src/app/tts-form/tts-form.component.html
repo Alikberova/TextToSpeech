@@ -1,22 +1,22 @@
 <form class="tts-form content" (ngSubmit)="onSubmit()">
-  <mat-form-field class="form-element">
-    <mat-label>Select voice</mat-label>
-    <mat-select [(ngModel)]="selectedVoice" name="voice">
-      <mat-option *ngFor="let voice of voices" [value]="voice">
-        {{ voice }}
-        <mat-icon [ngClass]="{'disabled': isSampleLoading}" class="play-icon" *ngIf="!isPlaying && currentlyPlayingVoice !== voice" (click)="playVoiceSample($event, voice, voiceSpeed)" [attr.aria-label]="'Play voice sample for ' + voice">play_circle</mat-icon>
-        <mat-icon class="play-icon pause" *ngIf="!isPlaying && currentlyPlayingVoice === voice && isPaused" (click)="playVoiceSample($event, voice, voiceSpeed)" [attr.aria-label]="'Pause voice sample'">play_circle</mat-icon>
-        <mat-icon class="play-icon" id="pause" *ngIf="!isSampleLoading && currentlyPlayingVoice === voice && !isPaused" [attr.aria-label]="'Pause voice sample'" (click)="pauseAudio($event)">pause</mat-icon>
-        <mat-icon class="play-icon" *ngIf="isSampleLoading && currentlyPlayingVoice === voice" [attr.aria-label]="'Voice sample is loading'" (click)="$event.stopPropagation()">downloading</mat-icon>
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+
+  <div class="dropdowns form-element">
+    <app-dropdown
+      [label]="'Select voice'"
+      [options]="voices"
+      [selectedOption]="selectedVoice"
+      [matIcon]="icons.playCircle"
+      [clickedMatIcon]="clickedMatIcon"
+      (iconClick)="playVoiceSample($event.event, $event.index)">
+    </app-dropdown>
+  </div>
 
   <div class="file-upload form-element">
     <button type="button" mat-raised-button color="primary" (click)="fileInput.click()"
     [ngClass]="{'file-selected': uploadedFile}">Choose File</button>
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept="{{ acceptableFileTypes.join(',') }}"
-           aria-label="Upload File"/>
+           aria-label="Upload File"
+           id="upload-input"/>
     <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxInputLength | FormatMaxInputLengthPipe}} characters </mat-error>
     <div class="mat-information" *ngIf="!uploadedFile">
       <mat-icon>info</mat-icon>

@@ -21,7 +21,7 @@ internal sealed class TextToSpeechPage: BasePage
     private IWebElement PlayButton => _driver.FindElement(By.XPath("//mat-icon[contains(text(), 'play_circle')]"));
     private IWebElement PauseButton => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id(PauseButtonId)));
     private IWebElement TargetVoiceButton => _driver.FindElement(By.XPath($"//mat-option/span[contains(text(), '{TargetVoice}')]"));
-    private IWebElement FileInput => _driver.FindElement(By.CssSelector(".file-upload input[type='file']"));
+    private IWebElement FileInput => _driver.FindElement(By.Id("upload"));
     private IWebElement DownloadBtn => _driver.FindElement(By.Id(DownloadButtonId));
 
     public void SelectVoice()

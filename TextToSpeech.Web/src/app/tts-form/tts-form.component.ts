@@ -1,4 +1,4 @@
-import { Component, OnInit, inject} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -15,13 +15,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
 import { ConfigService } from '../services/config-service';
+import { DropdownComponent } from "../shared-ui/components/dropdown/dropdown.component";
 
 @Component({
-  selector: 'app-tts-form',
-  standalone: true,
-  imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, FormatMaxInputLengthPipe],
-  templateUrl: './tts-form.component.html',
-  styleUrl: './tts-form.component.scss',
+    selector: 'app-tts-form',
+    standalone: true,
+    templateUrl: './tts-form.component.html',
+    styleUrl: './tts-form.component.scss',
+    imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, FormatMaxInputLengthPipe, DropdownComponent]
 })
 
 export class TtsFormComponent implements OnInit {
@@ -43,21 +44,31 @@ export class TtsFormComponent implements OnInit {
   readonly ttsApis = ['OpenAI', 'Narakeet'];
   readonly acceptableFileTypes = ['.pdf', '.txt'];
   readonly maxInputLength = 100000;
+  readonly icons = { 
+    downloading:'downloading',
+    playCircle:'play_circle',
+    pause:'pause'
+  };
 
   uploadedFile: File | undefined;
   voiceSpeed = 1;
   selectedVoice = this.voices[0];
-
   @ViewChild('fileInput') fileInput!: ElementRef;
   isTextConversionLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
   warnedMaxInputLength = false;
-  isPlaying = false; 
-  isSampleLoading = false;
+  clickedMatIcon: string|undefined;
+
   currentlyPlayingVoice: string | null = null;
-  isPaused = false;
+  currentlyPlayingSpeed: number | null = null;
+  currentlyPlayingLanguageCode: string | null = null;
+
   private audio: HTMLAudioElement | null = null;
+
+  changeClickedIcon(icon: string) {
+    this.clickedMatIcon = icon;
+  }
 
   onFileSelected(event: Event) {
     this.warnedMaxInputLength = false;
@@ -79,33 +90,37 @@ export class TtsFormComponent implements OnInit {
     this.uploadedFile = target.files[0];
   }
 
-  playVoiceSample(event: MouseEvent, voice: string, speed: number): void {
+  playVoiceSample(event: MouseEvent, index: number): void {
     event.stopPropagation();
-    if (this.currentlyPlayingVoice === voice && this.audio){
+    const langCode = 'en-US';
+    const voice = this.voices[index];
+    if (this.audio && !this.audio.paused) {
+      this.audio.pause();
+      this.changeClickedIcon(this.icons.playCircle)
+      if (this.isCurrentAudioTheSameAsPrevious(voice, this.voiceSpeed, langCode)) {
+        return;
+      }
+    }
+    if (this.isCurrentAudioTheSameAsPrevious(voice, this.voiceSpeed, langCode) && this.audio) {
       this.audio.play();
-      this.isPaused = false
+      this.changeClickedIcon(this.icons.pause)
       return;
     }
-    this.isSampleLoading = true;
-    this.currentlyPlayingVoice = voice;
-    if (this.audio) {
-      this.audio.pause();
-      URL.revokeObjectURL(this.audio.currentSrc)
-    }
-    this.isPaused = false;
+    this.changeClickedIcon(this.icons.downloading)
+    this.setCurrentlyPlayingData(voice, this.voiceSpeed, langCode);
     const request: SpeechRequest = {
       ttsApi: this.ttsApis[0],
       model: this.models[0],
       voice: voice,
-      speed: speed,
+      speed: this.voiceSpeed,
       languageCode: 'en-US',
       input: 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!',
     };
     this.speechClient.getSpeechSample(request).subscribe({
       next: (blob) => this.playAudio(blob),
       error: () => {
-        this.currentlyPlayingVoice = null;
-        this.isSampleLoading = false;
+        this.setCurrentlyPlayingData(null, null, null);
+        this.changeClickedIcon(this.icons.playCircle)
       }
     })
   }
@@ -116,21 +131,12 @@ export class TtsFormComponent implements OnInit {
     this.audio.load();
     this.audio.oncanplay = () => {
       this.audio!.play().then(()=>{
-        this.isSampleLoading = false;
+        this.changeClickedIcon(this.icons.pause)
       });
     }
-    
     this.audio.onended = () => {
-      this.isPlaying = false;
-      this.currentlyPlayingVoice = null;
+      this.changeClickedIcon(this.icons.playCircle)
     }
-  }
-
-  pauseAudio(event: MouseEvent) {
-    event.stopPropagation();
-    this.audio!.pause();
-    this.isPaused = true;
-    this.isPlaying = false;
   }
 
   clearFileSelection() {
@@ -176,5 +182,17 @@ export class TtsFormComponent implements OnInit {
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
+  }
+
+  private setCurrentlyPlayingData(voice: string | null, speed: number | null, languageCode: string | null) {
+    this.currentlyPlayingVoice = voice;
+    this.currentlyPlayingSpeed = speed;
+    this.currentlyPlayingLanguageCode = languageCode;
+  }
+
+  private isCurrentAudioTheSameAsPrevious(voice: string, speed: number, languageCode: string) {
+    return this.currentlyPlayingVoice === voice
+      && this.currentlyPlayingSpeed === speed
+      && this.currentlyPlayingLanguageCode === languageCode;
   }
 }
