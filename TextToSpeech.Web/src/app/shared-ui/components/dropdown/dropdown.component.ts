@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 })
 
 export class DropdownComponent {
+  @Input() id!: string;
   @Input() label: string | undefined;
   @Input() options!: string[];
   @Input() selectedOption: string | undefined;

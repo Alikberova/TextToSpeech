@@ -2,12 +2,13 @@
 
   <div class="dropdowns form-element">
     <app-dropdown
-      [label]="'Select voice'"
-      [options]="voices"
-      [selectedOption]="selectedVoice"
-      [matIcon]="icons.playCircle"
-      [clickedMatIcon]="clickedMatIcon"
-      (iconClick)="playVoiceSample($event.event, $event.index)">
+    [id]="'voice-dropdown'"
+    [label]="'Select voice'"
+    [options]="voices"
+    [selectedOption]="selectedVoice"
+    [matIcon]="icons.playCircle"
+    [clickedMatIcon]="clickedMatIcon"
+    (iconClick)="playVoiceSample($event.event, $event.index)">
     </app-dropdown>
   </div>
 
