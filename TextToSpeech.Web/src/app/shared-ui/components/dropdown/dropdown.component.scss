@@ -15,7 +15,7 @@ mat-icon {
     color: lighten(adjust-hue($color-blue-gem, 10deg), 10%);
     transform: scale(1.2);
   }
-  &.pause {
+  &.active-mat-icon {
     color: lighten(adjust-hue($color-blue-gem, 10deg), 20%);
   }
 }

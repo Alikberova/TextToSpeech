@@ -30,9 +30,11 @@ export class DropdownComponent {
     }
   }
 
-  getMatIconName(option: string) {
-    const isIconClickedOnThisOption = option === this.options[this.clickedOptionIndex];
-    
-    return isIconClickedOnThisOption && this.clickedMatIcon ? this.clickedMatIcon : this.matIcon
+  getMatIconName(option: string) { 
+    return this.isIconClickedOnThisOption(option) && this.clickedMatIcon ? this.clickedMatIcon : this.matIcon
+  }
+
+  isIconClickedOnThisOption(option: string): boolean {
+    return option === this.options[this.clickedOptionIndex];
   }
 }

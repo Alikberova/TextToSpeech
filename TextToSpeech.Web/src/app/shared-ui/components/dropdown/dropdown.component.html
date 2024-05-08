@@ -6,7 +6,8 @@
                 <mat-icon
                     *ngIf="matIcon"
                     (click)="onIconClick($event)"
-                    [attr.data-index]="i">{{ getMatIconName(option) }}
+                    [attr.data-index]="i"
+                    [ngClass]="{ 'active-mat-icon': isIconClickedOnThisOption(option) }">{{ getMatIconName(option) }}
                 </mat-icon>
                 {{ option }}
             </mat-option>
