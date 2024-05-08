@@ -45,9 +45,9 @@ export class TtsFormComponent implements OnInit {
   readonly acceptableFileTypes = ['.pdf', '.txt'];
   readonly maxInputLength = 100000;
   readonly icons = { 
-    downloading:'downloading',
-    playCircle:'play_circle',
-    pause:'pause'
+    downloading: 'downloading',
+    playCircle: 'play_circle',
+    pause: 'pause'
   };
 
   uploadedFile: File | undefined;
