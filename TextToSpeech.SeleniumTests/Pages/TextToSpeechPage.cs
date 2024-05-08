@@ -17,11 +17,11 @@ internal sealed class TextToSpeechPage: BasePage
         _sourceFilePath = fileName;
     }
 
-    private IWebElement VoiceDropdown => _driver.FindElement(By.Name("voice"));
+    private IWebElement VoiceDropdown => _driver.FindElement(By.Id("voice-dropdown"));
     private IWebElement PlayButton => _driver.FindElement(By.XPath("//mat-icon[contains(text(), 'play_circle')]"));
-    private IWebElement PauseButton => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id(PauseButtonId)));
+    private IWebElement PauseButton => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//mat-icon[contains(text(), 'pause')]")));
     private IWebElement TargetVoiceButton => _driver.FindElement(By.XPath($"//mat-option/span[contains(text(), '{TargetVoice}')]"));
-    private IWebElement FileInput => _driver.FindElement(By.CssSelector(".file-upload input[type='file']"));
+    private IWebElement FileInput => _driver.FindElement(By.Id("upload-input"));
     private IWebElement DownloadBtn => _driver.FindElement(By.Id(DownloadButtonId));
 
     public void SelectVoice()

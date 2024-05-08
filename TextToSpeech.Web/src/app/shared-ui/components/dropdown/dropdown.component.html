@@ -1,0 +1,17 @@
+<mat-form-field>
+    <mat-label>{{ label }}</mat-label>
+    <mat-select [(ngModel)]="selectedOption" [id]="id">
+        <ng-container *ngFor="let option of options; let i = index">
+            <mat-option [value]="option">
+                <mat-icon
+                    *ngIf="matIcon"
+                    (click)="onIconClick($event)"
+                    [attr.data-index]="i"
+                    [ngClass]="{ 'active-mat-icon': isIconClickedOnThisOption(option) }">
+                        {{ getMatIconName(option) }}
+                </mat-icon>
+                {{ option }}
+            </mat-option>
+        </ng-container>
+    </mat-select>
+</mat-form-field>
