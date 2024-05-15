@@ -154,7 +154,7 @@ public sealed class SpeechService : ISpeechService
             Id = Guid.NewGuid(),
             Data = bytes,
             CreatedAt = DateTime.UtcNow,
-            Description = $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
+            Description = $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}_{request.TtsApi}",
             Status = Status.Completed,
             Hash = hash,
             Voice = request.Voice,

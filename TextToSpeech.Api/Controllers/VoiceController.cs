@@ -24,7 +24,6 @@ namespace TextToSpeech.Api.Controllers
                 return NotFound();
             }
 
-
             Response.Headers.Append("Cache-Control", "public, max-age=3600");
 
             return Ok(result);
