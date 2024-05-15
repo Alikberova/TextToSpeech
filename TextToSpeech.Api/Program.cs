@@ -12,8 +12,6 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Infra.Services.Interfaces;
-using Microsoft.Extensions.Options;
-using TextToSpeech.Infra.Services.Ai;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +44,6 @@ builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigCon
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
 
 builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(ConfigConstants.NarakeetConfig));
-
-builder.Services.AddHttpClient<INarakeetService, NarakeetService>((provider, client) => {
-    var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
-
-    client.BaseAddress = new Uri(options.ApiUrl);
-    client.DefaultRequestHeaders.Add("x-api-key", options.ApiKey);
-});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));

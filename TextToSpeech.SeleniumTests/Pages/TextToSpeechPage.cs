@@ -6,7 +6,6 @@ namespace TextToSpeech.SeleniumTests.Pages;
 
 internal sealed class TextToSpeechPage: BasePage
 {
-    private const string PauseButtonId = "pause";
     private const string DownloadButtonId = "download";
     private const string TargetVoice = "Fable";
 

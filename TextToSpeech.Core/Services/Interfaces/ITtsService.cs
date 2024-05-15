@@ -1,6 +1,4 @@
-﻿using OpenAI.Audio;
-
-namespace TextToSpeech.Core.Services.Interfaces;
+﻿namespace TextToSpeech.Core.Services.Interfaces;
 
 public interface ITtsService
 {
