@@ -10,6 +10,10 @@ on:
       - master
       - dev
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
   environment: Development
   certs-path: /home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
