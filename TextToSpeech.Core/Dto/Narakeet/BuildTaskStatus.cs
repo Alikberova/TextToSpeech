@@ -2,7 +2,7 @@
 
 namespace TextToSpeech.Core.Dto.Narakeet;
 
-public class BuildTaskStatus
+public sealed class BuildTaskStatus
 {
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;

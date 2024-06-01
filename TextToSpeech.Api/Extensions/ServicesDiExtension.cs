@@ -31,6 +31,8 @@ internal static class ServicesDiExtension
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<IDbInitializer, DbInitializer>();
+        services.AddScoped<ITranslationService, TranslationService>();
+        services.AddScoped<ITranslationRepository, TranslationRepository>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

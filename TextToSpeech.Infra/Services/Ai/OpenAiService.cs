@@ -24,7 +24,7 @@ public class OpenAiService : ITtsService
     {
         model ??= "tts-1";
 
-        var parsed = Enum.TryParse<SpeechVoice>(voice, out var voiceEnum);
+        var parsed = Enum.TryParse<SpeechVoice>(voice, true, out var voiceEnum);
 
         if (!parsed)
         {

@@ -103,7 +103,7 @@ public class NarakeetService : INarakeetService
         return result;
     }
 
-    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask, Action<BuildTaskStatus> progressCallback = null)
+    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask, Action<BuildTaskStatus>? progressCallback = null)
     {
         while (true)
         {
@@ -111,8 +111,9 @@ public class NarakeetService : INarakeetService
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
-
-            if (buildTaskStatus is null || string.IsNullOrWhiteSpace(buildTaskStatus.Result))
+            
+            if (buildTaskStatus is null ||
+                (string.IsNullOrWhiteSpace(buildTaskStatus.Result) && string.IsNullOrWhiteSpace(buildTaskStatus.Message)))
             {
                 throw new Exception($"{nameof(BuildTaskStatus)} was not deserialized");
             }

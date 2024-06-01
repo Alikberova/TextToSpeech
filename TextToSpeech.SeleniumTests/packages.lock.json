@@ -80,6 +80,69 @@
           "System.Diagnostics.EventLog": "6.0.0"
         }
       },
+      "Google.Api.Gax": {
+        "type": "Transitive",
+        "resolved": "4.8.0",
+        "contentHash": "xlV8Jq/G5CQAA3PwYAuKGjfzGOP7AvjhREnE6vgZlzxREGYchHudZWa2PWSqFJL+MBtz9YgitLpRogANN3CVvg==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Google.Api.Gax.Rest": {
+        "type": "Transitive",
+        "resolved": "4.8.0",
+        "contentHash": "zaA5LZ2VvGj/wwIzRB68swr7khi2kWNgqWvsB0fYtScIAl3kGkGtqiBcx63H1YLeKr5xau1866bFjTeReH6FSQ==",
+        "dependencies": {
+          "Google.Api.Gax": "4.8.0",
+          "Google.Apis.Auth": "[1.67.0, 2.0.0)",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0"
+        }
+      },
+      "Google.Apis": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "XM8/fViJaB1pN61OdXy5RMZoQEqd3hKlWvA/K431gFSb5XtQ48BynfgrbBkUtFcPbSRa4BdjBHzSbkBh/skyMg==",
+        "dependencies": {
+          "Google.Apis.Core": "1.67.0"
+        }
+      },
+      "Google.Apis.Auth": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "Bs9BlbZ12Y4NXzMONjpzQhZr9VbwLUTGMHkcQRF36aYnk2fYrmj5HNVNh7PPHDDq1fcEQpCtPic2nSlpYQLKXw==",
+        "dependencies": {
+          "Google.Apis": "1.67.0",
+          "Google.Apis.Core": "1.67.0",
+          "System.Management": "7.0.2"
+        }
+      },
+      "Google.Apis.Core": {
+        "type": "Transitive",
+        "resolved": "1.67.0",
+        "contentHash": "IPq0I3B01NYZraPoMl8muELFLg4Vr2sbfyZp4PR2Xe3MAhHkZCiKyV28Yh1L14zIKUb0X0snol1sR5/mx4S6Iw==",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
+      },
+      "Google.Apis.Translate.v2": {
+        "type": "Transitive",
+        "resolved": "1.67.0.875",
+        "contentHash": "Od8FKupnCHNwdJtrtvKqcNc5GO7kRy+IIAr6qTKt71DnF+1pEt0eTu52mxiDw9tStGHLwwFinZ+MTZf5ytmCpA==",
+        "dependencies": {
+          "Google.Apis": "1.67.0",
+          "Google.Apis.Auth": "1.67.0"
+        }
+      },
+      "Google.Cloud.Translation.V2": {
+        "type": "Transitive",
+        "resolved": "3.4.0",
+        "contentHash": "BshkfNJG5ktwaReEZagocTNu1vBKMtdr0LkbKxrSTlj3Fi0mvKu6tAXOQXFs+dhmZkgMNEFNHA+t++jUh3BtOw==",
+        "dependencies": {
+          "Google.Api.Gax.Rest": "[4.8.0, 5.0.0)",
+          "Google.Apis.Translate.v2": "[1.67.0.875, 2.0.0)"
+        }
+      },
       "MailKit": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -117,6 +180,11 @@
           "Microsoft.EntityFrameworkCore.Relational": "8.0.2",
           "Microsoft.Extensions.Identity.Stores": "8.0.2"
         }
+      },
+      "Microsoft.Bcl.AsyncInterfaces": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
@@ -331,8 +399,8 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "13.0.1",
-        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
+        "resolved": "13.0.3",
+        "contentHash": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ=="
       },
       "Npgsql": {
         "type": "Transitive",
@@ -375,6 +443,11 @@
           "Pipelines.Sockets.Unofficial": "2.2.8"
         }
       },
+      "System.CodeDom": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "GLltyqEsE5/3IE+zYRP5sNa1l44qKl9v+bfdMcwg+M9qnQf47wK3H0SUR/T+3N4JEQXF3vV4CSuuo0rsg+nq2A=="
+      },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
         "resolved": "6.0.0",
@@ -398,6 +471,14 @@
         "type": "Transitive",
         "resolved": "5.0.1",
         "contentHash": "qEePWsaq9LoEEIqhbGe6D5J8c9IqQOUuTzzV6wn1POlfdLkJliZY3OlB0j0f17uMWlqZYjH7txj+2YbyrIA8Yg=="
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "7.0.2",
+        "contentHash": "/qEUN91mP/MUQmJnM5y5BdT7ZoPuVrtxnFlbJ8a3kBJGhe2wCzBfnPFtK2wTtEEcf3DMGR9J00GZZfg6HRI6yA==",
+        "dependencies": {
+          "System.CodeDom": "7.0.0"
+        }
       },
       "System.Reflection.Metadata": {
         "type": "Transitive",
@@ -479,6 +560,7 @@
       "texttospeech.infra": {
         "type": "Project",
         "dependencies": {
+          "Google.Cloud.Translation.V2": "[3.4.0, )",
           "MailKit": "[4.3.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.2, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.2, )",

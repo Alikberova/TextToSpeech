@@ -22,7 +22,7 @@ internal sealed class ExceptionHandlingMiddleware
             _logger.LogError(ex, "Unhandled exception.");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(new { Error = "An error occurred processing your request." }.ToString());
+            await context.Response.WriteAsync(new { Error = "An error occurred processing your request." }.ToString()!);
         }
     }
 }

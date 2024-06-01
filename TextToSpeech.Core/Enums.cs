@@ -10,4 +10,11 @@ public sealed class Enums
         Failed,
         Cancelled
     }
+
+    public enum AudioType
+    {
+        Unspecified,
+        Sample,
+        Full
+    }
 }

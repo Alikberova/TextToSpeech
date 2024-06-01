@@ -14,4 +14,8 @@ public sealed class AudioFile
     public string Voice { get; set; } = string.Empty;
     public string LanguageCode { get; set; } = string.Empty;
     public double Speed { get; set; }
+    public AudioType Type { get; set; }
+
+    public Guid? TtsApiId { get; set; }
+    public TtsApi? TtsApi { get; set; }
 }
