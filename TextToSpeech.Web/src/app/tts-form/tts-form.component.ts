@@ -44,7 +44,7 @@ export class TtsFormComponent implements OnInit {
     private translationService: TranslationService
   ) {
     this.dropdownConfigApi = this.dropdownService.getConfig(null,
-      this.dropdownService.defaultSelectedLanguageIndex,
+      0,
       TtsApis.map((api, index) => ({ id: index, optionDescription: api })),
       this.dropdownService.headingApi);
     this.setLangAndVoiceConfig();

@@ -23,7 +23,7 @@ export class DropdownComponent implements OnChanges {
   @Output() iconClick: EventEmitter<{ event: MouseEvent, index: number }> = new EventEmitter<{ event: MouseEvent, index: number }>();
   clickedOptionIndex: number = undefined!;
   dropDownList: DropdownItem[] = [];
-  selectedIndex: number | undefined;
+  selectedIndex: number | null = null;
   valueField: string | undefined;
   labelField: string | undefined;
   heading!: string;

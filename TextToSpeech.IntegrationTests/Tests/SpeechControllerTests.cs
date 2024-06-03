@@ -19,7 +19,8 @@ using TextToSpeech.Infra.Services.Interfaces;
 namespace TextToSpeech.IntegrationTests.Tests;
 
 // todo Unit tests for Signalr if speech ready - need to mock the rest
-public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
+// todo ensure only mock is used; delete RunRealApiTests
+public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Program>>
 {
     private const string AudioMpeg = "audio/mpeg";
     private const string InvalidMp3Error = "Invalid MP3 file.";
@@ -27,7 +28,7 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
     private readonly TestWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
-    public SpeechApiTests()
+    public SpeechControllerTests()
     {
         _factory = CreateFactory();
         _client = _factory.CreateClient();
@@ -65,10 +66,14 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
         var spechStatusUpdated = new TaskCompletionSource<bool>();
 
         var status = string.Empty;
+        string? errorMessage = null;
+        Guid? fileId = null;
 
-        hubConnection.On<Guid, string>(SharedConstants.AudioStatusUpdated, (fileId, updatedStatus) =>
+        hubConnection.On<Guid, string, string>(SharedConstants.AudioStatusUpdated, (fileIdResult, updatedStatus, errorMessageResult) =>
         {
             status = updatedStatus;
+            errorMessage = errorMessageResult;
+            fileId = fileIdResult;
             spechStatusUpdated.SetResult(true);
         });
 
@@ -81,19 +86,19 @@ public class SpeechApiTests : IClassFixture<TestWebApplicationFactory<Program>>
 
         var responseString = await response.Content.ReadAsStringAsync();
 
-        var isAudioFileIdValid = Guid.TryParse(responseString.Trim('"'), out var audioFileId);
-
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
         var audioFilePath = _factory.Services.GetRequiredService<IPathService>()
-            .GetFileStorageFilePath($"{audioFileId}.mp3");
+            .GetFileStorageFilePath($"{fileId}.mp3");
 
         //Assert
 
         Assert.True(completedTask == spechStatusUpdated.Task, "Timed out to update speech status");
         Assert.Equal(Status.Completed.ToString(), status);
-        Assert.True(isAudioFileIdValid, "Audio file ID is not a valid guid");
+        Assert.True(Guid.TryParse(responseString.Trim('"'), out var respStringFileId), "Response string file ID is not a valid guid");
+        Assert.Equal(respStringFileId, fileId);
         Assert.True(Mp3FileUtilities.IsMp3Valid(audioFilePath), InvalidMp3Error);
+        Assert.Null(errorMessage);
 
         // Cleanup
 

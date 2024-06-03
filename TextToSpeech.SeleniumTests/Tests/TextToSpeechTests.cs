@@ -18,6 +18,7 @@ public sealed class TextToSpeechTests : TestBase
         page.UploadFile();
         page.Submit();
         page.DownloadFile();
+        page.ChangeApiAndLang();
 
         var file = Path.Combine(DownloadDirectory, $"{FileName}.mp3");
 

@@ -33,6 +33,7 @@ internal static class ServicesDiExtension
         services.AddScoped<IDbInitializer, DbInitializer>();
         services.AddScoped<ITranslationService, TranslationService>();
         services.AddScoped<ITranslationRepository, TranslationRepository>();
+        services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();

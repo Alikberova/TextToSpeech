@@ -22,4 +22,9 @@ internal class BasePage
     {
         _driver.FindElement(By.XPath($"//span[contains(text(), '{text}')]")).Click();
     }
+
+    protected IWebElement GetDropdownButton(string buttonText)
+    {
+        return _driver.FindElement(By.XPath($"//mat-option/span[contains(text(), '{buttonText}')]"));
+    }
 }

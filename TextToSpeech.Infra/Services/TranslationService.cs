@@ -1,23 +1,18 @@
-﻿using Google.Cloud.Translation.V2;
-using Microsoft.Extensions.Configuration;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
+﻿using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Repositories;
+using TextToSpeech.Infra.Services.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 
 public sealed class TranslationService : ITranslationService
 {
-    private readonly TranslationClient _client;
+    private readonly ITranslationClientWrapper _client;
     private readonly ITranslationRepository _translationRepository;
 
-    public TranslationService(IConfiguration configuration,
+    public TranslationService(ITranslationClientWrapper client,
         ITranslationRepository translationRepository)
     {
-        var apiKey = configuration[ConfigConstants.GoogleCloudApiKey] ??
-            throw new ArgumentException("Google Api Key cannot be null");
-
-        _client = TranslationClient.CreateFromApiKey(apiKey);
+        _client = client;
         _translationRepository = translationRepository;
     }
 

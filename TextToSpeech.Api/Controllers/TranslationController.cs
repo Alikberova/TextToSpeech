@@ -1,5 +1,4 @@
-﻿using Google.Apis.Requests;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Infra.Services;
 
