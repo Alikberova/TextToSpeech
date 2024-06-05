@@ -3,12 +3,6 @@ using TextToSpeech.Core.Config;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using Microsoft.EntityFrameworkCore;
-using TextToSpeech.Infra;
-using TextToSpeech.SeleniumTests.Pages;
-using System.Text;
-using System.Security.Cryptography;
-using TextToSpeech.Core.Entities;
 
 namespace TextToSpeech.SeleniumTests;
 
@@ -18,17 +12,9 @@ public class TestBase : IDisposable
         "BtaDownloads");
     protected IWebDriver Driver { get; private set; } = default!;
     protected WebDriverWait Wait { get; private set; } = default!;
-    private readonly AppDbContext _context;
 
     public TestBase()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
-
-        _context = new AppDbContext(options);
-
-        SeedTestData(_context, TextToSpeechPage.VoiceToChange);
         Setup();
     }
 
@@ -77,30 +63,5 @@ public class TestBase : IDisposable
                 Directory.Delete(DownloadDirectory, true);
             }
         }
-    }
-
-    private static void SeedTestData(AppDbContext context, string voice)
-    {
-        const string langCode = "en-US";
-
-        if (context.AudioFiles.Any(a => a.LanguageCode.StartsWith(langCode) && a.Voice == voice))
-        {
-            return;
-        }
-
-        const string uiDemoText = "Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!";
-
-        var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(uiDemoText)));
-
-        context.Add(new AudioFile()
-        {
-            Id = Guid.NewGuid(),
-            Hash = hash,
-            Speed = 1,
-            Voice = voice,
-            LanguageCode = langCode
-        });
-
-        context.SaveChanges();
     }
 }
