@@ -1,9 +1,8 @@
 ﻿using TextToSpeech.Core.Services.Interfaces;
 
-namespace TextToSpeech.Infra.Services.Interfaces
+namespace TextToSpeech.Infra.Services.Interfaces;
+
+public interface ITtsServiceFactory
 {
-    public interface ITtsServiceFactory
-    {
-        ITtsService Get(string key);
-    }
+    ITtsService Get(string key);
 }

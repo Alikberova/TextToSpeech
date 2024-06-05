@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { ConfigConstants } from '../constants/config-constants';
 import { ConfigService } from './config-service';
 
 @Injectable({
@@ -22,9 +21,9 @@ export class SignalRService {
       .catch(err => console.log('Error while starting connection: ' + err));
   };
 
-  addAudioStatusListener(callback: (fileId: string, status: string) => void) {
-    this.hubConnection.on('AudioStatusUpdated', (fileId, status) => {
-      callback(fileId, status);
+  addAudioStatusListener(callback: (fileId: string, status: string, errorMessage: string | undefined) => void) {
+    this.hubConnection.on('AudioStatusUpdated', (fileId, status, errorMessage) => {
+      callback(fileId, status, errorMessage);
     });
   }
 }

@@ -1,15 +1,25 @@
 <form class="tts-form content" (ngSubmit)="onSubmit()">
 
   <div class="dropdowns form-element">
-    <app-dropdown
-    [id]="'voice-dropdown'"
-    [label]="'Select voice'"
-    [options]="voices"
-    [selectedOption]="selectedVoice"
+
+  <app-dropdown
+    [config]="dropdownConfigApi"
+    (selectionChanged)="apiSelectionChanged($event)">
+  </app-dropdown>
+
+  <app-dropdown
+    [config]="dropdownConfigLanguage"
+    (selectionChanged)="languageSelectionChanged($event)">
+  </app-dropdown>
+  
+  <app-dropdown
+    [config]="dropdownConfigVoice"
     [matIcon]="icons.playCircle"
     [clickedMatIcon]="clickedMatIcon"
-    (iconClick)="playVoiceSample($event.event, $event.index)">
-    </app-dropdown>
+    [clickedMatIconClass]="clickedVoiceMatIconClass"
+    (iconClick)="playVoiceSample($event.event, $event.index)"
+    (selectionChanged)="voiceSelectionChanged($event)">
+  </app-dropdown>
   </div>
 
   <div class="file-upload form-element">

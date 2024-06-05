@@ -1,8 +1,15 @@
-﻿namespace TextToSpeech.Core.Dto.Narakeet;
+﻿using System.Text.Json.Serialization;
 
-public class BuildTask
+namespace TextToSpeech.Core.Dto.Narakeet;
+
+public sealed class BuildTask
 {
+    [JsonPropertyName("statusUrl")]
     public string StatusUrl { get; set; } = string.Empty;
+
+    [JsonPropertyName("taskId")]
     public string TaskId { get; set; } = string.Empty;
+
+    [JsonPropertyName("requestId")]
     public string RequestId { get; set; } = string.Empty;
 }

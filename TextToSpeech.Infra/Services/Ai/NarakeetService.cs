@@ -8,7 +8,7 @@ using System.Text;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public class NarakeetService : ITtsService, INarakeetService
+public class NarakeetService : INarakeetService
 {
     public int MaxInputLength { get; init; } = 13000; //23 kb
 
@@ -83,7 +83,7 @@ public class NarakeetService : ITtsService, INarakeetService
 
     public async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest)
     {
-        string url = $"/text-to-speech/{audioTaskRequest.Format}?voice={audioTaskRequest.Voice}&voice-speed={audioTaskRequest.Speed}";
+        var url = $"/text-to-speech/{audioTaskRequest.Format}?voice={audioTaskRequest.Voice}&voice-speed={audioTaskRequest.Speed}";
 
         StringContent requestBody = new(audioTaskRequest.Text, Encoding.UTF8, "text/plain");
 
@@ -91,12 +91,19 @@ public class NarakeetService : ITtsService, INarakeetService
 
         response.EnsureSuccessStatusCode();
 
-        string responseJson = await response.Content.ReadAsStringAsync();
+        var responseJson = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<BuildTask>(responseJson);
+        var result = JsonSerializer.Deserialize<BuildTask>(responseJson);
+
+        if (result is null || string.IsNullOrWhiteSpace(result.TaskId))
+        {
+            throw new Exception($"{nameof(BuildTask)} was not deserialized");
+        }
+
+        return result;
     }
 
-    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask, Action<BuildTaskStatus> progressCallback = null)
+    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask, Action<BuildTaskStatus>? progressCallback = null)
     {
         while (true)
         {
@@ -104,10 +111,18 @@ public class NarakeetService : ITtsService, INarakeetService
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
+            
+            if (buildTaskStatus is null ||
+                (string.IsNullOrWhiteSpace(buildTaskStatus.Result) && string.IsNullOrWhiteSpace(buildTaskStatus.Message)))
+            {
+                throw new Exception($"{nameof(BuildTaskStatus)} was not deserialized");
+            }
+
             if (buildTaskStatus.Finished)
             {
                 return buildTaskStatus;
             }
+
             progressCallback?.Invoke(buildTaskStatus);
             await Task.Delay(TimeSpan.FromSeconds(2));
         }

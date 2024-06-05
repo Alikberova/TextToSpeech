@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TextToSpeech.Api.Services;
 using TextToSpeech.Infra.Services.Interfaces;
 
 namespace TextToSpeech.Api.Controllers
@@ -23,6 +24,9 @@ namespace TextToSpeech.Api.Controllers
             {
                 return NotFound();
             }
+
+            // for 2 weeks
+            HttpHeaderHelper.SetCacheControl(Response, 1209600);
 
             return Ok(result);
         }

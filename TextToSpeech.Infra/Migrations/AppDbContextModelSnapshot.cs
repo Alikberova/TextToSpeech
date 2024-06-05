@@ -189,13 +189,66 @@ namespace TextToSpeech.Infra.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("TtsApiId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Voice")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TtsApiId");
+
                     b.ToTable("AudioFiles");
+                });
+
+            modelBuilder.Entity("TextToSpeech.Core.Entities.Translation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OriginalText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourceLanguage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TargetLanguage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TranslatedText")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Translations");
+                });
+
+            modelBuilder.Entity("TextToSpeech.Core.Entities.TtsApi", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TtsApis");
                 });
 
             modelBuilder.Entity("TextToSpeech.Core.Entities.User", b =>
@@ -323,6 +376,21 @@ namespace TextToSpeech.Infra.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TextToSpeech.Core.Entities.AudioFile", b =>
+                {
+                    b.HasOne("TextToSpeech.Core.Entities.TtsApi", "TtsApi")
+                        .WithMany("AudioFiles")
+                        .HasForeignKey("TtsApiId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("TtsApi");
+                });
+
+            modelBuilder.Entity("TextToSpeech.Core.Entities.TtsApi", b =>
+                {
+                    b.Navigation("AudioFiles");
                 });
 #pragma warning restore 612, 618
         }

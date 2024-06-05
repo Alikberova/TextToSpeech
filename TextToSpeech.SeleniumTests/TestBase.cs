@@ -3,6 +3,11 @@ using TextToSpeech.Core.Config;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using Microsoft.Extensions.DependencyInjection;
+using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Infra.Services;
+using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace TextToSpeech.SeleniumTests;
 
@@ -12,6 +17,7 @@ public class TestBase : IDisposable
         "BtaDownloads");
     protected IWebDriver Driver { get; private set; } = default!;
     protected WebDriverWait Wait { get; private set; } = default!;
+    protected IServiceProvider ServiceProvider { get; private set; } = default!;
 
     public TestBase()
     {
@@ -20,6 +26,14 @@ public class TestBase : IDisposable
 
     private void Setup()
     {
+        // Configure services
+        var serviceCollection = new ServiceCollection();
+        ConfigureServices(serviceCollection);
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+
+        // Seed Redis Cache
+        SeedRedisCache().GetAwaiter().GetResult();
+
         var options = new ChromeOptions();
 
         if (!HostingEnvironment.IsWindows())
@@ -63,5 +77,23 @@ public class TestBase : IDisposable
                 Directory.Delete(DownloadDirectory, true);
             }
         }
+    }
+    private static void ConfigureServices(IServiceCollection services)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddEnvironmentVariables()
+            .AddUserSecrets(Assembly.GetExecutingAssembly())
+            .Build();
+
+        var tst = configuration.GetConnectionString("Redis");
+
+        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
+        services.AddSingleton<RedisCacheSeeder>();
+    }
+
+    private async Task SeedRedisCache()
+    {
+        var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+        await redisCacheSeeder.SeedVoicesAsync();
     }
 }

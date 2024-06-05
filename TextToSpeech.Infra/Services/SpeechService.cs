@@ -117,8 +117,8 @@ public sealed class SpeechService : ISpeechService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error on processing speech");
-            audioFile.Status = Status.Failed;
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+            audioFile.Status = Status.Failed; //todo track status while processing, throw as needed
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString(), ex.Message);
             throw;
         }
     }
@@ -149,6 +149,8 @@ public sealed class SpeechService : ISpeechService
 
         var bytes = bytesCollection[0].ToArray();
 
+        var ttsApiId = SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value;
+
         audioFile = new()
         {
             Id = Guid.NewGuid(),
@@ -159,7 +161,9 @@ public sealed class SpeechService : ISpeechService
             Hash = hash,
             Voice = request.Voice,
             LanguageCode = request.LanguageCode,
-            Speed = request.Speed
+            Speed = request.Speed,
+            Type = AudioType.Sample,
+            TtsApiId = ttsApiId
         };
 
         await _audioFileRepository.AddAudioFileAsync(audioFile);
@@ -179,9 +183,9 @@ public sealed class SpeechService : ISpeechService
     /// <summary>
     /// Notify clients about the status update
     /// </summary>
-    private async Task UpdateAudioStatus(Guid audioFileId, string status)
+    private async Task UpdateAudioStatus(Guid audioFileId, string status, string? errorMessage = null)
     {
-        await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status);
+        await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status, errorMessage);
     }
     // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.
 }

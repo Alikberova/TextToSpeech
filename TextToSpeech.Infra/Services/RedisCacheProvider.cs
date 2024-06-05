@@ -21,7 +21,7 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task<T?> GetCachedData<T>(string key)
     {
-        if (_redisConnection is null)
+        if (_redisConnection is null || !_redisConnection.IsConnected)
         {
             return default;
         }
@@ -39,7 +39,7 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task SetCachedData<T>(string key, T data, TimeSpan expiry)
     {
-        if (_redisConnection is null)
+        if (_redisConnection is null || !_redisConnection.IsConnected)
         {
             return;
 

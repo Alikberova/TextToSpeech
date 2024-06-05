@@ -11,6 +11,8 @@ using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Api.Services;
 using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra;
+using Microsoft.Extensions.Options;
+using TextToSpeech.Core.Config;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -19,18 +21,19 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuthenticationService>();
-
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITtsService, OpenAiService>();
-        services.AddScoped<INarakeetService, NarakeetService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<IDbInitializer, DbInitializer>();
+        services.AddScoped<ITranslationService, TranslationService>();
+        services.AddScoped<ITranslationRepository, TranslationRepository>();
+        services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IFileStorageService, FileStorageService>();
@@ -40,6 +43,19 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
 
+        AddServicesWithHttpClient(services);
+
         return services;
+    }
+
+    private static void AddServicesWithHttpClient(IServiceCollection services)
+    {
+        services.AddHttpClient<INarakeetService, NarakeetService>((provider, client) =>
+        {
+            var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
+
+            client.BaseAddress = new Uri(options.ApiUrl);
+            client.DefaultRequestHeaders.Add("x-api-key", options.ApiKey);
+        });
     }
 }

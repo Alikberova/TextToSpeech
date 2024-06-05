@@ -21,11 +21,10 @@ public class TtsServiceFactory : ITtsServiceFactory
         ITtsService service = key switch
         {
             SharedConstants.OpenAI => _serviceProvider.GetServices<ITtsService>().OfType<OpenAiService>().Single(),
-            SharedConstants.Narakeet => _serviceProvider.GetServices<ITtsService>().OfType<NarakeetService>().Single(),
+            SharedConstants.Narakeet => _serviceProvider.GetServices<INarakeetService>().OfType<NarakeetService>().Single(),
             _ => throw new ArgumentException($"Service with key '{key}' is not registered."),
         };
 
         return service;
     }
 }
-
