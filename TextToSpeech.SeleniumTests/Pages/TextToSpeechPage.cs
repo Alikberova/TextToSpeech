@@ -7,13 +7,14 @@ namespace TextToSpeech.SeleniumTests.Pages;
 
 internal sealed class TextToSpeechPage: BasePage
 {
+    public const string LangToChange = "German (Standard)";
+    public const string VoiceToChange = "hans";
+
     private const string DownloadButtonId = "download";
     private const string Dropdown = "-dropdown";
 
     private const string VoiceToPlay = "Fable";
     private const string ApiToChange = SharedConstants.Narakeet;
-    private const string LangToChange = "German (Standard)";
-    private const string VoiceToChange = "hans";
 
     private readonly string _sourceFilePath;
 

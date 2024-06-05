@@ -60,7 +60,7 @@ import { Observable, map } from "rxjs";
 
                 const languageOptions = uniqueLanguages.map((lang, index) => ({ id: index, optionDescription: lang.language }));
                 this.setDefaultSelectedLanguageIndex(languageOptions);
-                const selectedLangIndex = languageConfig?.selectedIndex ? languageConfig.selectedIndex : this.defaultSelectedLanguageIndex;
+                const selectedLangIndex = this.getSelectedLangIndex(languageConfig);
                 languageConfig = this.getConfig(languageConfig, selectedLangIndex, languageOptions, this.headingLanguage);
 
                 // Create voice dropdown options based on the selected language
@@ -82,7 +82,7 @@ import { Observable, map } from "rxjs";
         const voiceOptions = OpenAiVoices.map((v, index) => ({ id: index, optionDescription: v }));
         
         this.setDefaultSelectedLanguageIndex(languageOptions);
-        const selectedLangIndex = languageConfig?.selectedIndex ? languageConfig.selectedIndex : this.defaultSelectedLanguageIndex;
+        const selectedLangIndex = this.getSelectedLangIndex(languageConfig);
 
         const languageConfigRes = this.getConfig(languageConfig, selectedLangIndex, languageOptions, this.headingLanguage);
         this.selectedLanguageCode = Languages[languageConfigRes.selectedIndex].languageCode;
@@ -92,7 +92,15 @@ import { Observable, map } from "rxjs";
         return { languageConfigRes, voiceConfigRes };
     }
 
-    setDefaultSelectedLanguageIndex(menuItems: DropdownItem[]) {
+    private setDefaultSelectedLanguageIndex(menuItems: DropdownItem[]) {
         this.defaultSelectedLanguageIndex = menuItems.findIndex(item => item.optionDescription.startsWith("English"));
+    }
+
+    private getSelectedLangIndex(languageConfig: DropdownConfig)
+    {
+        if (!languageConfig) {
+            return this.defaultSelectedLanguageIndex;
+        }
+        return languageConfig.selectedIndex;
     }
 }
