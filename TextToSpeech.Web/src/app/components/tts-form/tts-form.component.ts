@@ -2,27 +2,27 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { SpeechRequest } from '../models/text-to-speech';
-import { SpeechClient } from '../http-clients/speech-client';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { SignalRService } from '../services/signalr.service';
 import { ViewChild, ElementRef } from '@angular/core';
-import { SnackbarService } from '../shared-ui/snackbar-service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { FormatMaxInputLengthPipe } from '../pipe/format-max-input';
-import { ConfigService } from '../services/config-service';
-import { DropdownComponent } from "../shared-ui/components/dropdown/dropdown.component";
-import { DropdownConfig } from '../models/dropdown-config';
-import { DropdownConfigService as DropdownService } from '../services/dropdown.service';
-import { AudioService } from '../services/audio.service';
-import { TranslationService } from '../services/translation.service';
 import { Subscription } from 'rxjs';
-import { TtsApis, DemoText, Narakeet } from '../constants/tts-constants';
-import { EnLanguageCode } from '../constants/language';
+import { EnLanguageCode } from '../../constants/language';
+import { TtsApis, Narakeet, DemoText } from '../../constants/tts-constants';
+import { SpeechClient } from '../../http-clients/speech-client';
+import { DropdownConfig } from '../../models/dropdown-config';
+import { SpeechRequest } from '../../models/dto/text-to-speech';
+import { FormatMaxInputLengthPipe } from '../../pipe/format-max-input';
+import { AudioService } from '../../services/audio.service';
+import { ConfigService } from '../../services/config.service';
+import { SignalRService } from '../../services/signalr.service';
+import { TranslationService } from '../../services/translation.service';
+import { DropdownComponent } from '../../shared-ui/components/dropdown/dropdown.component';
+import { SnackbarService } from '../../shared-ui/snackbar-service';
+import { DropdownService } from '../../services/dropdown.service';
 
 @Component({
     selector: 'app-tts-form',
@@ -86,7 +86,7 @@ export class TtsFormComponent implements OnInit {
     this.dropdownConfigApi = this.dropdownService.getConfig(this.dropdownConfigApi, id ?? 0);
     this.dropdownConfigLanguage.selectedIndex = 0; //reset language and voice
     this.setLangAndVoiceConfig();
-    this.audioService.revokeAudioSample();
+    this.audioService.stopAudio();
     this.changeClickedVoiceIcon(this.icons.playCircle)
     this.clickedVoiceMatIconClass = '_';
   }
@@ -95,7 +95,7 @@ export class TtsFormComponent implements OnInit {
     this.dropdownConfigLanguage.selectedIndex = id;
     this.dropdownConfigVoice.selectedIndex = 0; //reset voice
     this.setLangAndVoiceConfig();
-    this.audioService.revokeAudioSample();
+    this.audioService.stopAudio();
     this.changeClickedVoiceIcon(this.icons.playCircle)
     this.clickedVoiceMatIconClass = '_';
   }

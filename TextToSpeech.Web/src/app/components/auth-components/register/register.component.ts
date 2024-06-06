@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { Router } from '@angular/router';
-import { UserClient } from '../../http-clients/user-client';
-import {User} from '../../models/user'
-import { SnackbarService } from '../../shared-ui/snackbar-service';
-import { RoutesConstants } from '../../constants/route-constants';
+import { UserClient } from '../../../http-clients/user-client';
+import {User} from '../../../models/dto/user'
+import { SnackbarService } from '../../../shared-ui/snackbar-service';
+import { RoutesConstants } from '../../../constants/route-constants';
 
 @Component({
     selector: 'app-register',

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DocumentService } from '../services/document.service';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { DocumentType } from '../constants/route-constants';
+import { DocumentType } from '../../constants/route-constants';
+import { DocumentService } from '../../services/document.service';
 
 @Component({
   selector: 'app-legal-document',

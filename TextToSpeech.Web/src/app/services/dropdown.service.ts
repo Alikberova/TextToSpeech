@@ -2,14 +2,14 @@ import { Injectable } from "@angular/core";
 import { DropdownConfig, DropdownItem } from "../models/dropdown-config";
 import { VoiceClient } from "../http-clients/voice-client";
 import { Languages, EnUSLanguageCode } from "../constants/language";
-import { OpenAiVoices, Narakeet, TtsApis } from "../constants/tts-constants";
+import { OpenAiVoices, Narakeet } from "../constants/tts-constants";
 import { Observable, map } from "rxjs";
 
 @Injectable({
     providedIn: "root"
   })
   
-  export class DropdownConfigService {
+  export class DropdownService {
     constructor (private voiceClient: VoiceClient) {}
     selectedLanguageCode = EnUSLanguageCode;
     defaultSelectedLanguageIndex: number = 0;

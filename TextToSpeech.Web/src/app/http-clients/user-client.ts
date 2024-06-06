@@ -1,9 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Observable, catchError } from "rxjs";
-import { User } from "../models/user";
+import { User } from "../models/dto/user";
 import { ConfigConstants } from "../constants/config-constants";
 import { Injectable, inject } from "@angular/core";
-import { ConfigService } from "../services/config-service";
+import { ConfigService } from "../services/config.service";
 
 @Injectable({
     providedIn: 'root',

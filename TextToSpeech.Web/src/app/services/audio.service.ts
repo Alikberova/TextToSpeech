@@ -32,7 +32,7 @@ import { Injectable } from "@angular/core";
       return this.audio !== null && !this.audio.paused;
     }
 
-    revokeAudioSample() { //todo rename to stopAudio
+    stopAudio() {
         if (!this.audio) {
           return;
         }

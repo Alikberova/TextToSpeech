@@ -1,7 +1,7 @@
 import {  Injectable, inject } from "@angular/core";
-import { FeedbackRequest } from "../models/feedback"
+import { FeedbackRequest } from "../models/dto/feedback"
 import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "./config-service";
+import { ConfigService } from "./config.service";
 
 @Injectable({
   providedIn: "root"

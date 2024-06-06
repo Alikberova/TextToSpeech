@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { ValidationService } from '../../services/validation.service';
 import { CommonModule } from '@angular/common';
+import { ValidationService } from '../../../services/validation.service';
+import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
 
 @Component({
   selector: 'app-auth-form',

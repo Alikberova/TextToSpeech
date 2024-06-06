@@ -4,9 +4,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FeedbackService } from '../services/feedback.service';
 import { CommonModule } from '@angular/common';
-import { SnackbarService } from '../shared-ui/snackbar-service';
+import { FeedbackService } from '../../services/feedback.service';
+import { SnackbarService } from '../../shared-ui/snackbar-service';
 
 @Component({
   selector: 'app-feedback-form',

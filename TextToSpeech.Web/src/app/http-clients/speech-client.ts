@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { SpeechRequest } from '../models/text-to-speech';
+import { SpeechRequest } from '../models/dto/text-to-speech';
 import { Observable } from 'rxjs';
-import { ConfigService } from '../services/config-service';
+import { ConfigService } from '../services/config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +36,14 @@ export class SpeechClient {
     return this.http.post<string>(`${this.apiUrl}`, formData);
   }
 
-  getSpeechSample(request: SpeechRequest): Observable<Blob> { //todo validate fields
+  getSpeechSample(request: SpeechRequest): Observable<Blob> {
+    if (!request.input ||
+      !request.languageCode ||
+      !request.speed ||
+      !request.ttsApi ||
+      !request.voice) {
+        throw new Error("Some data in SpeechRequest is missed")
+    }
     return this.http.post(`${this.apiUrl}/sample`, request, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

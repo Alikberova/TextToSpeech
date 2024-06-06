@@ -3,12 +3,12 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../services/auth/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { RoutesConstants } from '../constants/route-constants';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { RoutesConstants } from '../../constants/route-constants';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-nav',

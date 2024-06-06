@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { ConfigService } from './config-service';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'

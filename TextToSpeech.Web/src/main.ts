@@ -7,7 +7,7 @@ import { provideRouter } from '@angular/router';
 import { INGXLoggerConfig, LoggerModule, NGXLogger, NgxLoggerLevel } from 'ngx-logger';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
-import { ConfigService } from './app/services/config-service';
+import { ConfigService } from './app/services/config.service';
 import { errorInterceptor } from './app/interceptors/error.interceptor';
 
 const appConfig: ApplicationConfig = {
