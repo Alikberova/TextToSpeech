@@ -19,7 +19,6 @@ using TextToSpeech.Infra.Services.Interfaces;
 namespace TextToSpeech.IntegrationTests.Tests;
 
 // todo Unit tests for Signalr if speech ready - need to mock the rest
-// todo ensure only mock is used; delete RunRealApiTests
 public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Program>>
 {
     private const string AudioMpeg = "audio/mpeg";
@@ -112,11 +111,6 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
 
         factory.ConfigureTestServices(services =>
         {
-            if (factory.RunRealApiTests)
-            {
-                return;
-            }
-
             services.AddScoped(_ => ITtsServiceFactoryMock.Get().Object);
             services.AddScoped(_ => new Mock<IAudioFileRepository>().Object);
             services.AddScoped(_ => new Mock<IDbInitializer>().Object);

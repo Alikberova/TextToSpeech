@@ -56,6 +56,7 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
+  readonly acceptableFileTypes = AcceptableFileTypes;
   readonly icons = { 
     downloading: 'downloading',
     playCircle: 'play_circle',
@@ -72,8 +73,6 @@ export class TtsFormComponent implements OnInit {
   dropdownConfigApi!: DropdownConfig;
   dropdownConfigLanguage!: DropdownConfig;
   dropdownConfigVoice!: DropdownConfig;
-
-  readonly acceptableFileTypes = AcceptableFileTypes;
 
   private currentlyPlayingVoice: string | null = null;
   private currentlyPlayingSpeed: number | null = null;

@@ -21,8 +21,7 @@ public sealed class EmailService : IEmailService
         email.From.Add(new MailboxAddress(request.Name, _emailConfig.EmailFrom));
         email.To.Add(new MailboxAddress("Admin", _emailConfig.EmailTo));
 
-//todo const
-        email.Subject = "TextToSpeech";
+        email.Subject = SharedConstants.AppName;
         email.Body = new TextPart(MimeKit.Text.TextFormat.Text)
         {
             Text = $"Message from {request.UserEmail}:\n{request.Message}"

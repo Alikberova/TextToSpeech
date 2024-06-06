@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TextToSpeech.IntegrationTests;
@@ -10,16 +9,6 @@ public class TestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class
 {
     private Action<IServiceCollection> _configureTestServices = null!;
-    public bool RunRealApiTests { get; init; }
-
-    public TestWebApplicationFactory()
-    {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-
-        RunRealApiTests = configuration.GetValue<bool>("RunRealApiTests");
-    }
 
     public void ConfigureTestServices(Action<IServiceCollection> configureServices)
     {
