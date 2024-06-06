@@ -24,18 +24,17 @@
 
   <div class="file-upload form-element">
     <button type="button" mat-raised-button color="primary" (click)="fileInput.click()"
-    [ngClass]="{'file-selected': uploadedFile}">Choose File</button>
+    [ngClass]="{'file-selected': getUploadedFile()}">Choose File</button>
     <input hidden #fileInput type="file" (change)="onFileSelected($event)" accept="{{ acceptableFileTypes.join(',') }}"
            aria-label="Upload File"
            id="upload-input"/>
-    <mat-error *ngIf="warnedMaxInputLength">The file is too large. Cannot process file that exceeds {{maxInputLength | FormatMaxInputLengthPipe}} characters </mat-error>
-    <div class="mat-information" *ngIf="!uploadedFile">
+    <div class="mat-information" *ngIf="!getUploadedFile()">
       <mat-icon>info</mat-icon>
-      <span>Ready to turn your PDFs and TXTs into speech! Just drop them here</span>
+      <span>Ready to turn your {{ acceptableFileTypes.join(' and ') }} into speech! Just drop them here</span>
     </div>
     <div>
-      <span *ngIf="uploadedFile">{{ uploadedFile.name }}</span>
-      <button mat-button *ngIf="uploadedFile" (click)="clearFileSelection()" color="warn"
+      <span *ngIf="getUploadedFile()">{{ getUploadedFile()!.name }}</span>
+      <button mat-button *ngIf="getUploadedFile()" (click)="clearFileSelection()" color="warn"
               aria-label="Clear selected file">
         <mat-icon>clear</mat-icon>
       </button>
@@ -51,8 +50,8 @@
     <mat-progress-bar *ngIf="isTextConversionLoading" mode="indeterminate"></mat-progress-bar>
   </div>
 
-  <button mat-raised-button color="primary" class="form-element submit-btn" [disabled]="!uploadedFile"
-    [matTooltip]="uploadedFile || isSpeechReady ? '' : 'You need to select file first'">Submit
+  <button mat-raised-button color="primary" class="form-element submit-btn" [disabled]="!getUploadedFile()"
+    [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
   </button>
 
   <a mat-raised-button color="accent" class="form-element" id="download" [href]="audioDownloadUrl" download

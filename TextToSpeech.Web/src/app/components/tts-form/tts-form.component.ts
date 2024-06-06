@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ViewChild, ElementRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -15,7 +14,6 @@ import { TtsApis, Narakeet, DemoText } from '../../constants/tts-constants';
 import { SpeechClient } from '../../http-clients/speech-client';
 import { DropdownConfig } from '../../models/dropdown-config';
 import { SpeechRequest } from '../../models/dto/text-to-speech';
-import { FormatMaxInputLengthPipe } from '../../pipe/format-max-input';
 import { AudioService } from '../../services/audio.service';
 import { ConfigService } from '../../services/config.service';
 import { SignalRService } from '../../services/signalr.service';
@@ -23,13 +21,15 @@ import { TranslationService } from '../../services/translation.service';
 import { DropdownComponent } from '../../shared-ui/components/dropdown/dropdown.component';
 import { SnackbarService } from '../../shared-ui/snackbar-service';
 import { DropdownService } from '../../services/dropdown.service';
+import { FileInputService } from '../../services/file-input.service';
+import { AcceptableFileTypes } from "../../constants/tts-constants";
 
 @Component({
     selector: 'app-tts-form',
     standalone: true,
     templateUrl: './tts-form.component.html',
     styleUrl: './tts-form.component.scss',
-    imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, FormatMaxInputLengthPipe, DropdownComponent]
+    imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, DropdownComponent]
 })
 
 export class TtsFormComponent implements OnInit {
@@ -41,7 +41,8 @@ export class TtsFormComponent implements OnInit {
     private configService: ConfigService,
     private dropdownService: DropdownService,
     private audioService: AudioService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private fileInputService: FileInputService
   ) {
     this.dropdownConfigApi = this.dropdownService.getConfig(null,
       0,
@@ -54,28 +55,25 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.startConnection();
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
-  
-  readonly acceptableFileTypes = ['.pdf', '.txt'];
-  readonly maxInputLength = 100000;
+
   readonly icons = { 
     downloading: 'downloading',
     playCircle: 'play_circle',
     pause: 'pause'
   };
-
-  uploadedFile: File | undefined;
+ 
   voiceSpeed = 1;
   currentAudioFileId = '';
-  @ViewChild('fileInput') fileInput!: ElementRef;
   isTextConversionLoading = false;
   isSpeechReady = false;
   audioDownloadUrl = '';
-  warnedMaxInputLength = false;
   clickedMatIcon: string | undefined;
   clickedVoiceMatIconClass: string | undefined;
   dropdownConfigApi!: DropdownConfig;
   dropdownConfigLanguage!: DropdownConfig;
   dropdownConfigVoice!: DropdownConfig;
+
+  readonly acceptableFileTypes = AcceptableFileTypes;
 
   private currentlyPlayingVoice: string | null = null;
   private currentlyPlayingSpeed: number | null = null;
@@ -121,23 +119,18 @@ export class TtsFormComponent implements OnInit {
   }
 
   onFileSelected(event: Event) {
-    this.warnedMaxInputLength = false;
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length == 0) {
       return;
     }
-    if (!this.acceptableFileTypes.some(type => target.files![0].name.endsWith(type))) {
+
+    const error = this.fileInputService.validateFile(target.files![0]);
+    if (error) {
       this.isSpeechReady = false;
-      this.snackBarService.showError("Oops! 🙈 Looks like I can't work my magic on this file type. Stick with PDFs or text files for the best results, okay? 🚀");
+      this.snackBarService.showError(error);
       return;
     }
-    if (target.files[0].size > this.maxInputLength) {
-      this.clearFileSelection();
-      this.warnedMaxInputLength = true;
-      this.isSpeechReady = false;
-      return;
-    }
-    this.uploadedFile = target.files[0];
+    this.fileInputService.uploadedFile = target.files[0];
   }
 
   playVoiceSample(event: MouseEvent, index: number): void {
@@ -165,13 +158,6 @@ export class TtsFormComponent implements OnInit {
     this.sendRequestAndPlaySample(api, voice, this.voiceSpeed, languageCode);
   }
 
-  clearFileSelection() {
-    this.uploadedFile = null!;
-    if (this.fileInput && this.fileInput.nativeElement) {
-      this.fileInput.nativeElement.value = '';
-    }
-  }
-
   onSubmit() {
     this.isTextConversionLoading = true;
     const api = this.dropdownService.getSelectedValueFromIndex(this.dropdownConfigApi);
@@ -180,13 +166,21 @@ export class TtsFormComponent implements OnInit {
       voice: this.dropdownService.getSelectedValueFromIndex(this.dropdownConfigVoice).toLowerCase(),
       speed: this.voiceSpeed,
       languageCode: this.dropdownService.selectedLanguageCode,
-      file: this.uploadedFile
+      file: this.fileInputService.uploadedFile
     };
 
     this.speechClient.createSpeech(speechRequest).subscribe({
       error: _ => this.isTextConversionLoading = false,
       next: id => this.currentAudioFileId = id
     });
+  }
+
+  getUploadedFile(): File | undefined {
+    return this.fileInputService.uploadedFile;
+  }
+
+  clearFileSelection() {
+    this.fileInputService.clearFileSelection();
   }
 
   private sendRequestAndPlaySample(api: string, voice: string, speed: number, langCode: string) {
@@ -241,7 +235,7 @@ export class TtsFormComponent implements OnInit {
         ? "Please, " + langMismatchError.charAt(0).toLowerCase() + langMismatchError.slice(1)
         : "Oopsie-daisy! Our talking robot hit a snag creating your speech. Let's try again!"
       this.snackBarService.showError(error);
-    return;
+      return;
     }
     this.isSpeechReady = true;
     this.setDownloadData(fileId);
@@ -250,7 +244,7 @@ export class TtsFormComponent implements OnInit {
   }
 
   private setDownloadData(audioFileId: string) { //todo move
-    const fileNameWithoutExtension = this.uploadedFile!.name.replace(/\.[^/.]+$/, '');
+    const fileNameWithoutExtension = this.fileInputService.uploadedFile!.name.replace(/\.[^/.]+$/, '');
     const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
     const apiUrl = `${this.configService.apiUrl}/audio`;
     this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;

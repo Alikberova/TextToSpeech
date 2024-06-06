@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
-import { FeedbackService } from '../../services/feedback.service';
+import { EmailClient } from '../../http-clients/email-client';
 import { SnackbarService } from '../../shared-ui/snackbar-service';
 
 @Component({
@@ -21,7 +21,7 @@ export class FeedbackFormComponent {
   @ViewChild('formDirective') private formDirective!: NgForm;
   isSubmitted = false;
 
-  constructor(private feedbackService: FeedbackService, private snackbarService: SnackbarService) {
+  constructor(private emailClient: EmailClient, private snackbarService: SnackbarService) {
     this.feedbackForm = new FormGroup({
       userEmail: new FormControl("", [Validators.email]),
       name: new FormControl(""),
@@ -32,7 +32,7 @@ export class FeedbackFormComponent {
   submitFeedback() {
     if (this.feedbackForm.valid) {
       const feedback = this.feedbackForm.value;
-      this.feedbackService.feedbackMessageSend(feedback).subscribe({
+      this.emailClient.sendEmail(feedback).subscribe({
         next: _ => {
           this.snackbarService.showSuccess("Your feedback was sent. Thanks!")
           this.feedbackForm.reset();

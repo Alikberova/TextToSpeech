@@ -1,20 +1,20 @@
 import {  Injectable, inject } from "@angular/core";
 import { FeedbackRequest } from "../models/dto/feedback"
 import { HttpClient } from "@angular/common/http";
-import { ConfigService } from "./config.service";
+import { ConfigService } from "../services/config.service";
 
 @Injectable({
   providedIn: "root"
 })
 
-export class FeedbackService {
+export class EmailClient {
   private configService = inject(ConfigService);
 
   private apiUrl = `${this.configService.apiUrl}/email`;
 
   constructor(private http: HttpClient) { }
 
-  feedbackMessageSend(request: FeedbackRequest) {
+  sendEmail(request: FeedbackRequest) {
 
     const body = {
       name: request.name,
