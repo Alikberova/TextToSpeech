@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/auth-components/login/login.component';
 import { RegisterComponent } from './components/auth-components/register/register.component';
-import { QaComponent } from './qa/qa.component';
+import { QaComponent } from './components/qa/qa.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { RoutesConstants } from './constants/route-constants';
 import { FeedbackFormComponent } from './components/feedback-form/feedback-form.component';
