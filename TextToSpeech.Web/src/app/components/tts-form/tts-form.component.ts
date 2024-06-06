@@ -22,7 +22,7 @@ import { DropdownComponent } from '../../shared-ui/components/dropdown/dropdown.
 import { SnackbarService } from '../../shared-ui/snackbar-service';
 import { DropdownService } from '../../services/dropdown.service';
 import { FileInputService } from '../../services/file-input.service';
-import { AcceptableFileTypes, MaxInputLength } from "../../constants/tts-constants";
+import { AcceptableFileTypes } from "../../constants/tts-constants";
 
 @Component({
     selector: 'app-tts-form',
