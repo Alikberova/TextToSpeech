@@ -15,6 +15,11 @@ public class RedisCacheSeeder
 
     public async Task SeedNarakeetVoices()
     {
+        if (await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet) is not null)
+        {
+            return;
+        }
+
         var voices = new List<VoiceResponse>
         {
             new() {
