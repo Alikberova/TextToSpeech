@@ -20,7 +20,6 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuthenticationService>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITtsService, OpenAiService>();
