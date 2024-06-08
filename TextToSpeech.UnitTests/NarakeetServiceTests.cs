@@ -5,8 +5,8 @@ using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Infra.Services.Ai;
 using Xunit;
 using TextToSpeech.Infra.Constants;
-using System.Net.Http.Formatting;
 using TextToSpeech.Core.Interfaces;
+using System.Net.Http.Json;
 
 namespace TextToSpeech.UnitTests;
 
@@ -47,7 +47,7 @@ public class NarakeetServiceTests
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new ObjectContent(typeof(List<VoiceResponse>), voicesFromHttpClient, new JsonMediaTypeFormatter())
+                Content = JsonContent.Create(voicesFromHttpClient)
             });
 
         var baseUri = new Uri("http://example.com");

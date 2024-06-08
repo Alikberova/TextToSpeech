@@ -19,7 +19,6 @@ public class TranslationServiceTests
     private const string SourceLanguage = "en";
     private const string TargetLanguage = "fr";
 
-
     public TranslationServiceTests()
     {
         _mockTranslationRepository = new Mock<ITranslationRepository>();
