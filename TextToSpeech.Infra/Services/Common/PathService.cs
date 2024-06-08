@@ -1,13 +1,8 @@
 ﻿using TextToSpeech.Core.Config;
 using Microsoft.Extensions.Configuration;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Common;
-
-public interface IPathService
-{
-    string GetFileStorageFilePath(string fileName);
-    string GetFileStoragePath();
-}
 
 public sealed class PathService : IPathService
 {

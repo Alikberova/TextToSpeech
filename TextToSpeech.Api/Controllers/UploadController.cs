@@ -1,11 +1,11 @@
-﻿using TextToSpeech.Infra.Services.Common;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public sealed class UploadController : ControllerBase
+public sealed class UploadController : ControllerBase //todo del
 {
     private readonly IFileStorageService _fileStorageService;
 

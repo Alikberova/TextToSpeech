@@ -1,14 +1,8 @@
 ﻿namespace TextToSpeech.Infra.Services.FileProcessing;
 
-public interface IAudioFileService
+public sealed class AudioFileService
 {
-    byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles);
-    byte[] GenerateSilentMp3(int durationSeconds);
-}
-
-public sealed class AudioFileService : IAudioFileService
-{
-    public byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
+    public static byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
     {
         using var memoryStream = new MemoryStream();
 
@@ -22,7 +16,7 @@ public sealed class AudioFileService : IAudioFileService
         return memoryStream.ToArray();
     }
 
-    public byte[] GenerateSilentMp3(int durationSeconds)
+    public static byte[] GenerateSilentMp3(int durationSeconds)
     {
         int sampleRate = 44100;
         int channels = 2;

@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Dto;
 
-namespace TextToSpeech.Core.Services.Interfaces;
+namespace TextToSpeech.Core.Interfaces;
 
 public interface ISpeechService
 {

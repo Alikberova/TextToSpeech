@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Infra.Services.Interfaces;
+﻿namespace TextToSpeech.Core.Interfaces;
 
 public interface IRedisCacheProvider
 {

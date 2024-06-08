@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Services.Interfaces;
+﻿namespace TextToSpeech.Core.Interfaces.Ai;
 
 public interface ITtsService
 {

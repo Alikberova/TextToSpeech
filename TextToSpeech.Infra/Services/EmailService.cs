@@ -1,8 +1,8 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Services.Interfaces;
 using Microsoft.Extensions.Options;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 

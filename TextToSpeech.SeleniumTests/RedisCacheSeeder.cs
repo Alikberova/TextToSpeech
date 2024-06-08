@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Dto.Narakeet;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Services.Interfaces;
 
 namespace TextToSpeech.SeleniumTests;
 

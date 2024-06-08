@@ -3,10 +3,10 @@ using Moq;
 using System.Net;
 using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Infra.Services.Ai;
-using TextToSpeech.Infra.Services.Interfaces;
 using Xunit;
 using TextToSpeech.Infra.Constants;
 using System.Net.Http.Formatting;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.UnitTests;
 

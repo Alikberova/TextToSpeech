@@ -3,8 +3,9 @@ using Microsoft.Extensions.Configuration;
 using OpenAI;
 using OpenAI.Audio;
 using OpenAI.Models;
+using TextToSpeech.Core.Interfaces.Ai;
 
-namespace TextToSpeech.Core.Services.Interfaces.Ai;
+namespace TextToSpeech.Infra.Services.Ai;
 
 public class OpenAiService : ITtsService
 {

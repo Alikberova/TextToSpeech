@@ -1,6 +1,7 @@
 ﻿using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Api.Services;
 

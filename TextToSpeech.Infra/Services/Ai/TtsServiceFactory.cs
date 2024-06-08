@@ -1,11 +1,8 @@
-﻿using TextToSpeech.Core.Services.Interfaces.Ai;
-using TextToSpeech.Core.Services.Interfaces;
-using TextToSpeech.Infra.Services.Ai;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Core.Interfaces.Ai;
 
-namespace TextToSpeech.Infra.Services.Factories;
+namespace TextToSpeech.Infra.Services.Ai;
 
 public class TtsServiceFactory : ITtsServiceFactory
 {

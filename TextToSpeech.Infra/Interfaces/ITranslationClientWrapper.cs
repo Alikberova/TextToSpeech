@@ -1,6 +1,6 @@
 ﻿using Google.Cloud.Translation.V2;
 
-namespace TextToSpeech.Infra.Services.Interfaces;
+namespace TextToSpeech.Infra.Interfaces;
 
 public interface ITranslationClientWrapper
 {

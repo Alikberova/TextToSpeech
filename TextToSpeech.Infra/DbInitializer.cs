@@ -4,8 +4,8 @@ using System.Text;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Services.FileProcessing;
-using TextToSpeech.Infra.Services.Interfaces;
 using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Infra;
@@ -13,12 +13,10 @@ namespace TextToSpeech.Infra;
 public sealed class DbInitializer : IDbInitializer
 {
     private readonly AppDbContext _dbContext;
-    private readonly IAudioFileService _audioFileService;
 
-    public DbInitializer(AppDbContext dbContext, IAudioFileService audioFileService)
+    public DbInitializer(AppDbContext dbContext)
     {
         _dbContext = dbContext;
-        _audioFileService = audioFileService;
     }
 
     public async Task Initialize()
@@ -73,7 +71,7 @@ public sealed class DbInitializer : IDbInitializer
         {
             Id = Guid.Parse("497540fb-2c84-449e-aadf-505b21aa0f69"),
             FileName = "test_sample_audio_alloy.mp3",
-            Data = _audioFileService.GenerateSilentMp3(5),
+            Data = AudioFileService.GenerateSilentMp3(5),
             CreatedAt = DateTime.UtcNow,
             Description = "Test sample audio file alloy",
             Status = Status.Completed,

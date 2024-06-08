@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Core.Dto;
-using TextToSpeech.Infra.Services;
+using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Api.Controllers;
 

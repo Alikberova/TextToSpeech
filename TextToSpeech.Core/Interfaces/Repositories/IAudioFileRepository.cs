@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Entities;
 
-namespace TextToSpeech.Core.Repositories;
+namespace TextToSpeech.Core.Interfaces.Repositories;
 
 public interface IAudioFileRepository
 {

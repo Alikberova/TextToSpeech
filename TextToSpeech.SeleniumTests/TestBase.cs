@@ -4,10 +4,10 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using Microsoft.Extensions.DependencyInjection;
-using TextToSpeech.Infra.Services.Interfaces;
 using TextToSpeech.Infra.Services;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.SeleniumTests;
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace TextToSpeech.Infra.Services.Interfaces;
+namespace TextToSpeech.Core.Interfaces;
 
 public interface IFileProcessor
 {

@@ -1,9 +1,6 @@
-﻿namespace TextToSpeech.Infra.Services;
+﻿using TextToSpeech.Core.Interfaces;
 
-public interface ITextProcessingService
-{
-    List<string> SplitTextIfGreaterThan(string text, int maxLength);
-}
+namespace TextToSpeech.Infra.Services;
 
 public sealed class TextProcessingService : ITextProcessingService
 {
