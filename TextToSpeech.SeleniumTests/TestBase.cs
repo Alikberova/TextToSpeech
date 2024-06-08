@@ -31,7 +31,7 @@ public class TestBase : IDisposable
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        SeedRedisCache().GetAwaiter().GetResult();
+        Task.Run(SeedRedisCache).GetAwaiter().GetResult();
 
         var options = new ChromeOptions();
 
@@ -73,7 +73,10 @@ public class TestBase : IDisposable
                 Driver.Dispose();
             }
 
-            Directory.Delete(TestDirectory, true);
+            if (Directory.Exists(TestDirectory))
+            {
+                Directory.Delete(TestDirectory, true);
+            }
         }
     }
     private static void ConfigureServices(IServiceCollection services)

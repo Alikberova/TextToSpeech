@@ -23,7 +23,7 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task<T?> GetCachedData<T>(string key)
     {
-        Console.WriteLine("Trying to get cache from redis.");
+        Console.WriteLine("Trying to get cache from redis: " + key);
         Console.WriteLine("_redisConnection: " + _redisConnection);
         Console.WriteLine("_redisConnection?.IsConnected: " + _redisConnection?.IsConnected);
 
@@ -45,7 +45,7 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task SetCachedData<T>(string key, T data, TimeSpan expiry)
     {
-        Console.WriteLine("Trying to set cache to redis.");
+        Console.WriteLine("Trying to set cache to redis:" + key);
         Console.WriteLine("_redisConnection: " + _redisConnection);
         Console.WriteLine("_redisConnection?.IsConnected: " + _redisConnection?.IsConnected);
 
