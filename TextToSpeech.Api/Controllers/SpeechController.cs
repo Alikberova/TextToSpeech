@@ -17,9 +17,9 @@ public sealed class SpeechController : ControllerBase
 
     // POST api/<SpeechController>
     [HttpPost]
-    public IActionResult CreateSpeech([FromForm] SpeechRequest request)
+    public async Task<IActionResult> CreateSpeech([FromForm] SpeechRequest request)
     {
-        var fileId = _speechService.CreateSpeech(request);
+        var fileId = await _speechService.CreateSpeech(request);
 
         return Ok(fileId);
     }

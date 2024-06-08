@@ -24,4 +24,7 @@ public static class SharedConstants
     public static readonly string ServerProjectName = $"{AppName}.Api";
 
     public const int ClientPort = 4000;
+    public const string AngularDemoText =
+        "Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!";
+    public const string FullAudioFileContentForTesting = "Test content for audio file full type.";
 }

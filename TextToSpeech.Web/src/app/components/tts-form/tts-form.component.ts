@@ -81,7 +81,7 @@ export class TtsFormComponent implements OnInit {
 
   apiSelectionChanged(id: number) {
     this.dropdownConfigApi = this.dropdownService.getConfig(this.dropdownConfigApi, id ?? 0);
-    this.dropdownConfigLanguage.selectedIndex = 0; //reset language and voice
+    this.dropdownConfigLanguage.selectedIndex = -1; //reset language and voice; -1 for lang as there different default index it's not 0 and not static
     this.setLangAndVoiceConfig();
     this.audioService.stopAudio();
     this.changeClickedVoiceIcon(this.icons.playCircle)

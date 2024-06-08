@@ -22,6 +22,7 @@ env:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       matrix:
         test_type: [ Selenium, Unit, Integration ]

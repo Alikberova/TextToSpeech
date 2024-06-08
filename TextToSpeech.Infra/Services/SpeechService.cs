@@ -13,6 +13,7 @@ using static TextToSpeech.Core.Enums;
 using System.Text;
 using System.Security.Cryptography;
 using TextToSpeech.Core.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -58,11 +59,22 @@ public sealed class SpeechService : ISpeechService
     /// <param name="request"></param>
     /// <returns>ID of the newly created audio file</returns>
     /// <exception cref="ArgumentException"></exception>
-    public Guid CreateSpeech(Core.Dto.SpeechRequest request)
+    public async Task<Guid> CreateSpeech(Core.Dto.SpeechRequest request)
     {
-        if (request.File is null)
+        ArgumentNullException.ThrowIfNull(request.File);
+
+        var fileText = await ExtractContent(request.File);
+
+        var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(fileText)));
+
+        //todo save new audio to db
+        //todo create hash for all compared props
+        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(hash, request.Voice, request.LanguageCode, request.Speed);
+
+        if (dbAudioFile is not null && dbAudioFile.Status is Status.Completed)
         {
-            throw new ArgumentException(nameof(request.File));
+            _ = UpdateAudioStatus(dbAudioFile.Id, dbAudioFile.Status.ToString(), delayMs: 100);
+            return dbAudioFile.Id;
         }
 
         var audioFile = new AudioFile
@@ -84,7 +96,7 @@ public sealed class SpeechService : ISpeechService
         try
         {
             // todo handle errors
-            string fileText = await ExtractContent(request);
+            string fileText = await ExtractContent(request.File!);
 
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
@@ -171,20 +183,25 @@ public sealed class SpeechService : ISpeechService
         return new MemoryStream(bytes);
     }
 
-    private async Task<string> ExtractContent(Core.Dto.SpeechRequest request)
+    private async Task<string> ExtractContent(IFormFile file)
     {
-        var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(request.File?.FileName)!) ??
+        var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(file.FileName)) ??
             throw new NotSupportedException("File type not supported");
 
-        var fileText = await fileProcessor.ExtractContentAsync(request.File!);
+        var fileText = await fileProcessor.ExtractContentAsync(file);
         return fileText;
     }
 
     /// <summary>
     /// Notify clients about the status update
     /// </summary>
-    private async Task UpdateAudioStatus(Guid audioFileId, string status, string? errorMessage = null)
+    private async Task UpdateAudioStatus(Guid audioFileId, string status, string? errorMessage = null, int? delayMs = null)
     {
+        if (delayMs is not null)
+        {
+            await Task.Delay(delayMs.Value);
+        }
+
         await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status, errorMessage);
     }
     // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.

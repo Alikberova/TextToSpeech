@@ -1,7 +1,6 @@
 ﻿using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services.Interfaces;
-using TextToSpeech.SeleniumTests.Pages;
 
 namespace TextToSpeech.SeleniumTests;
 
@@ -14,8 +13,13 @@ public class RedisCacheSeeder
         _redisCacheProvider = redisCacheProvider;
     }
 
-    public async Task SeedVoicesAsync()
+    public async Task SeedNarakeetVoices()
     {
+        if (await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet) is not null)
+        {
+            return;
+        }
+
         var voices = new List<VoiceResponse>
         {
             new() {
@@ -25,14 +29,20 @@ public class RedisCacheSeeder
                 Styles = []
             },
             new() {
+                Name = "amanda",
+                Language = TextToSpeechFormConstants.English,
+                LanguageCode = "en-US",
+                Styles = []
+            },
+            new() {
                 Name = "armin",
-                Language = TextToSpeechPage.LangToChange,
+                Language = TextToSpeechFormConstants.GermanStandard,
                 LanguageCode = "de-DE",
                 Styles = []
             },
             new() {
-                Name = TextToSpeechPage.VoiceToChange,
-                Language = TextToSpeechPage.LangToChange,
+                Name = TextToSpeechFormConstants.NarakeetVoiceHans,
+                Language = TextToSpeechFormConstants.GermanStandard,
                 LanguageCode = "de-DE",
                 Styles = []
             },
