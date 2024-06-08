@@ -14,19 +14,13 @@ public class RedisCacheProvider : IRedisCacheProvider
         {
             _redisConnection = ConnectionMultiplexer.Connect(connectionString);
         }
-        catch (RedisConnectionException ex)
+        catch (RedisConnectionException)
         {
-            Console.WriteLine("RedisConnectionException Message: " + ex.Message);
-            Console.WriteLine("RedisConnectionException StackTrace: " + ex.StackTrace);
         }
     }
 
     public async Task<T?> GetCachedData<T>(string key)
     {
-        Console.WriteLine("Trying to get cache from redis: " + key);
-        Console.WriteLine("_redisConnection: " + _redisConnection);
-        Console.WriteLine("_redisConnection?.IsConnected: " + _redisConnection?.IsConnected);
-
         if (_redisConnection is null || !_redisConnection.IsConnected)
         {
             return default;
@@ -45,10 +39,6 @@ public class RedisCacheProvider : IRedisCacheProvider
 
     public async Task SetCachedData<T>(string key, T data, TimeSpan expiry)
     {
-        Console.WriteLine("Trying to set cache to redis:" + key);
-        Console.WriteLine("_redisConnection: " + _redisConnection);
-        Console.WriteLine("_redisConnection?.IsConnected: " + _redisConnection?.IsConnected);
-
         if (_redisConnection is null || !_redisConnection.IsConnected)
         {
             return;

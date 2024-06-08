@@ -20,8 +20,6 @@ public class RedisCacheSeeder
             return;
         }
 
-        Console.WriteLine("Seeding voices to redis");
-
         var voices = new List<VoiceResponse>
         {
             new() {
