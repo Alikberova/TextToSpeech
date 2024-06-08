@@ -1,10 +1,10 @@
-﻿using TextToSpeech.Core.Services.Interfaces;
-using TextToSpeech.Infra.Services.Interfaces;
-using TextToSpeech.Core.Dto.Narakeet;
+﻿using TextToSpeech.Core.Dto.Narakeet;
 using System.Net.Http.Json;
 using TextToSpeech.Infra.Constants;
 using System.Text.Json;
 using System.Text;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services.Ai;
 

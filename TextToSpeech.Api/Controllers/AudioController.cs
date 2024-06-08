@@ -1,7 +1,7 @@
-﻿using TextToSpeech.Infra.Services.Common;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using TextToSpeech.Core.Repositories;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.Api.Controllers;
 
@@ -49,25 +49,5 @@ public sealed class AudioController : ControllerBase
         };
 
         Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
-    }
-
-    [HttpGet]
-    [Route("streammp3/{fileId}")]
-    public async Task<IActionResult> StreamMp3(string fileId) //todo remove
-    {
-        string filePath = _pathService.GetFileStorageFilePath($"{fileId}.mp3");
-
-        if (!System.IO.File.Exists(filePath))
-        {
-            return NotFound("File not found.");
-        }
-
-        var memoryStream = new MemoryStream();
-        using (var stream = new FileStream(filePath, FileMode.Open))
-        {
-            await stream.CopyToAsync(memoryStream);
-        }
-        memoryStream.Position = 0;
-        return File(memoryStream, "audio/mpeg", Path.GetFileName(filePath), true);
     }
 }

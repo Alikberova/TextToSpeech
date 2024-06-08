@@ -1,5 +1,4 @@
 ﻿using TextToSpeech.Core.Config;
-using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.TestingInfra.DataGenerators;
 using TextToSpeech.TestingInfra.Mocks;
 using TextToSpeech.TestingInfra.Utils;
@@ -13,8 +12,8 @@ using System.Text;
 
 using static TextToSpeech.Core.Enums;
 using Moq;
-using TextToSpeech.Core.Repositories;
-using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.IntegrationTests.Tests;
 

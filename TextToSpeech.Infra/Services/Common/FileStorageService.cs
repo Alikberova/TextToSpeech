@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Common;
-
-public interface IFileStorageService
-{
-    Task<Guid> StoreFileAsync(IFormFile file);
-}
 
 public sealed class FileStorageService : IFileStorageService
 {

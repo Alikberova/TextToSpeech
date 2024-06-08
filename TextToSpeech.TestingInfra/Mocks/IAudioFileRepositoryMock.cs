@@ -1,5 +1,5 @@
 ﻿using Moq;
-using TextToSpeech.Core.Repositories;
+using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.TestingInfra.Mocks;
 

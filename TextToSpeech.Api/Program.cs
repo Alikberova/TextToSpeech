@@ -3,7 +3,6 @@ using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Infra;
-using TextToSpeech.Infra.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
-using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

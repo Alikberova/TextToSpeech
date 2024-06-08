@@ -1,11 +1,11 @@
 ﻿using Google.Cloud.Translation.V2;
 using Microsoft.Extensions.Configuration;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Infra.Services.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 
-namespace TextToSpeech.Core.Services.Interfaces.Ai;
+namespace TextToSpeech.Infra.Services.Ai;
 
-public class TranslationClientWrapper : ITranslationClientWrapper //todo make consistent location of services/interfaces
+public class TranslationClientWrapper : ITranslationClientWrapper
 {
     private readonly TranslationClient _client;
 

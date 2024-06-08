@@ -1,19 +1,16 @@
 ﻿using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Services.Interfaces;
-using TextToSpeech.Infra.Services.Common;
-using TextToSpeech.Infra.Services.Factories;
-using TextToSpeech.Infra.Services.FileProcessing;
-using TextToSpeech.Infra.Services.Interfaces;
-using TextToSpeech.Infra.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TextToSpeech.Core.Enums;
 using System.Text;
 using System.Security.Cryptography;
-using TextToSpeech.Core.Repositories;
 using Microsoft.AspNetCore.Http;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Services.FileProcessing;
+using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -21,9 +18,8 @@ public sealed class SpeechService : ISpeechService
 {
     private readonly ITextProcessingService _textFileService;
     private readonly ITtsServiceFactory _ttsServiceFactory;
-    private readonly IAudioFileService _audioFileService;
     private readonly IPathService _pathService;
-    private readonly FileProcessorFactory _fileProcessorFactory;
+    private readonly IFileProcessorFactory _fileProcessorFactory;
     private readonly IFileStorageService _fileStorageService;
     private readonly IHubContext<AudioHub> _hubContext;
     private readonly ILogger<SpeechService> _logger;
@@ -32,9 +28,8 @@ public sealed class SpeechService : ISpeechService
 
     public SpeechService(ITextProcessingService textFileService,
         ITtsServiceFactory ttsServiceFactory,
-        IAudioFileService audioFileService,
         IPathService pathService,
-        FileProcessorFactory fileProcessorFactory,
+        IFileProcessorFactory fileProcessorFactory,
         IFileStorageService fileStorageService,
         IHubContext<AudioHub> hubContext,
         ILogger<SpeechService> logger,
@@ -43,7 +38,6 @@ public sealed class SpeechService : ISpeechService
     {
         _textFileService = textFileService;
         _ttsServiceFactory = ttsServiceFactory;
-        _audioFileService = audioFileService;
         _pathService = pathService;
         _fileProcessorFactory = fileProcessorFactory;
         _fileStorageService = fileStorageService;
@@ -104,7 +98,7 @@ public sealed class SpeechService : ISpeechService
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
 
-            var bytes = _audioFileService.ConcatenateMp3Files(bytesCollection);
+            var bytes = AudioFileService.ConcatenateMp3Files(bytesCollection);
 
             var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
 

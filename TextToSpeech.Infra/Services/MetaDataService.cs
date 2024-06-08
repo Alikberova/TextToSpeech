@@ -1,11 +1,7 @@
 ﻿using TextToSpeech.Core.Config;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
-
-public interface IMetaDataService
-{
-    public void AddMetaData(string pathFile, string title);
-}
 
 public class MetaDataService() : IMetaDataService
 {

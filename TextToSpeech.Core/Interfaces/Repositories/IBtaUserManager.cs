@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Entities;
 
-namespace TextToSpeech.Core.Services.Interfaces;
+namespace TextToSpeech.Core.Interfaces.Repositories;
 
 public interface IBtaUserManager
 {

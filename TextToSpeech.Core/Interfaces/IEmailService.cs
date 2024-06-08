@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Services.Interfaces;
+﻿namespace TextToSpeech.Core.Interfaces;
 
 public interface IEmailService
 {

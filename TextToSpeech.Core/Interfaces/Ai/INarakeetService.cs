@@ -1,7 +1,6 @@
 ﻿using TextToSpeech.Core.Dto.Narakeet;
-using TextToSpeech.Core.Services.Interfaces;
 
-namespace TextToSpeech.Infra.Services.Interfaces;
+namespace TextToSpeech.Core.Interfaces.Ai;
 
 public interface INarakeetService : ITtsService
 {

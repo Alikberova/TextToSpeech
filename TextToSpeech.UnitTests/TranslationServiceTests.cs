@@ -1,10 +1,10 @@
 ﻿using Google.Cloud.Translation.V2;
 using Moq;
 using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Repositories;
-using TextToSpeech.Infra.Services.Interfaces;
 using TextToSpeech.Infra.Services;
 using Xunit;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.UnitTests;
 

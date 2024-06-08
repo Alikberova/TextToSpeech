@@ -1,5 +1,5 @@
-﻿using TextToSpeech.Infra.Services.Interfaces;
-using Moq;
+﻿using Moq;
+using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.TestingInfra.Mocks;
 

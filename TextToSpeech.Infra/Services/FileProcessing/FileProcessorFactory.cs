@@ -1,8 +1,8 @@
-﻿using TextToSpeech.Infra.Services.Interfaces;
+﻿using TextToSpeech.Core.Interfaces;
 
-namespace TextToSpeech.Infra.Services.Factories;
+namespace TextToSpeech.Infra.Services.FileProcessing;
 
-public sealed class FileProcessorFactory
+public sealed class FileProcessorFactory : IFileProcessorFactory
 {
     private readonly IEnumerable<IFileProcessor> _processors;
 

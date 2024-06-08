@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Repositories;
+using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.Infra.Repositories;
 
