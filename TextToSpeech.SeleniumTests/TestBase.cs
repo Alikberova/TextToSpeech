@@ -13,8 +13,8 @@ namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IDisposable
 {
-    protected static readonly string DownloadDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-        "BtaDownloads");
+    protected static readonly string TestDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        "TtsTest");
     protected IWebDriver Driver { get; private set; } = default!;
     protected WebDriverWait Wait { get; private set; } = default!;
     protected IServiceProvider ServiceProvider { get; private set; } = default!;
@@ -31,7 +31,6 @@ public class TestBase : IDisposable
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        // Seed Redis Cache
         SeedRedisCache().GetAwaiter().GetResult();
 
         var options = new ChromeOptions();
@@ -45,7 +44,7 @@ public class TestBase : IDisposable
         options.AddArgument("--ignore-ssl-errors");
         options.AddArgument("--no-sandbox");
         options.AddArgument("--disable-dev-shm-usage");
-        options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
+        options.AddUserProfilePreference("download.default_directory", TestDirectory);
 
         Driver = new ChromeDriver(options);
         Driver.Manage().Window.Maximize();
@@ -54,6 +53,8 @@ public class TestBase : IDisposable
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
+
+        Directory.CreateDirectory(TestDirectory);
     }
 
     public void Dispose()
@@ -72,10 +73,7 @@ public class TestBase : IDisposable
                 Driver.Dispose();
             }
 
-            if (Directory.Exists(DownloadDirectory))
-            {
-                Directory.Delete(DownloadDirectory, true);
-            }
+            Directory.Delete(TestDirectory, true);
         }
     }
     private static void ConfigureServices(IServiceCollection services)
@@ -85,8 +83,6 @@ public class TestBase : IDisposable
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build();
 
-        var tst = configuration.GetConnectionString("Redis");
-
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
         services.AddSingleton<RedisCacheSeeder>();
     }
@@ -94,6 +90,6 @@ public class TestBase : IDisposable
     private async Task SeedRedisCache()
     {
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-        await redisCacheSeeder.SeedVoicesAsync();
+        await redisCacheSeeder.SeedNarakeetVoices();
     }
 }

@@ -98,7 +98,7 @@ import { Observable, map } from "rxjs";
 
     private getSelectedLangIndex(languageConfig: DropdownConfig)
     {
-        if (!languageConfig) {
+        if (!languageConfig || languageConfig.selectedIndex < 0) {
             return this.defaultSelectedLanguageIndex;
         }
         return languageConfig.selectedIndex;

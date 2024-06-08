@@ -7,14 +7,8 @@ namespace TextToSpeech.SeleniumTests.Pages;
 
 internal sealed class TextToSpeechPage: BasePage
 {
-    public const string LangToChange = "German (Standard)";
-    public const string VoiceToChange = "hans";
-
     private const string DownloadButtonId = "download";
     private const string Dropdown = "-dropdown";
-
-    private const string VoiceToPlay = "Fable";
-    private const string ApiToChange = SharedConstants.Narakeet;
 
     private readonly string _sourceFilePath;
 
@@ -28,10 +22,10 @@ internal sealed class TextToSpeechPage: BasePage
     private IWebElement VoiceDropdown => _driver.FindElement(By.Id($"voice{Dropdown}"));
     private IWebElement PlayButton => _driver.FindElement(By.XPath("//mat-icon[contains(text(), 'play_circle')]"));
     private IWebElement PauseButton => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//mat-icon[contains(text(), 'pause')]")));
-    private IWebElement TargetVoiceDropdownButton => GetDropdownButton(VoiceToPlay);
-    private IWebElement ApiToChangeDropdownButton => GetDropdownButton(ApiToChange);
-    private IWebElement LangToChangeDropdownButton => GetDropdownButton(LangToChange);
-    private IWebElement VoiceToChangeDropdownButton => GetDropdownButton(VoiceToChange);
+    private IWebElement TargetVoiceDropdownButton => GetDropdownButton(TextToSpeechFormConstants.OpeAiVoiceFable);
+    private IWebElement NarraketApiDropdownButton => GetDropdownButton(SharedConstants.Narakeet);
+    private IWebElement LangToChangeDropdownButton => GetDropdownButton(TextToSpeechFormConstants.GermanStandard);
+    private IWebElement VoiceToChangeDropdownButton => GetDropdownButton(TextToSpeechFormConstants.NarakeetVoiceHans);
     private IWebElement FileInput => _driver.FindElement(By.Id("upload-input"));
     private IWebElement DownloadBtn => _driver.FindElement(By.Id(DownloadButtonId));
 
@@ -67,10 +61,19 @@ internal sealed class TextToSpeechPage: BasePage
         Thread.Sleep(500);
     }
 
-    public void ChangeApiAndLang()
+    public void ChangeApiToNarakeet()
     {
         ApiDropdown.Click();
-        ApiToChangeDropdownButton.Click();
+        NarraketApiDropdownButton.Click();
+    }
+
+    public string GetLanguageDropdownValue()
+    {
+        return LangDropdown.Text;
+    }
+
+    public void ChangeLangAndVoice()
+    {
         LangDropdown.Click();
         LangToChangeDropdownButton.Click();
         VoiceDropdown.Click();

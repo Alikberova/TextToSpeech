@@ -1,3 +1,4 @@
+using TextToSpeech.Core.Config;
 using TextToSpeech.SeleniumTests.Pages;
 
 namespace TextToSpeech.SeleniumTests.Tests;
@@ -9,7 +10,9 @@ public sealed class TextToSpeechTests : TestBase
     [Fact]
     public void TestTextToSpeechForm()
     {
-        var sourceFilePath = Path.Combine(Directory.GetCurrentDirectory(), "TestData", $"{FileName}.txt");
+        var sourceFilePath = Path.Combine(TestDirectory, $"{FileName}.txt");
+
+        File.WriteAllText(sourceFilePath, SharedConstants.FullAudioFileContentForTesting);
 
         var page = new TextToSpeechPage(Driver, Wait, sourceFilePath);
 
@@ -18,10 +21,13 @@ public sealed class TextToSpeechTests : TestBase
         page.UploadFile();
         page.Submit();
         page.DownloadFile();
-        page.ChangeApiAndLang();
+        page.ChangeApiToNarakeet();
+        var defaultNarakeetLang = page.GetLanguageDropdownValue();
+        page.ChangeLangAndVoice();
 
-        var file = Path.Combine(DownloadDirectory, $"{FileName}.mp3");
+        var file = Path.Combine(TestDirectory, $"{FileName}.mp3");
 
         Assert.True(File.Exists(file), $"File {file} does not exist");
+        Assert.Contains(TextToSpeechFormConstants.English, defaultNarakeetLang);
     }
 }
