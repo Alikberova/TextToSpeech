@@ -21,14 +21,14 @@ public sealed class DbInitializer : IDbInitializer
         _audioFileService = audioFileService;
     }
 
-    public void Initialize()
+    public async Task Initialize()
     {
-        _dbContext.Database.Migrate();
+        await _dbContext.Database.MigrateAsync();
 
-        Seed();
+        await Seed();
     }
 
-    private void Seed()
+    private async Task Seed()
     {
         foreach (var keyValue in SharedConstants.TtsApis)
         {
@@ -40,16 +40,16 @@ public sealed class DbInitializer : IDbInitializer
                     Id = keyValue.Value,
                 };
 
-                _dbContext.TtsApis.Add(service);
+                await _dbContext.TtsApis.AddAsync(service);
             }
         }
 
         if (!HostingEnvironment.IsDevelopment())
         {
+            await _dbContext.SaveChangesAsync();
             return;
         }
 
-        // todo if debug
         var audios = new List<AudioFile>()
         {
             CreateAudioSampleAlloy(),
@@ -60,11 +60,11 @@ public sealed class DbInitializer : IDbInitializer
         {
             if (!_dbContext.AudioFiles.Any(a => a.Id == audio.Id))
             {
-                _dbContext.AudioFiles.Add(audio);
+                await _dbContext.AudioFiles.AddAsync(audio);
             }
         }
 
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 
     public AudioFile CreateAudioSampleAlloy()

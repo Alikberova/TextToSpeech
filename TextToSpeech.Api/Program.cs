@@ -76,7 +76,7 @@ app.MapHub<AudioHub>(SharedConstants.AudioHubEndpoint);
 
 using var scope = app.Services.CreateScope();
 
-scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
+await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
 app.Run();
 
