@@ -31,7 +31,7 @@ public class TestBase : IDisposable
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        Task.Run(SeedRedisCache).GetAwaiter().GetResult();
+        SeedRedisCache().GetAwaiter().GetResult();
 
         var options = new ChromeOptions();
 
@@ -93,6 +93,6 @@ public class TestBase : IDisposable
     private async Task SeedRedisCache()
     {
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-        await redisCacheSeeder.SeedNarakeetVoices();
+        await redisCacheSeeder.SeedNarakeetVoices().ConfigureAwait(false);
     }
 }
