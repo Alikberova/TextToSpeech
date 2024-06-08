@@ -86,7 +86,8 @@ public class TestBase : IDisposable
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build();
 
-        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
+        var conn = configuration.GetConnectionString("Redis")!.Replace("redis", "localhost");
+        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
         services.AddSingleton<RedisCacheSeeder>();
     }
 
