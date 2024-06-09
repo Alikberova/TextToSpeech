@@ -44,7 +44,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.issues.create({
+            await github.rest.issues.create({
                 ...context.repo,
                 title: 'Health Check Alert: API Service Down',
                 body: 'The API service at https://localhost:7057/health is down. Please investigate.',
