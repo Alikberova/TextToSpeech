@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@latest
 
       - name: Check Backend health
         id: backend-check
@@ -41,13 +41,26 @@ jobs:
 
       - name: Notify if services are down
         if: failure()
-        uses: actions/github-script@v5
+        uses: actions/github-script@latest
         with:
           script: |
-            github.rest.issues.createComment({
-              title: 'Health Check Alert: Service/s are Down',
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}'
-            })
+            const { github, context } = require('@actions/github');
+            await github.issues.create({
+                ...context.repo,
+                title: 'Health Check Alert: API Service Down',
+                body: 'The API service at https://localhost:7057/health is down. Please investigate.',
+                labels: ['alert', 'health-check']
+            });
+
+    #   - name: Notify if services are down
+    #     if: failure()
+    #     uses: actions/github-script@latest
+    #     with:
+    #       script: |
+    #         github.rest.issues.createComment({
+    #           title: 'Health Check Alert: Service/s are Down',
+    #           owner: context.repo.owner,
+    #           repo: context.repo.repo,
+    #           issue_number: context.issue.number,
+    #           body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}'
+    #         })
