@@ -1,0 +1,50 @@
+name: Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
+
+env:
+  environment: Staging
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Backend health
+        id: backend-check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            curl -f https://localhost:7057/health
+
+      - name: Check Frontend health
+        id: frontend-check
+        uses: appleboy/ssh-action@master
+        if: always()
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USER_NAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            script: |
+                curl -f https://localhost:443
+
+      - name: Notify if services are down
+        if: failure()
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              title: 'Health Check Alert: Service/s are Down',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}'
+            })
