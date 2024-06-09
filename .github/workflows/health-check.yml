@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Check Backend health
         id: backend-check
         uses: appleboy/ssh-action@master
