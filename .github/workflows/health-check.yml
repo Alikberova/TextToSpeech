@@ -5,8 +5,8 @@ on:
   push:
     branches:
         - health
-  schedule:
-    - cron: '0 * * * *' # Runs every hour
+#   schedule:
+#     - cron: '0 * * * *' # Runs every hour
 
 env:
   environment: Staging
@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Check Backend health
         id: backend-check
         uses: appleboy/ssh-action@master
@@ -46,20 +44,7 @@ jobs:
           script: |
             await github.rest.issues.create({
                 ...context.repo,
-                title: 'Health Check Alert: Service/s are Down',
-                body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}. Please investigate.',
+                title: 'Health Check Alert: service/s are down',
+                body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}, frotend: ${{ steps.frontend-check.outcome }}. \nPlease investigate.',
                 labels: ['alert', 'health-check']
             });
-
-    #   - name: Notify if services are down
-    #     if: failure()
-    #     uses: actions/github-script@latest
-    #     with:
-    #       script: |
-    #         github.rest.issues.createComment({
-    #           title: 'Health Check Alert: Service/s are Down',
-    #           owner: context.repo.owner,
-    #           repo: context.repo.repo,
-    #           issue_number: context.issue.number,
-    #           body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}'
-    #         })
