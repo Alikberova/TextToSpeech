@@ -47,7 +47,7 @@ jobs:
             await github.rest.issues.create({
                 ...context.repo,
                 title: 'Health Check Alert: Service/s are Down',
-                body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}. Frotend: ${{ steps.frontend-check.outcome }}.
+                body: 'One or more services are down.
                 \nPlease investigate.',
                 labels: ['alert', 'health-check']
             });
