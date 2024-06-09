@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Check Backend health
         id: backend-check
         uses: appleboy/ssh-action@master
@@ -42,7 +44,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { github, context } = require('@actions/github');
             await github.issues.create({
                 ...context.repo,
                 title: 'Health Check Alert: API Service Down',
