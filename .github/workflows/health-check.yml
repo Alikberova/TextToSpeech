@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v4
 
       - name: Check Backend health
         id: backend-check
@@ -41,7 +41,7 @@ jobs:
 
       - name: Notify if services are down
         if: failure()
-        uses: actions/github-script@latest
+        uses: actions/github-script@v7
         with:
           script: |
             const { github, context } = require('@actions/github');
