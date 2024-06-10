@@ -24,18 +24,12 @@ jobs:
           username: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            curl -f https://localhost:7057/health
+            curl -f -k https://localhost:7057/health
 
       - name: Check Frontend health
         id: frontend-check
-        uses: appleboy/ssh-action@master
         if: always()
-        with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.USER_NAME }}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            script: |
-                curl -f https://localhost:443
+        run: curl -f https://texttospeech.duckdns.org
 
       - name: Notify if services are down
         if: failure()
@@ -44,7 +38,7 @@ jobs:
           script: |
             await github.rest.issues.create({
                 ...context.repo,
-                title: 'Health Check Alert: service/s are down',
+                title: 'Health Check Alert: some service/s are down',
                 body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}, frotend: ${{ steps.frontend-check.outcome }}. \nPlease investigate.',
                 labels: ['alert', 'health-check']
             });
