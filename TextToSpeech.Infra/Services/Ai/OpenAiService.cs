@@ -11,7 +11,7 @@ public class OpenAiService : ITtsService
 {
     public int MaxInputLength { get; init; } = 4096;
 
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
     public OpenAiService(IConfiguration configuration)
     {

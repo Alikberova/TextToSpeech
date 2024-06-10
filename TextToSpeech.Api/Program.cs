@@ -53,6 +53,8 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 AddAuthentication(builder);
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -64,6 +66,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("WebCorsPolicy"); // CORS should be before other middleware
+
+app.UseHealthChecks("/health");
 
 app.UseAuthentication();
 app.UseAuthorization();
