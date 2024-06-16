@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TextToSpeech.Core.Enums;
 using System.Text;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Interfaces;
@@ -62,15 +61,22 @@ public sealed class SpeechService : ISpeechService
 
         var fileText = await ExtractContent(request.File);
 
-        var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(fileText)));
+        var hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(fileText),
+            request.Voice, request.LanguageCode, request.Speed);
 
-        //todo save new audio to db
-        //todo create hash for all compared props
-        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(hash, request.Voice, request.LanguageCode, request.Speed);
+        var audioFileId = await _redisCacheProvider.GetCachedData<Guid>(hash);
 
-        if (dbAudioFile is not null && dbAudioFile.Status is Status.Completed)
+        if (audioFileId != Guid.Empty)
         {
-            _ = UpdateAudioStatus(dbAudioFile.Id, dbAudioFile.Status.ToString(), delayMs: 100);
+            _ = UpdateAudioStatus(audioFileId, Status.Completed.ToString(), delayMs: 100);
+            return audioFileId;
+        }
+
+        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(hash);
+
+        if (dbAudioFile is not null)
+        {
+            _ = UpdateAudioStatus(dbAudioFile.Id, Status.Completed.ToString(), delayMs: 100);
             return dbAudioFile.Id;
         }
 
@@ -79,6 +85,7 @@ public sealed class SpeechService : ISpeechService
             Id = Guid.NewGuid(),
             Status = Status.Processing,
             CreatedAt = DateTime.UtcNow,
+            Hash = hash,
         };
 
         var fileId = audioFile.Id;
@@ -105,8 +112,6 @@ public sealed class SpeechService : ISpeechService
 
             var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
 
-            await File.WriteAllBytesAsync(localFilePath, bytes);
-
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
@@ -120,6 +125,10 @@ public sealed class SpeechService : ISpeechService
                 _logger.LogError(ex, "An error in AddMetaData");
                 //todo fix tests
             }
+
+            await File.WriteAllBytesAsync(localFilePath, bytes);
+            await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
+            await _audioFileRepository.AddAudioFileAsync(audioFile);
 
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
         }
