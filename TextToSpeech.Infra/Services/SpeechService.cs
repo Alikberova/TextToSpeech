@@ -25,6 +25,7 @@ public sealed class SpeechService : ISpeechService
     private readonly ILogger<SpeechService> _logger;
     private readonly IMetaDataService _metaDataService;
     private readonly IAudioFileRepository _audioFileRepository;
+    private readonly IRedisCacheProvider _redisCacheProvider;
 
     public SpeechService(ITextProcessingService textFileService,
         ITtsServiceFactory ttsServiceFactory,
@@ -34,7 +35,8 @@ public sealed class SpeechService : ISpeechService
         IHubContext<AudioHub> hubContext,
         ILogger<SpeechService> logger,
         IMetaDataService metaDataService,
-        IAudioFileRepository audioFileRepository)
+        IAudioFileRepository audioFileRepository,
+        IRedisCacheProvider redisCacheProvider)
     {
         _textFileService = textFileService;
         _ttsServiceFactory = ttsServiceFactory;
@@ -45,6 +47,7 @@ public sealed class SpeechService : ISpeechService
         _logger = logger;
         _metaDataService = metaDataService;
         _audioFileRepository = audioFileRepository;
+        _redisCacheProvider = redisCacheProvider;
     }
 
     /// <summary>
@@ -136,9 +139,16 @@ public sealed class SpeechService : ISpeechService
             throw new ArgumentException(nameof(request.Input));
         }
 
-        var hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(request.Input)));
+        var hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(request.Input),
+            request.Voice, request.LanguageCode, request.Speed);
 
-        var audioFile = await _audioFileRepository.GetAudioFileAsync(hash, request.Voice, request.LanguageCode, request.Speed);
+        var audioFile = await _redisCacheProvider.GetCachedData<AudioFile>(hash);
+
+        if (audioFile is null)
+        {
+            audioFile = await _audioFileRepository.GetAudioFileAsync(hash);
+            await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
+        }
 
         if (audioFile is not null)
         {
@@ -153,28 +163,20 @@ public sealed class SpeechService : ISpeechService
             throw new Exception($"Bytes collection length is not as expected - expected  1, got: {bytesCollection.Length}");
         }
 
-        var bytes = bytesCollection[0].ToArray();
+        audioFile = AudioFileBuilder.Create(bytesCollection[0].ToArray(),
+            $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
+            request.Voice,
+            request.LanguageCode,
+            request.Speed,
+            AudioType.Sample,
+            ttsApiId: SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value);
 
-        var ttsApiId = SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value;
+        audioFile.Status = Status.Completed;
 
-        audioFile = new()
-        {
-            Id = Guid.NewGuid(),
-            Data = bytes,
-            CreatedAt = DateTime.UtcNow,
-            Description = $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
-            Status = Status.Completed,
-            Hash = hash,
-            Voice = request.Voice,
-            LanguageCode = request.LanguageCode,
-            Speed = request.Speed,
-            Type = AudioType.Sample,
-            TtsApiId = ttsApiId
-        };
-
+        await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
         await _audioFileRepository.AddAudioFileAsync(audioFile);
 
-        return new MemoryStream(bytes);
+        return new MemoryStream(audioFile.Data);
     }
 
     private async Task<string> ExtractContent(IFormFile file)

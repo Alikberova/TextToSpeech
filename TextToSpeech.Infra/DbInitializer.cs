@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.FileProcessing;
 using static TextToSpeech.Core.Enums;
 
@@ -65,44 +64,36 @@ public sealed class DbInitializer : IDbInitializer
         await _dbContext.SaveChangesAsync();
     }
 
-    public AudioFile CreateAudioSampleAlloy()
+    public static AudioFile CreateAudioSampleAlloy()
     {
-        var audio = new AudioFile
-        {
-            Id = Guid.Parse("497540fb-2c84-449e-aadf-505b21aa0f69"),
-            FileName = "test_sample_audio_alloy.mp3",
-            Data = AudioFileService.GenerateSilentMp3(5),
-            CreatedAt = DateTime.UtcNow,
-            Description = "Test sample audio file alloy",
-            Status = Status.Completed,
-            Hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(SharedConstants.AngularDemoText))),
-            Voice = "alloy",
-            LanguageCode = "en",
-            Speed = 1,
-            Type = AudioType.Sample,
-            TtsApiId = SharedConstants.TtsApis[SharedConstants.OpenAI]
-        };
+        var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
+            "Test sample audio file alloy",
+            "alloy",
+            "en",
+            1,
+            AudioType.Sample,
+            "test_sample_audio_alloy.mp3",
+            Guid.Parse("1bf4b7a2-b16f-401f-9a6c-42294eb3ea54"),
+            SharedConstants.TtsApis[SharedConstants.OpenAI]);
+
+        audio.Status = Status.Completed;
 
         return audio;
     }
 
     public static AudioFile CreateAudioFullFable()
     {
-        var audio = new AudioFile
-        {
-            Id = Guid.Parse("95c53f80-63d5-40c2-96f1-0a38d978f77f"),
-            FileName = "test_full_audio_fable.mp3",
-            Data = "  "u8.ToArray(),
-            CreatedAt = DateTime.UtcNow,
-            Description = "Test full audio file fable",
-            Status = Status.Completed,
-            Hash = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(SharedConstants.FullAudioFileContentForTesting))),
-            Voice = "fable",
-            LanguageCode = "en",
-            Speed = 1,
-            Type = AudioType.Full,
-            TtsApiId = SharedConstants.TtsApis[SharedConstants.OpenAI]
-        };
+        var audio = AudioFileBuilder.Create("  "u8.ToArray(),
+            "Test full audio file fable",
+            "fable",
+            "en",
+            1,
+            AudioType.Full,
+            "test_full_audio_fable.mp3",
+            Guid.Parse("b43cbe4a-806d-47a4-982e-0cb25df3e56c"),
+            SharedConstants.TtsApis[SharedConstants.OpenAI]);
+
+        audio.Status = Status.Completed;
 
         return audio;
     }
