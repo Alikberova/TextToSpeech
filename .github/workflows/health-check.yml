@@ -3,7 +3,7 @@ name: Health Check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *' # Runs every 12h
+    - cron: '0 1 * * *' # Runs day at 1 am
 
 env:
   environment: Staging
