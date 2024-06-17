@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { DropdownConfig, DropdownItem } from "../models/dropdown-config";
 import { VoiceClient } from "../http-clients/voice-client";
-import { Languages, EnUSLanguageCode } from "../constants/language";
+import { Languages, EnUSLanguageCode } from "../constants/content/language";
 import { OpenAiVoices, Narakeet } from "../constants/tts-constants";
 import { Observable, map } from "rxjs";
 
