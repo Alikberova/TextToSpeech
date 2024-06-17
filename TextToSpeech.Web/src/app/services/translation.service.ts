@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { EnLanguageCode } from "../constants/content/language";
+import { EnLanguageCode } from "../constants/language";
 import { TranslationClient } from "../http-clients/translation-client";
 import { TranslationRequest } from "../models/dto/translation-request";
 
