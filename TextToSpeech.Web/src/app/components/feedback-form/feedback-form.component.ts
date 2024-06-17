@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { EmailClient } from '../../http-clients/email-client';
-import { SnackbarService } from '../../shared-ui/snackbar-service';
+import { SnackbarService } from '../../ui-services/snackbar-service';
 
 @Component({
   selector: 'app-feedback-form',
