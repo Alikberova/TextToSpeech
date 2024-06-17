@@ -3,7 +3,7 @@ import { AuthFormComponent } from "../auth-form/auth-form.component";
 import { Router } from '@angular/router';
 import { UserClient } from '../../../http-clients/user-client';
 import {User} from '../../../models/dto/user'
-import { SnackbarService } from '../../../ui-services/snackbar-service';
+import { SnackbarService } from '../../../shared-ui/snackbar-service';
 import { RoutesConstants } from '../../../constants/route-constants';
 
 @Component({
