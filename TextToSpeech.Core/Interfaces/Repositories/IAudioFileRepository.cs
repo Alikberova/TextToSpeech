@@ -8,7 +8,6 @@ public interface IAudioFileRepository
     Task DeleteAudioFileAsync(Guid id);
     Task<List<AudioFile>> GetAllAudioFilesAsync();
     Task<AudioFile?> GetAudioFileAsync(Guid id);
-    Task<AudioFile?> GetAudioFileAsync(string hash);
-    Task<AudioFile?> GetAudioFileAsync(string hash, string voice, string languageCode, double speed);
+    Task<AudioFile?> GetAudioFileByHashAsync(string hash);
     Task UpdateAudioFileAsync(AudioFile audioFile);
 }

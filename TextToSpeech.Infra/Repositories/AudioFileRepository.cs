@@ -4,14 +4,9 @@ using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.Infra.Repositories;
 
-public sealed class AudioFileRepository : IAudioFileRepository
+public sealed class AudioFileRepository(AppDbContext context) : IAudioFileRepository
 {
-    private readonly AppDbContext _context;
-
-    public AudioFileRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     public async Task AddAudioFileAsync(AudioFile audioFile)
     {
@@ -24,17 +19,9 @@ public sealed class AudioFileRepository : IAudioFileRepository
         return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Id == id);
     }
 
-    public async Task<AudioFile?> GetAudioFileAsync(string hash)
+    public async Task<AudioFile?> GetAudioFileByHashAsync(string hash)
     {
         return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Hash == hash);
-    }
-
-    public async Task<AudioFile?> GetAudioFileAsync(string hash, string voice, string languageCode, double speed)
-    {
-        return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Hash == hash
-            && f.Voice.ToLower() == voice.ToLower()
-            && f.LanguageCode.ToLower() == languageCode.ToLower()
-            && f.Speed == speed);
     }
 
     public async Task<List<AudioFile>> GetAllAudioFilesAsync()

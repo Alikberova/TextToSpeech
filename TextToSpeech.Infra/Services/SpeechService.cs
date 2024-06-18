@@ -13,41 +13,27 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class SpeechService : ISpeechService
+public sealed class SpeechService(ITextProcessingService textFileService,
+    ITtsServiceFactory ttsServiceFactory,
+    IPathService pathService,
+    IFileProcessorFactory fileProcessorFactory,
+    IFileStorageService fileStorageService,
+    IHubContext<AudioHub> hubContext,
+    ILogger<SpeechService> logger,
+    IMetaDataService metaDataService,
+    IAudioFileRepository audioFileRepository,
+    IRedisCacheProvider redisCacheProvider) : ISpeechService
 {
-    private readonly ITextProcessingService _textFileService;
-    private readonly ITtsServiceFactory _ttsServiceFactory;
-    private readonly IPathService _pathService;
-    private readonly IFileProcessorFactory _fileProcessorFactory;
-    private readonly IFileStorageService _fileStorageService;
-    private readonly IHubContext<AudioHub> _hubContext;
-    private readonly ILogger<SpeechService> _logger;
-    private readonly IMetaDataService _metaDataService;
-    private readonly IAudioFileRepository _audioFileRepository;
-    private readonly IRedisCacheProvider _redisCacheProvider;
-
-    public SpeechService(ITextProcessingService textFileService,
-        ITtsServiceFactory ttsServiceFactory,
-        IPathService pathService,
-        IFileProcessorFactory fileProcessorFactory,
-        IFileStorageService fileStorageService,
-        IHubContext<AudioHub> hubContext,
-        ILogger<SpeechService> logger,
-        IMetaDataService metaDataService,
-        IAudioFileRepository audioFileRepository,
-        IRedisCacheProvider redisCacheProvider)
-    {
-        _textFileService = textFileService;
-        _ttsServiceFactory = ttsServiceFactory;
-        _pathService = pathService;
-        _fileProcessorFactory = fileProcessorFactory;
-        _fileStorageService = fileStorageService;
-        _hubContext = hubContext;
-        _logger = logger;
-        _metaDataService = metaDataService;
-        _audioFileRepository = audioFileRepository;
-        _redisCacheProvider = redisCacheProvider;
-    }
+    private readonly ITextProcessingService _textFileService = textFileService;
+    private readonly ITtsServiceFactory _ttsServiceFactory = ttsServiceFactory;
+    private readonly IPathService _pathService = pathService;
+    private readonly IFileProcessorFactory _fileProcessorFactory = fileProcessorFactory;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
+    private readonly IHubContext<AudioHub> _hubContext = hubContext;
+    private readonly ILogger<SpeechService> _logger = logger;
+    private readonly IMetaDataService _metaDataService = metaDataService;
+    private readonly IAudioFileRepository _audioFileRepository = audioFileRepository;
+    private readonly IRedisCacheProvider _redisCacheProvider = redisCacheProvider;
 
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
@@ -72,7 +58,7 @@ public sealed class SpeechService : ISpeechService
             return audioFileId;
         }
 
-        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(hash);
+        var dbAudioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
 
         if (dbAudioFile is not null)
         {
@@ -156,7 +142,7 @@ public sealed class SpeechService : ISpeechService
 
         if (audioFile is null)
         {
-            audioFile = await _audioFileRepository.GetAudioFileAsync(hash);
+            audioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
             await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
         }
 

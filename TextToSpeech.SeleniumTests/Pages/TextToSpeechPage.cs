@@ -5,17 +5,14 @@ using TextToSpeech.Core.Config;
 
 namespace TextToSpeech.SeleniumTests.Pages;
 
-internal sealed class TextToSpeechPage: BasePage
+internal sealed class TextToSpeechPage(IWebDriver driver,
+    WebDriverWait wait,
+    string fileName) : BasePage(driver, wait)
 {
     private const string DownloadButtonId = "download";
     private const string Dropdown = "-dropdown";
 
-    private readonly string _sourceFilePath;
-
-    public TextToSpeechPage(IWebDriver driver, WebDriverWait wait, string fileName) : base(driver, wait)
-    {
-        _sourceFilePath = fileName;
-    }
+    private readonly string _sourceFilePath = fileName;
 
     private IWebElement ApiDropdown => _driver.FindElement(By.Id($"speech-service{Dropdown}"));
     private IWebElement LangDropdown => _driver.FindElement(By.Id($"voice-language{Dropdown}"));
