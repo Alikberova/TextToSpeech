@@ -10,11 +10,8 @@ public static class IAudioFileRepositoryMock
         var mock = new Mock<IAudioFileRepository>();
 
         mock.Setup(s =>
-            s.GetAudioFileAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<double>()));
+            s.GetAudioFileByHashAsync(
+                It.IsAny<string>()));
 
         return mock;
     }

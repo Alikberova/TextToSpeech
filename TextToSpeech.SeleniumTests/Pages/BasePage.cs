@@ -4,16 +4,11 @@ using SeleniumExtras.WaitHelpers;
 
 namespace TextToSpeech.SeleniumTests.Pages;
 
-internal class BasePage
+internal class BasePage(IWebDriver driver, WebDriverWait wait)
 {
-    protected IWebDriver _driver;
-    protected WebDriverWait _wait;
+    protected IWebDriver _driver = driver;
+    protected WebDriverWait _wait = wait;
 
-    public BasePage(IWebDriver driver, WebDriverWait wait)
-    {
-        _driver = driver;
-        _wait = wait;
-    }
     public void Submit()
     {
         ClickSpanByText("Submit");
