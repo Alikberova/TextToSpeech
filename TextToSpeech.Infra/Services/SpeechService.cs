@@ -112,6 +112,8 @@ public sealed class SpeechService : ISpeechService
 
             var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
 
+            await File.WriteAllBytesAsync(localFilePath, bytes);
+
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
@@ -126,7 +128,6 @@ public sealed class SpeechService : ISpeechService
                 //todo fix tests
             }
 
-            await File.WriteAllBytesAsync(localFilePath, bytes);
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);
 
