@@ -54,6 +54,12 @@
           "Npgsql": "8.0.3"
         }
       },
+      "PdfPig": {
+        "type": "Direct",
+        "requested": "[0.1.8, )",
+        "resolved": "0.1.8",
+        "contentHash": "lrqrQPAwziQV2E5uImAg1i3SpxDn5XdJ8q3sjRBgEdx1quq1ZftnKNyfp3sTY0J7OxpA14ryGBSSUdoGLGCHjw=="
+      },
       "StackExchange.Redis": {
         "type": "Direct",
         "requested": "[2.7.33, )",

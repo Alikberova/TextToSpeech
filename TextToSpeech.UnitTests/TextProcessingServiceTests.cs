@@ -4,7 +4,7 @@ using Xunit;
 
 namespace TextToSpeech.UnitTests;
 
-public class TextProcessingServiceTests
+public sealed class TextProcessingServiceTests
 {
     [Theory]
     [InlineData(TextProcessingConstants.Text1500chars, 120)]

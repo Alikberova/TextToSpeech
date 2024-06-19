@@ -8,7 +8,7 @@ using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.UnitTests;
 
-public class TranslationServiceTests
+public sealed class TranslationServiceTests
 {
     private readonly Mock<ITranslationRepository> _mockTranslationRepository;
     private readonly Mock<ITranslationClientWrapper> _mockTranslationClientWrapper;

@@ -391,6 +391,11 @@
         "resolved": "7.7.8",
         "contentHash": "q8g5vMDPbD/T6ymcCRH+Q/7yYlnVgI9xUO/O16L7s2O8a3G9jqCC8AXepyPPikCwuv3yPrzI7JT87yWmIM3XUg=="
       },
+      "PdfPig": {
+        "type": "Transitive",
+        "resolved": "0.1.8",
+        "contentHash": "lrqrQPAwziQV2E5uImAg1i3SpxDn5XdJ8q3sjRBgEdx1quq1ZftnKNyfp3sTY0J7OxpA14ryGBSSUdoGLGCHjw=="
+      },
       "Pipelines.Sockets.Unofficial": {
         "type": "Transitive",
         "resolved": "2.2.8",
@@ -519,6 +524,7 @@
           "MailKit": "[4.6.0, )",
           "Microsoft.EntityFrameworkCore": "[8.0.6, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[8.0.4, )",
+          "PdfPig": "[0.1.8, )",
           "StackExchange.Redis": "[2.7.33, )",
           "TextToSpeech.Core": "[1.0.0, )",
           "taglib-sharp-netstandard2.0": "[2.1.0, )"
