@@ -2,7 +2,7 @@
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class TextProcessingService : ITextProcessingService
+public sealed class TextProcessingService : ITextProcessingService //todo use string builder
 {
     public List<string> SplitTextIfGreaterThan(string text, int maxLength)
     {

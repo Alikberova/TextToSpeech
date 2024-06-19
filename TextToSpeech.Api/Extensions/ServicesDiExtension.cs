@@ -38,6 +38,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IPathService, PathService>();
         services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
+        services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
 
         AddServicesWithHttpClient(services);
