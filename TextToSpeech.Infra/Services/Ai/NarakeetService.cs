@@ -8,18 +8,9 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public class NarakeetService : INarakeetService
+public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, HttpClient _httpClient) : INarakeetService
 {
-    public int MaxInputLength { get; init; } = 13000; //23 kb
-
-    private readonly HttpClient _httpClient;
-    private readonly IRedisCacheProvider _redisCacheProvider;
-
-    public NarakeetService(IRedisCacheProvider redisCacheProvider, HttpClient httpClient)
-    {
-        _redisCacheProvider = redisCacheProvider;
-        _httpClient = httpClient;
-    }
+    public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
 
     /// <summary>
     /// Requests speech with Narakeet API

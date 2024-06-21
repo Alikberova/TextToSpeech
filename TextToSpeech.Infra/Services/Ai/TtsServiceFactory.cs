@@ -4,15 +4,8 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public class TtsServiceFactory : ITtsServiceFactory
+public class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsServiceFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public TtsServiceFactory(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public ITtsService Get(string key)
     {
         ITtsService service = key switch
