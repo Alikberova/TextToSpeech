@@ -57,6 +57,7 @@ export class TtsFormComponent implements OnInit {
   }
 
   readonly acceptableFileTypes = AcceptableFileTypes;
+  readonly acceptableFileTypesString = this.acceptableFileTypes.map(s => s.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ' and $1');
   readonly icons = { 
     downloading: 'downloading',
     playCircle: 'play_circle',
