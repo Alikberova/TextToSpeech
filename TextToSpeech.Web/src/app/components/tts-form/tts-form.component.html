@@ -30,7 +30,7 @@
            id="upload-input"/>
     <div class="mat-information" *ngIf="!getUploadedFile()">
       <mat-icon>info</mat-icon>
-      <span>Ready to turn your {{ acceptableFileTypes.join(' and ') }} into speech! Just drop them here</span>
+      <span>Ready to turn your {{ acceptableFileTypesString }} into speech! Just drop them here</span>
     </div>
     <div>
       <span *ngIf="getUploadedFile()">{{ getUploadedFile()!.name }}</span>

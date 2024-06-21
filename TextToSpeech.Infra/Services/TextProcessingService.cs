@@ -53,7 +53,7 @@ public sealed class TextProcessingService : ITextProcessingService //todo use st
         return chunks;
     }
 
-    private int FindLastSentenceEnd(string text, int start, int end)
+    private static int FindLastSentenceEnd(string text, int start, int end)
     {
         // Search for sentence-ending punctuation within the specified range
         for (int i = end - 1; i >= start; i--)
