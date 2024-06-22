@@ -10,7 +10,7 @@ using System.Net.Http.Json;
 
 namespace TextToSpeech.UnitTests;
 
-public class NarakeetServiceTests
+public sealed class NarakeetServiceTests
 {
     [Fact]
     public async Task GetAvailableVoices_ReturnsVoicesFromCache_WhenCachedDataExists()

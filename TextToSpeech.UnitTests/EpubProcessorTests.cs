@@ -5,7 +5,7 @@ using Xunit;
 
 namespace TextToSpeech.UnitTests;
 
-public class EpubProcessorTests
+public sealed class EpubProcessorTests
 {
     private readonly EpubProcessor _epubProcessor;
 

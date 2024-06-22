@@ -1,6 +1,6 @@
 ﻿namespace TextToSpeech.Infra.Services.FileProcessing;
 
-public sealed class AudioFileService
+public static class AudioFileService
 {
     public static byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
     {
