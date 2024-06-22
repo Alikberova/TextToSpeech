@@ -48,28 +48,26 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             return audioFileId.Value;
         }
 
+        var fileId = Guid.NewGuid();
+
+        _ = ProcessSpeechAsync(request, fileId, fileText, hash);
+
+        return fileId;
+    }
+
+    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, Guid fileId, string fileText, string hash)
+    {
         var audioFile = new AudioFile
         {
-            Id = Guid.NewGuid(),
+            Id = fileId,
             Status = Status.Processing,
             CreatedAt = DateTime.UtcNow,
             Hash = hash,
         };
 
-        var fileId = audioFile.Id;
-
-        _ = ProcessSpeechAsync(request, audioFile);
-
-        return fileId;
-    }
-
-    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, AudioFile audioFile)
-    {
         try
         {
             // todo handle errors
-            string fileText = await ExtractText(request.File!);
-
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
@@ -85,16 +83,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
-            try
-            {
-                _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-                _logger.LogError(ex, "An error in AddMetaData");
-                //todo fix tests
-            }
+            _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);

@@ -7,11 +7,10 @@ public class MetaDataService() : IMetaDataService
 {
     public void AddMetaData(string pathFile, string title)
     {
-        var file = TagLib.File.Create(pathFile);
+        using var file = TagLib.File.Create(pathFile);
 
         file.Tag.Title = title;
         file.Tag.Comment = $"Website: {SharedConstants.Domain}";
         file.Save();
-        file.Dispose();
     }
 }
