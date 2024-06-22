@@ -7,9 +7,16 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public sealed class OpenAiService(IConfiguration _configuration) : ITtsService
+public class OpenAiService : ITtsService
 {
-    public int MaxLengthPerApiRequest { get; init; } = 4096;
+    public int MaxInputLength { get; init; } = 4096;
+
+    private readonly IConfiguration _configuration;
+
+    public OpenAiService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,

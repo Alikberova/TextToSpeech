@@ -10,7 +10,7 @@ internal static class ITtsServiceMock
         var mockOpenAiService = new Mock<ITtsService>();
 
         mockOpenAiService.SetupGet(service =>
-            service.MaxLengthPerApiRequest)
+            service.MaxInputLength)
                 .Returns(150);
 
         mockOpenAiService.Setup(service =>
