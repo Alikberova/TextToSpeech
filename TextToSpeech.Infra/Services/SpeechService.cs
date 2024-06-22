@@ -13,16 +13,28 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class SpeechService(ITextProcessingService _textFileService,
-    ITtsServiceFactory _ttsServiceFactory,
-    IPathService _pathService,
-    IFileProcessorFactory _fileProcessorFactory,
-    IHubContext<AudioHub> _hubContext,
-    ILogger<SpeechService> _logger,
-    IMetaDataService _metaDataService,
-    IAudioFileRepository _audioFileRepository,
-    IRedisCacheProvider _redisCacheProvider) : ISpeechService
+public sealed class SpeechService(ITextProcessingService textFileService,
+    ITtsServiceFactory ttsServiceFactory,
+    IPathService pathService,
+    IFileProcessorFactory fileProcessorFactory,
+    IFileStorageService fileStorageService,
+    IHubContext<AudioHub> hubContext,
+    ILogger<SpeechService> logger,
+    IMetaDataService metaDataService,
+    IAudioFileRepository audioFileRepository,
+    IRedisCacheProvider redisCacheProvider) : ISpeechService
 {
+    private readonly ITextProcessingService _textFileService = textFileService;
+    private readonly ITtsServiceFactory _ttsServiceFactory = ttsServiceFactory;
+    private readonly IPathService _pathService = pathService;
+    private readonly IFileProcessorFactory _fileProcessorFactory = fileProcessorFactory;
+    private readonly IFileStorageService _fileStorageService = fileStorageService;
+    private readonly IHubContext<AudioHub> _hubContext = hubContext;
+    private readonly ILogger<SpeechService> _logger = logger;
+    private readonly IMetaDataService _metaDataService = metaDataService;
+    private readonly IAudioFileRepository _audioFileRepository = audioFileRepository;
+    private readonly IRedisCacheProvider _redisCacheProvider = redisCacheProvider;
+
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
     /// </summary>
@@ -78,7 +90,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
-            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest); //todo rename to MaxLengthPerApiRequest
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
 
