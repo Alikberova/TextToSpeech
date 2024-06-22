@@ -5,5 +5,5 @@ namespace TextToSpeech.Core.Interfaces;
 public interface IFileProcessor
 {
     bool CanProcess(string fileType);
-    Task<string> ExtractContentAsync(IFormFile file);
+    Task<string> ExtractTextAsync(IFormFile file);
 }

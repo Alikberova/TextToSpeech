@@ -66,7 +66,7 @@ public sealed class PdfProcessorTests
         };
 
         // Act
-        var actual = (await _pdfProcessor.ExtractContentAsync(file)).Trim();
+        var actual = (await _pdfProcessor.ExtractTextAsync(file)).Trim();
 
         // Assert
         Assert.Equal(expected, actual);

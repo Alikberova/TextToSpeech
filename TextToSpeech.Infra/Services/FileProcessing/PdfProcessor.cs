@@ -10,7 +10,7 @@ public sealed class PdfProcessor : IFileProcessor
 {
     public bool CanProcess(string fileType) => fileType.Equals(".pdf", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractContentAsync(IFormFile file)
+    public async Task<string> ExtractTextAsync(IFormFile file)
     {
         var stringBuilder = new StringBuilder();
 

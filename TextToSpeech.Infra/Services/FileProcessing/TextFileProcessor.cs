@@ -7,7 +7,7 @@ public sealed class TextFileProcessor : IFileProcessor
 {
     public bool CanProcess(string fileType) => fileType.Equals(".txt", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractContentAsync(IFormFile file)
+    public async Task<string> ExtractTextAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
         {
