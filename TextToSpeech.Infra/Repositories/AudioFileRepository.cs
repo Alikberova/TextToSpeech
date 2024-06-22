@@ -10,6 +10,11 @@ public sealed class AudioFileRepository(AppDbContext context) : IAudioFileReposi
 
     public async Task AddAudioFileAsync(AudioFile audioFile)
     {
+        if (string.IsNullOrWhiteSpace(audioFile.Hash))
+        {
+            throw new Exception("Unable to save audio file without hash");
+        }
+
         _context.AudioFiles.Add(audioFile);
         await _context.SaveChangesAsync();
     }

@@ -2,7 +2,6 @@
 using TextToSpeech.Core.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using static TextToSpeech.Core.Enums;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -13,25 +12,16 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class SpeechService(ITextProcessingService textFileService,
-    ITtsServiceFactory ttsServiceFactory,
-    IPathService pathService,
-    IFileProcessorFactory fileProcessorFactory,
-    IHubContext<AudioHub> hubContext,
-    ILogger<SpeechService> logger,
-    IMetaDataService metaDataService,
-    IAudioFileRepository audioFileRepository,
-    IRedisCacheProvider redisCacheProvider) : ISpeechService
+public sealed class SpeechService(ITextProcessingService _textFileService,
+    ITtsServiceFactory _ttsServiceFactory,
+    IPathService _pathService,
+    IFileProcessorFactory _fileProcessorFactory,
+    IHubContext<AudioHub> _hubContext,
+    ILogger<SpeechService> _logger,
+    IMetaDataService _metaDataService,
+    IAudioFileRepository _audioFileRepository,
+    IRedisCacheProvider _redisCacheProvider) : ISpeechService
 {
-    private readonly ITextProcessingService _textFileService = textFileService;
-    private readonly ITtsServiceFactory _ttsServiceFactory = ttsServiceFactory;
-    private readonly IPathService _pathService = pathService;
-    private readonly IFileProcessorFactory _fileProcessorFactory = fileProcessorFactory;
-    private readonly IHubContext<AudioHub> _hubContext = hubContext;
-    private readonly ILogger<SpeechService> _logger = logger;
-    private readonly IMetaDataService _metaDataService = metaDataService;
-    private readonly IAudioFileRepository _audioFileRepository = audioFileRepository;
-    private readonly IRedisCacheProvider _redisCacheProvider = redisCacheProvider;
 
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
@@ -48,44 +38,36 @@ public sealed class SpeechService(ITextProcessingService textFileService,
         var hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(fileText),
             request.Voice, request.LanguageCode, request.Speed);
 
-        var audioFileId = await _redisCacheProvider.GetCachedData<Guid>(hash);
+        var audioFileId = await _redisCacheProvider.GetCachedData<Guid?>(hash)
+            ?? (await _audioFileRepository.GetAudioFileByHashAsync(hash))?.Id;
 
-        if (audioFileId != Guid.Empty)
+        if (audioFileId is not null)
         {
-            _ = UpdateAudioStatus(audioFileId, Status.Completed.ToString(), delayMs: 100);
-            return audioFileId;
+            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: 100);
+            return audioFileId.Value;
         }
 
-        var dbAudioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
+        audioFileId = Guid.NewGuid();
 
-        if (dbAudioFile is not null)
-        {
-            _ = UpdateAudioStatus(dbAudioFile.Id, Status.Completed.ToString(), delayMs: 100);
-            return dbAudioFile.Id;
-        }
+        _ = ProcessSpeechAsync(request, audioFileId.Value, fileText, hash);
 
-        var audioFile = new AudioFile
-        {
-            Id = Guid.NewGuid(),
-            Status = Status.Processing,
-            CreatedAt = DateTime.UtcNow,
-            Hash = hash,
-        };
-
-        var fileId = audioFile.Id;
-
-        _ = ProcessSpeechAsync(request, audioFile);
-
-        return fileId;
+        return audioFileId.Value;
     }
 
-    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, AudioFile audioFile)
+    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, Guid fileId, string fileText, string hash)
     {
+        var audioFile = AudioFileBuilder.Create([],
+            request.Voice,
+            request.LanguageCode,
+            request.Speed,
+            AudioType.Full,
+            SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value,
+            request.File!.FileName,
+            fileId);
+
         try
         {
             // todo handle errors
-            string fileText = await ExtractText(request.File!);
-
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
@@ -100,17 +82,9 @@ public sealed class SpeechService(ITextProcessingService textFileService,
 
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
+            audioFile.Hash = hash;
 
-            try
-            {
-                _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
-            }
-            catch (Exception ex)
-            {
-                Debugger.Break();
-                _logger.LogError(ex, "An error in AddMetaData");
-                //todo fix tests
-            }
+            _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);
@@ -158,12 +132,11 @@ public sealed class SpeechService(ITextProcessingService textFileService,
         }
 
         audioFile = AudioFileBuilder.Create(bytesCollection[0].ToArray(),
-            $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
             request.Voice,
             request.LanguageCode,
             request.Speed,
             AudioType.Sample,
-            ttsApiId: SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value);
+            SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value);
 
         audioFile.Status = Status.Completed;
 
