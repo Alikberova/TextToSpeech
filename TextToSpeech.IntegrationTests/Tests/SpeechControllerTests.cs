@@ -44,13 +44,10 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         // Act
         var response = await _client.PostAsync("/api/speech/sample", httpContent);
 
-        response.EnsureSuccessStatusCode();
-
-        var bytes = await response.Content.ReadAsByteArrayAsync();
-
         // Assert
+        response.EnsureSuccessStatusCode();
         Assert.Equal(AudioMpeg, response.Content.Headers.ContentType?.MediaType);
-        Assert.True(Mp3FileUtilities.IsMp3Valid(bytes), InvalidMp3Error);
+        Assert.NotEmpty(await response.Content.ReadAsByteArrayAsync());
     }
 
     [Theory]

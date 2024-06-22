@@ -1,6 +1,6 @@
 ﻿namespace TextToSpeech.TestingInfra.Utils;
 
-public class Mp3FileUtilities
+public static class Mp3FileUtilities
 {
     private const int MinBufferLength = 10;
 
@@ -15,7 +15,7 @@ public class Mp3FileUtilities
         return IsMp3Valid(bytes);
     }
 
-    public static bool IsMp3Valid(byte[] bytes)
+    private static bool IsMp3Valid(byte[] bytes)
     {
         if (bytes.Length < MinBufferLength)
         {
