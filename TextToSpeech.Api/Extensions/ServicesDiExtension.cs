@@ -34,7 +34,6 @@ internal static class ServicesDiExtension
         services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
-        services.AddSingleton<IFileStorageService, FileStorageService>();
         services.AddSingleton<IPathService, PathService>();
         services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
         services.AddSingleton<IFileProcessor, TextFileProcessor>();

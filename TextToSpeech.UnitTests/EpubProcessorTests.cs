@@ -54,7 +54,7 @@ public sealed class EpubProcessorTests
         };
 
         // Act
-        var result = await _epubProcessor.ExtractContentAsync(file);
+        var result = await _epubProcessor.ExtractTextAsync(file);
 
         // Assert
         Assert.Equal("Sample EPUB content", result); // Ensure the extracted content matches

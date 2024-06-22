@@ -17,7 +17,6 @@ public sealed class SpeechService(ITextProcessingService textFileService,
     ITtsServiceFactory ttsServiceFactory,
     IPathService pathService,
     IFileProcessorFactory fileProcessorFactory,
-    IFileStorageService fileStorageService,
     IHubContext<AudioHub> hubContext,
     ILogger<SpeechService> logger,
     IMetaDataService metaDataService,
@@ -28,7 +27,6 @@ public sealed class SpeechService(ITextProcessingService textFileService,
     private readonly ITtsServiceFactory _ttsServiceFactory = ttsServiceFactory;
     private readonly IPathService _pathService = pathService;
     private readonly IFileProcessorFactory _fileProcessorFactory = fileProcessorFactory;
-    private readonly IFileStorageService _fileStorageService = fileStorageService;
     private readonly IHubContext<AudioHub> _hubContext = hubContext;
     private readonly ILogger<SpeechService> _logger = logger;
     private readonly IMetaDataService _metaDataService = metaDataService;
@@ -45,7 +43,7 @@ public sealed class SpeechService(ITextProcessingService textFileService,
     {
         ArgumentNullException.ThrowIfNull(request.File);
 
-        var fileText = await ExtractContent(request.File);
+        var fileText = await ExtractText(request.File);
 
         var hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(fileText),
             request.Voice, request.LanguageCode, request.Speed);
@@ -86,17 +84,17 @@ public sealed class SpeechService(ITextProcessingService textFileService,
         try
         {
             // todo handle errors
-            string fileText = await ExtractContent(request.File!);
+            string fileText = await ExtractText(request.File!);
 
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
-            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest); //todo rename to MaxLengthPerApiRequest
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
 
             var bytes = AudioFileService.ConcatenateMp3Files(bytesCollection);
 
-            var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
+            var localFilePath = _pathService.GetFilePathInFileStorage($"{audioFile.Id}.mp3");
 
             await File.WriteAllBytesAsync(localFilePath, bytes);
 
@@ -175,12 +173,12 @@ public sealed class SpeechService(ITextProcessingService textFileService,
         return new MemoryStream(audioFile.Data);
     }
 
-    private async Task<string> ExtractContent(IFormFile file)
+    private async Task<string> ExtractText(IFormFile file)
     {
         var fileProcessor = _fileProcessorFactory.GetProcessor(Path.GetExtension(file.FileName)) ??
             throw new NotSupportedException("File type not supported");
 
-        var fileText = await fileProcessor.ExtractContentAsync(file);
+        var fileText = await fileProcessor.ExtractTextAsync(file);
         return fileText;
     }
 

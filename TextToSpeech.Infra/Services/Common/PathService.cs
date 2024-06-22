@@ -4,23 +4,20 @@ using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Common;
 
-public sealed class PathService : IPathService
+public sealed class PathService(IConfiguration _configuration) : IPathService
 {
-    private readonly IConfiguration _configuration;
-
-    public PathService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
-    public string GetFileStorageFilePath(string fileName)
+    public string GetFilePathInFileStorage(string fileName)
     {
         return Path.Combine(GetFileStoragePath(), fileName);
     }
 
     public string GetFileStoragePath()
     {
-        return Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
+        var path = Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
             SharedConstants.AppStorage);
+
+        Directory.CreateDirectory(path);
+
+        return path;
     }
 }

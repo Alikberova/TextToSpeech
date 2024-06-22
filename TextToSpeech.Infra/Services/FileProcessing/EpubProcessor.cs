@@ -8,7 +8,7 @@ public sealed class EpubProcessor : IFileProcessor // another package: VersOne.E
 {
     public bool CanProcess(string fileType) => fileType.Equals(".epub", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractContentAsync(IFormFile file)
+    public async Task<string> ExtractTextAsync(IFormFile file)
     {
         var book = EpubReader.Read(file.OpenReadStream(), false);
 
