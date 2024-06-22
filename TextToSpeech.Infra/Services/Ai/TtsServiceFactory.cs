@@ -4,7 +4,7 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsServiceFactory
+public sealed class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsServiceFactory
 {
     public ITtsService Get(string key)
     {
