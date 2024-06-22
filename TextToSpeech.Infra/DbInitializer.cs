@@ -68,14 +68,13 @@ public sealed class DbInitializer : IDbInitializer
     public static AudioFile CreateAudioSampleAlloy()
     {
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
-            "Test sample audio file alloy",
             "alloy",
             "en",
             1,
             AudioType.Sample,
+            SharedConstants.TtsApis[SharedConstants.OpenAI],
             "test_sample_audio_alloy.mp3",
-            Guid.Parse("32f7811a-0cc5-49d7-b0e1-8417cc08d78f"),
-            SharedConstants.TtsApis[SharedConstants.OpenAI]);
+            Guid.Parse("32f7811a-0cc5-49d7-b0e1-8417cc08d78f"));
 
         audio.Status = Status.Completed;
         audio.Hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(SharedConstants.AngularDemoText),
@@ -87,14 +86,13 @@ public sealed class DbInitializer : IDbInitializer
     public static AudioFile CreateAudioFullFable()
     {
         var audio = AudioFileBuilder.Create("  "u8.ToArray(),
-            "Test full audio file fable",
             "fable",
             "en",
             1,
             AudioType.Full,
+            SharedConstants.TtsApis[SharedConstants.OpenAI],
             "test_full_audio_fable.mp3",
-            Guid.Parse("c3c54b87-21c4-43a4-a774-2b7646484edd"),
-            SharedConstants.TtsApis[SharedConstants.OpenAI]);
+            Guid.Parse("c3c54b87-21c4-43a4-a774-2b7646484edd"));
 
         audio.Status = Status.Completed;
         audio.Hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(SharedConstants.FullAudioFileContentForTesting),

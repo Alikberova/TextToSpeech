@@ -2,7 +2,6 @@
 using TextToSpeech.Core.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using static TextToSpeech.Core.Enums;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -48,22 +47,23 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             return audioFileId.Value;
         }
 
-        var fileId = Guid.NewGuid();
+        audioFileId = Guid.NewGuid();
 
-        _ = ProcessSpeechAsync(request, fileId, fileText, hash);
+        _ = ProcessSpeechAsync(request, audioFileId.Value, fileText, hash);
 
-        return fileId;
+        return audioFileId.Value;
     }
 
     internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, Guid fileId, string fileText, string hash)
     {
-        var audioFile = new AudioFile
-        {
-            Id = fileId,
-            Status = Status.Processing,
-            CreatedAt = DateTime.UtcNow,
-            Hash = hash,
-        };
+        var audioFile = AudioFileBuilder.Create([],
+            request.Voice,
+            request.LanguageCode,
+            request.Speed,
+            AudioType.Full,
+            SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value,
+            request.File!.FileName,
+            fileId);
 
         try
         {
@@ -82,6 +82,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
+            audioFile.Hash = hash;
 
             _metaDataService.AddMetaData(localFilePath, request.File!.FileName);
 
@@ -131,12 +132,11 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
 
         audioFile = AudioFileBuilder.Create(bytesCollection[0].ToArray(),
-            $"Sample_{request.Voice}_{request.LanguageCode}_{request.TtsApi}_{request.Speed}",
             request.Voice,
             request.LanguageCode,
             request.Speed,
             AudioType.Sample,
-            ttsApiId: SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value);
+            SharedConstants.TtsApis.Single(kv => kv.Key == request.TtsApi).Value);
 
         audioFile.Status = Status.Completed;
 
