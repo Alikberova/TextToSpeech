@@ -17,7 +17,6 @@ public sealed class SpeechService(ITextProcessingService textFileService,
     ITtsServiceFactory ttsServiceFactory,
     IPathService pathService,
     IFileProcessorFactory fileProcessorFactory,
-    IFileStorageService fileStorageService,
     IHubContext<AudioHub> hubContext,
     ILogger<SpeechService> logger,
     IMetaDataService metaDataService,
@@ -95,7 +94,7 @@ public sealed class SpeechService(ITextProcessingService textFileService,
 
             var bytes = AudioFileService.ConcatenateMp3Files(bytesCollection);
 
-            var localFilePath = _pathService.GetFileStorageFilePath($"{audioFile.Id}.mp3");
+            var localFilePath = _pathService.GetFilePathInFileStorage($"{audioFile.Id}.mp3");
 
             await File.WriteAllBytesAsync(localFilePath, bytes);
 
