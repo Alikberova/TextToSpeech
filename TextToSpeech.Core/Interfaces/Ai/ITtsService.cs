@@ -2,7 +2,7 @@
 
 public interface ITtsService
 {
-    int MaxInputLength { get; init; }
+    int MaxLengthPerApiRequest { get; init; }
     Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,
         double speed = 1,

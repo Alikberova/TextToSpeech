@@ -90,7 +90,7 @@ public sealed class SpeechService(ITextProcessingService textFileService,
 
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
-            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxInputLength); //todo rename to MaxLengthPerApiRequest
+            var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest); //todo rename to MaxLengthPerApiRequest
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
 

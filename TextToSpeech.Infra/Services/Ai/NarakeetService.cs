@@ -10,7 +10,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 
 public class NarakeetService : INarakeetService
 {
-    public int MaxInputLength { get; init; } = 13000; //23 kb
+    public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
 
     private readonly HttpClient _httpClient;
     private readonly IRedisCacheProvider _redisCacheProvider;

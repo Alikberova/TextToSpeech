@@ -9,7 +9,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 
 public class OpenAiService : ITtsService
 {
-    public int MaxInputLength { get; init; } = 4096;
+    public int MaxLengthPerApiRequest { get; init; } = 4096;
 
     private readonly IConfiguration _configuration;
 
