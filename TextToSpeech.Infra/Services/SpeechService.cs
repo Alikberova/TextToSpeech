@@ -13,25 +13,16 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.Infra.Services;
 
-public sealed class SpeechService(ITextProcessingService textFileService,
-    ITtsServiceFactory ttsServiceFactory,
-    IPathService pathService,
-    IFileProcessorFactory fileProcessorFactory,
-    IHubContext<AudioHub> hubContext,
-    ILogger<SpeechService> logger,
-    IMetaDataService metaDataService,
-    IAudioFileRepository audioFileRepository,
-    IRedisCacheProvider redisCacheProvider) : ISpeechService
+public sealed class SpeechService(ITextProcessingService _textFileService,
+    ITtsServiceFactory _ttsServiceFactory,
+    IPathService _pathService,
+    IFileProcessorFactory _fileProcessorFactory,
+    IHubContext<AudioHub> _hubContext,
+    ILogger<SpeechService> _logger,
+    IMetaDataService _metaDataService,
+    IAudioFileRepository _audioFileRepository,
+    IRedisCacheProvider _redisCacheProvider) : ISpeechService
 {
-    private readonly ITextProcessingService _textFileService = textFileService;
-    private readonly ITtsServiceFactory _ttsServiceFactory = ttsServiceFactory;
-    private readonly IPathService _pathService = pathService;
-    private readonly IFileProcessorFactory _fileProcessorFactory = fileProcessorFactory;
-    private readonly IHubContext<AudioHub> _hubContext = hubContext;
-    private readonly ILogger<SpeechService> _logger = logger;
-    private readonly IMetaDataService _metaDataService = metaDataService;
-    private readonly IAudioFileRepository _audioFileRepository = audioFileRepository;
-    private readonly IRedisCacheProvider _redisCacheProvider = redisCacheProvider;
 
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
@@ -48,20 +39,13 @@ public sealed class SpeechService(ITextProcessingService textFileService,
         var hash = AudioFileBuilder.GenerateAudioFileHash(Encoding.UTF8.GetBytes(fileText),
             request.Voice, request.LanguageCode, request.Speed);
 
-        var audioFileId = await _redisCacheProvider.GetCachedData<Guid>(hash);
+        var audioFileId = await _redisCacheProvider.GetCachedData<Guid?>(hash)
+            ?? (await _audioFileRepository.GetAudioFileByHashAsync(hash))?.Id;
 
-        if (audioFileId != Guid.Empty)
+        if (audioFileId is not null)
         {
-            _ = UpdateAudioStatus(audioFileId, Status.Completed.ToString(), delayMs: 100);
-            return audioFileId;
-        }
-
-        var dbAudioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
-
-        if (dbAudioFile is not null)
-        {
-            _ = UpdateAudioStatus(dbAudioFile.Id, Status.Completed.ToString(), delayMs: 100);
-            return dbAudioFile.Id;
+            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: 100);
+            return audioFileId.Value;
         }
 
         var audioFile = new AudioFile
