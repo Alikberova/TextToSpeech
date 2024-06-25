@@ -1,9 +1,9 @@
 ﻿namespace TextToSpeech.Core.Dto.Narakeet;
 
-public sealed class AudioTaskRequest
+public sealed record AudioTaskRequest
 {
-    public string Voice { get; set; } = string.Empty;
-    public string Text { get; set; } = string.Empty;
-    public string Format { get; set; } = string.Empty;
-    public double Speed { get; set; }
+    public string Voice { get; init; } = string.Empty;
+    public string Text { get; init; } = string.Empty;
+    public string Format { get; init; } = string.Empty;
+    public double Speed { get; init; }
 }

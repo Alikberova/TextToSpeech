@@ -56,7 +56,10 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
     internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, Guid fileId, string fileText, string hash)
     {
-        var audioFile = AudioFileBuilder.Create([],
+        AudioFile audioFile = null!;
+        try
+        {
+            audioFile = AudioFileBuilder.Create([],
             request.Voice,
             request.LanguageCode,
             request.Speed,
@@ -65,8 +68,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             request.File!.FileName,
             fileId);
 
-        try
-        {
             // todo handle errors
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 

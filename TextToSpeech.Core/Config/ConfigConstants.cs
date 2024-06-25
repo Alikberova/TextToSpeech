@@ -1,6 +1,6 @@
 ﻿namespace TextToSpeech.Core.Config;
 
-public sealed class ConfigConstants
+public static class ConfigConstants
 {
     public const string JwtConfig = "JwtConfig";
     public const string EmailConfig = "EmailConfig";
