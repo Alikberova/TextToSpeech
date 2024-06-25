@@ -3,7 +3,7 @@ using OpenAI.Audio;
 
 namespace TextToSpeech.Core.Dto;
 
-public sealed class SpeechRequest
+public sealed record SpeechRequest
 {
     public string TtsApi { get; init; } = string.Empty;
     public string Voice { get; init; } = string.Empty;

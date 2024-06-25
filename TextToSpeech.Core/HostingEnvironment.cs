@@ -8,9 +8,4 @@ public static class HostingEnvironment
     {
         return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development;
     }
-
-    public static bool IsWindows()
-    {
-        return Environment.OSVersion.ToString().Contains("Windows");
-    }
 }

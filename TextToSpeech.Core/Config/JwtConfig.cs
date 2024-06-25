@@ -2,17 +2,17 @@
 
 public sealed class JwtConfig
 {
-    public Symmetric Symmetric { get; set; } = new();
-    public Asymmetric Asymmetric { get; set; } = new();
-    public string Issuer { get; set; } = string.Empty;
-    public string Audience { get; set; } = string.Empty;
-    public int ExpirationMinutes { get; set; }
+    public Symmetric Symmetric { get; init; } = new();
+    public Asymmetric Asymmetric { get; init; } = new();
+    public string Issuer { get; init; } = string.Empty;
+    public string Audience { get; init; } = string.Empty;
+    public int ExpirationMinutes { get; init; }
 }
 
 public sealed class Asymmetric
 {
-    public string PrivateKey { get; set; } = string.Empty;
-    public string PublicKey { get; set; } = string.Empty;
+    public string PrivateKey { get; init; } = string.Empty;
+    public string PublicKey { get; init; } = string.Empty;
 }
 
 public sealed class Symmetric

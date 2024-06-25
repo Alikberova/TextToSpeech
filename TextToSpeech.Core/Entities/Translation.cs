@@ -1,6 +1,6 @@
 ﻿namespace TextToSpeech.Core.Entities;
 
-public class Translation
+public sealed class Translation
 {
     public Guid Id { get; init; }
     public DateTime CreatedAt { get; init; }

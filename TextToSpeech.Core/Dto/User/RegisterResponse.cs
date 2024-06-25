@@ -1,9 +1,9 @@
 ﻿namespace TextToSpeech.Core.Dto.User;
 
-public sealed class RegisterResponse
+public sealed record RegisterResponse
 {
-    public string Id { get; set; } = string.Empty;
-    public string UserName { get; set; } = string.Empty;
-    public string? Email { get; set; }
-    public string? PhoneNumber { get; set; }
+    public string Id { get; init; } = string.Empty;
+    public string UserName { get; init; } = string.Empty;
+    public string? Email { get; init; }
+    public string? PhoneNumber { get; init; }
 }

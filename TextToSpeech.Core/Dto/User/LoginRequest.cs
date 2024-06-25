@@ -1,7 +1,7 @@
 ﻿namespace TextToSpeech.Core.Dto.User;
 
-public sealed class LoginRequest
+public sealed record LoginRequest
 {
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public string Username { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
 }

@@ -2,14 +2,14 @@
 
 namespace TextToSpeech.Core.Dto.Narakeet;
 
-public sealed class BuildTask
+public sealed record BuildTask
 {
     [JsonPropertyName("statusUrl")]
-    public string StatusUrl { get; set; } = string.Empty;
+    public string StatusUrl { get; init; } = string.Empty;
 
     [JsonPropertyName("taskId")]
-    public string TaskId { get; set; } = string.Empty;
+    public string TaskId { get; init; } = string.Empty;
 
     [JsonPropertyName("requestId")]
-    public string RequestId { get; set; } = string.Empty;
+    public string RequestId { get; init; } = string.Empty;
 }

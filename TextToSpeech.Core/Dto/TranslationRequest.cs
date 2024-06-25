@@ -2,7 +2,7 @@
 
 public sealed record TranslationRequest
 {
-    public string Text { get; set; } = string.Empty;
-    public string SourceLanguage { get; set; } = string.Empty;
-    public string TargetLanguage { get; set; } = string.Empty;
+    public string Text { get; init; } = string.Empty;
+    public string SourceLanguage { get; init; } = string.Empty;
+    public string TargetLanguage { get; init; } = string.Empty;
 }
