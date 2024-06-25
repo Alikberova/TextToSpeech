@@ -35,7 +35,7 @@ public class TestBase : IDisposable
 
         var options = new ChromeOptions();
 
-        if (!HostingEnvironment.IsDevelopment())
+        if (!HostingEnvironment.IsWindows())
         {
             options.AddArgument("--headless=new");
         }
