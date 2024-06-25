@@ -19,6 +19,8 @@ internal static class ServicesDiExtension
 {
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<IDbInitializer, DbInitializer>();
+
         services.AddScoped<AuthenticationService>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
@@ -28,7 +30,6 @@ internal static class ServicesDiExtension
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
-        services.AddScoped<IDbInitializer, DbInitializer>();
         services.AddScoped<ITranslationService, TranslationService>();
         services.AddScoped<ITranslationRepository, TranslationRepository>();
         services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();

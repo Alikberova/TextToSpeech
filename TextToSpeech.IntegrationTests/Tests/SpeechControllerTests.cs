@@ -109,7 +109,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         {
             services.AddScoped(_ => ITtsServiceFactoryMock.Get().Object);
             services.AddScoped(_ => new Mock<IAudioFileRepository>().Object);
-            services.AddScoped(_ => new Mock<IDbInitializer>().Object);
+            services.AddTransient(_ => new Mock<IDbInitializer>().Object);
             services.AddScoped(_ => new Mock<IRedisCacheProvider>().Object);
         });
 
