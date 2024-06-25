@@ -46,6 +46,7 @@ public class AudioFileBuilderTests
         var audioFile2 = AudioFileBuilder.Create(Bytes, Voice, LangCode, Speed, Type);
 
         // Assert
+        Assert.True(audioFile1 == audioFile2);
         Assert.Equal(audioFile1, audioFile2);
     }
 
