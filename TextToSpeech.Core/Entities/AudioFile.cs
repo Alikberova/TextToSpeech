@@ -18,4 +18,14 @@ public sealed class AudioFile
 
     public Guid? TtsApiId { get; set; }
     public TtsApi? TtsApi { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is AudioFile other && Hash == other.Hash;
+    }
+
+    public override int GetHashCode()
+    {
+        return Hash.GetHashCode();
+    }
 }

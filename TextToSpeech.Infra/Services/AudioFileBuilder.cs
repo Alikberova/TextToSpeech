@@ -6,14 +6,14 @@ using TextToSpeech.Core.Config;
 
 namespace TextToSpeech.Infra.Services;
 
-internal class AudioFileBuilder
+public class AudioFileBuilder
 {
     public static AudioFile Create(byte[] bytes,
         string voice,
         string langCode,
         double speed,
         AudioType type,
-        Guid? ttsApiId,
+        Guid? ttsApiId = null,
         string? fileName = null,
         Guid? id = null)
     {
