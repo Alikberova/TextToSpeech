@@ -11,7 +11,9 @@ namespace TextToSpeech.Infra.Services.Ai;
 public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, HttpClient _httpClient) : INarakeetService
 {
     public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
-
+    private const int MaxLengthForShortContent = 565;
+    private const string Mp3 = "mp3";
+    
     /// <summary>
     /// Requests speech with Narakeet API
     /// </summary>
@@ -26,6 +28,11 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     {
         if (textChunks.Count == 1)
         {
+            if (textChunks[0].Length <= MaxLengthForShortContent)
+            {
+                return [await RequestShortContent(textChunks.First(), voice, speed)];
+            }
+
             return [await RequestLongContent(textChunks.First(), voice, speed, cancellationToken)];
         }
 
@@ -34,7 +41,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return await Task.WhenAll(tasks);
     }
 
-    public async Task<List<VoiceResponse>?> GetAvailableVoices()
+    public async Task<List<VoiceResponse>?> GetAvailableVoices() //todo move redis from here
     {
         var cachedVoices = await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet);
 
@@ -55,7 +62,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     {
         AudioTaskRequest request = new()
         {
-            Format = "mp3",
+            Format = Mp3,
             Voice = voice,
             Speed = speed,
             Text = text
@@ -77,13 +84,12 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
     }
 
-    public async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest, CancellationToken cancellationToken)
+    private async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest, CancellationToken cancellationToken)
     {
-        var url = $"/text-to-speech/{audioTaskRequest.Format}?voice={audioTaskRequest.Voice}&voice-speed={audioTaskRequest.Speed}";
-
         StringContent requestBody = new(audioTaskRequest.Text, Encoding.UTF8, "text/plain");
 
-        using HttpResponseMessage response = await _httpClient.PostAsync(url, requestBody, cancellationToken);
+        using HttpResponseMessage response = await _httpClient.PostAsync(GetEndpoint(Mp3, audioTaskRequest.Voice, audioTaskRequest.Speed),
+            requestBody, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
@@ -99,7 +105,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return result;
     }
 
-    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
+    private async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
         CancellationToken cancellationToken,
         Action<BuildTaskStatus>? progressCallback = null)
     {
@@ -125,4 +131,19 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
             await Task.Delay(TimeSpan.FromSeconds(2));
         }
     }
+
+    private async Task<ReadOnlyMemory<byte>> RequestShortContent(string text, string voice, double speed)
+    {
+        StringContent requestBody = new(text, Encoding.UTF8, "text/plain");
+
+        _httpClient.DefaultRequestHeaders.Add("accept", "application/octet-stream");
+
+        using HttpResponseMessage response = await _httpClient.PostAsync(GetEndpoint(Mp3, voice, speed), requestBody);
+
+        response.EnsureSuccessStatusCode();
+
+        return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
+    }
+
+    private static string GetEndpoint(string format, string voice, double speed) => $"/text-to-speech/{format}?voice={voice}&voice-speed={speed}";
 }
