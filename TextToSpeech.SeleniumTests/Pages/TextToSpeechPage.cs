@@ -46,6 +46,7 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
     public void DownloadFile()
     {
+        _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));
         _wait.Until(driver =>
         {
             var elem = ExpectedConditions.ElementToBeClickable(By.Id(DownloadButtonId)).Invoke(driver);
@@ -54,7 +55,6 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
         Thread.Sleep(750);
         DownloadBtn.Click();
-        _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));
         Thread.Sleep(500);
     }
 
