@@ -16,7 +16,7 @@ internal class BasePage(IWebDriver driver, WebDriverWait wait)
 
     protected void ClickSpanByText(string text)
     {
-        _driver.FindElement(By.XPath($"//span[contains(text(), '{text}')]")).Click();
+        _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath($"//span[contains(text(), '{text}')]"))).Click();
     }
 
     protected IWebElement GetDropdownButton(string buttonText)
