@@ -7,12 +7,12 @@ namespace TextToSpeech.SeleniumTests.Pages;
 
 internal sealed class TextToSpeechPage(IWebDriver driver,
     WebDriverWait wait,
-    string fileName) : BasePage(driver, wait)
+    string filePathToProcessToAudio) : BasePage(driver, wait)
 {
     private const string DownloadButtonId = "download";
     private const string Dropdown = "-dropdown";
 
-    private readonly string _sourceFilePath = fileName;
+    private readonly string _filePathToProcessToAudio = filePathToProcessToAudio;
 
     private IWebElement ApiDropdown => _driver.FindElement(By.Id($"speech-service{Dropdown}"));
     private IWebElement LangDropdown => _driver.FindElement(By.Id($"voice-language{Dropdown}"));
@@ -41,11 +41,12 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
     public void UploadFile()
     {
-        FileInput.SendKeys(_sourceFilePath);
+        FileInput.SendKeys(_filePathToProcessToAudio);
     }
 
     public void DownloadFile()
     {
+        _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));
         _wait.Until(driver =>
         {
             var elem = ExpectedConditions.ElementToBeClickable(By.Id(DownloadButtonId)).Invoke(driver);
@@ -54,7 +55,6 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
         Thread.Sleep(750);
         DownloadBtn.Click();
-        _wait.Until(ExpectedConditions.ElementIsVisible(By.TagName("simple-snack-bar")));
         Thread.Sleep(500);
     }
 
@@ -75,6 +75,16 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
         LangToChangeDropdownButton.Click();
         VoiceDropdown.Click();
         VoiceToChangeDropdownButton.Click();
+    }
+
+    public void Cancel()
+    {
+        ClickSpanByText("Cancel");
+    }
+
+    public bool IsDownloadButtonEnabled()
+    {
+        return DownloadBtn.Enabled;
     }
 }
 

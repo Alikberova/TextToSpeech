@@ -1,4 +1,5 @@
 @import "colors";
+@import "sizes";
 
 .tts-form {
   display: flex;
@@ -14,9 +15,8 @@
   }
 }
 
-.dropdowns {
+.dropdown-container {
   display: flex;
-  flex-direction: row;
   gap: 30px;
   @media (max-width: 750px) {
     flex-direction: column;
@@ -33,15 +33,12 @@ app-dropdown {
   align-items: center;
   justify-content: flex-start;
   gap: 30px;
+  padding-bottom: 1vw;
   @media (max-width: 750px) {
     flex-direction: column;
     align-items: normal;
     gap: 20px;
   }
-}
-
-.submit-btn {
-  pointer-events: auto !important; // to turn on tooltip on disabled button
 }
 
 .progress-bar-container {
@@ -66,5 +63,31 @@ app-dropdown {
   }
   @media (max-width: 400px) {
     width: 45px;
+  }
+}
+
+// buttons
+
+.submit-btn {
+  pointer-events: auto !important; // to turn on tooltip on disabled button
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  @media (max-width: 750px) {
+    gap: 5px;
+  }
+  @media (max-width: 400px) {
+    flex-direction: column;
+    align-items: normal;
+  }
+}
+
+.app-button {
+  width: $btn-130;
+  @media (max-width: 400px) {
+    width: 100%;
   }
 }

@@ -183,6 +183,28 @@ export class TtsFormComponent implements OnInit {
     this.fileInputService.clearFileSelection();
   }
 
+  cancelProcessing() {
+    this.isTextConversionLoading = false;
+    this.signalRService.cancelProcessing(this.currentAudioFileId);
+    this.currentAudioFileId = '';
+  }
+
+  downloadFile() {
+    const file = this.getUploadedFile();
+    if (!file) {
+      return;
+    }
+    const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+    const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
+    const apiUrl = `${this.configService.apiUrl}/audio`;
+    this.audioDownloadUrl = `${apiUrl}/downloadmp3/${this.currentAudioFileId}/${audioDownloadFilename}`;
+    const link = document.createElement('a');
+    link.href = this.audioDownloadUrl;
+    link.click();
+    this.clearFileSelection();
+    this.isSpeechReady = false;
+  }
+
   private sendRequestAndPlaySample(api: string, voice: string, speed: number, langCode: string) {
     const request: SpeechRequest = {
       ttsApi: api,
@@ -238,16 +260,7 @@ export class TtsFormComponent implements OnInit {
       return;
     }
     this.isSpeechReady = true;
-    this.setDownloadData(fileId);
-    this.clearFileSelection();
     this.snackBarService.showSuccess('The audio file is ready, you can download it');
-  }
-
-  private setDownloadData(audioFileId: string) { //todo move
-    const fileNameWithoutExtension = this.fileInputService.uploadedFile!.name.replace(/\.[^/.]+$/, '');
-    const audioDownloadFilename = fileNameWithoutExtension + '.mp3'; // Store this for the download attribute
-    const apiUrl = `${this.configService.apiUrl}/audio`;
-    this.audioDownloadUrl = `${apiUrl}/downloadmp3/${audioFileId}/${audioDownloadFilename}`;
   }
 
   private setCurrentlyPlayingData(voice: string | null, speed: number | null, languageCode: string | null) {

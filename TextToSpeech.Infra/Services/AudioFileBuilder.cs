@@ -6,7 +6,7 @@ using TextToSpeech.Core.Config;
 
 namespace TextToSpeech.Infra.Services;
 
-public class AudioFileBuilder
+public static class AudioFileBuilder
 {
     public static AudioFile Create(byte[] bytes,
         string voice,

@@ -1,6 +1,6 @@
 <form class="tts-form content" (ngSubmit)="onSubmit()">
 
-  <div class="dropdowns form-element">
+  <div class="dropdown-container form-element">
 
   <app-dropdown
     [config]="dropdownConfigApi"
@@ -50,13 +50,20 @@
     <mat-progress-bar *ngIf="isTextConversionLoading" mode="indeterminate"></mat-progress-bar>
   </div>
 
-  <button mat-raised-button color="primary" class="form-element submit-btn" [disabled]="!getUploadedFile()"
-    [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
-  </button>
+  <div class="form-element button-container">
+    <button mat-raised-button color="primary" class="submit-btn app-button" [disabled]="!getUploadedFile()"
+      [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
+    </button>
 
-  <a mat-raised-button color="accent" class="form-element" id="download" [href]="audioDownloadUrl" download
-     [disabled]="!isSpeechReady">
-    Download
-  </a>
+    <button type="button" mat-raised-button color="accent" class="app-button" id="download" (click)="downloadFile()"
+      [disabled]="!isSpeechReady">
+      Download
+    </button>
+
+    <button type="button" mat-raised-button class="app-button" [disabled]="!isTextConversionLoading"
+      (click)="cancelProcessing()">
+      Cancel
+    </button>
+  </div>
 
 </form>

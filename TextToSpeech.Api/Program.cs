@@ -11,6 +11,7 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
