@@ -1,10 +1,12 @@
-﻿using TextToSpeech.Core.Config;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using TextToSpeech.Core.Interfaces;
 
-public sealed class AudioHub : Hub
+namespace TextToSpeech.Infra.SignalR;
+
+public sealed class AudioHub(ITaskManager _taskManager) : Hub
 {
-    public async Task NotifyAudioStatus(Guid fileId, string status, string? errorMessage = null)
+    public async Task CancelProcessing(Guid audioFileId)
     {
-        await Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, fileId, status, errorMessage);
+        await _taskManager.TryCancelTask(audioFileId);
     }
 }

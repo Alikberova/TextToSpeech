@@ -26,4 +26,10 @@ export class SignalRService {
       callback(fileId, status, errorMessage);
     });
   }
+
+  cancelProcessing(fileId: string) {
+    this.hubConnection.invoke('CancelProcessing', fileId)
+      .then(() => console.log(`Cancel request sent for fileId: ${fileId}`))
+      .catch(err => console.error('Error while sending cancel request: ' + err));
+  }
 }

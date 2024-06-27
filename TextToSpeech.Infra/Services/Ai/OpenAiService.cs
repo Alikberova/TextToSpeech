@@ -13,7 +13,8 @@ public sealed class OpenAiService(IConfiguration _configuration) : ITtsService
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,
-        double speed = 1,
+        CancellationToken cancellationToken,
+        double speed,
         string? model = null)
     {
         model ??= "tts-1";
@@ -30,17 +31,31 @@ public sealed class OpenAiService(IConfiguration _configuration) : ITtsService
         // Check if there's only one chunk, then just process it
         if (textChunks.Count == 1)
         {
-            return [await client.AudioEndpoint.CreateSpeechAsync(CreateRequest(textChunks.First(), model, voiceEnum, speed))];
+            var textChunk = textChunks.First();
+
+            return [await client.AudioEndpoint.CreateSpeechAsync(CreateRequest(textChunks.First(), model, voiceEnum, speed),
+                cancellationToken: cancellationToken)];
         }
 
         // Create a task for each text chunk
         var tasks = textChunks.Select(chunk =>
-            client.AudioEndpoint.CreateSpeechAsync(CreateRequest(chunk, model, voiceEnum, speed)));
+            client.AudioEndpoint.CreateSpeechAsync(CreateRequest(chunk, model, voiceEnum, speed), cancellationToken: cancellationToken));
 
         // Await all tasks to complete
         ReadOnlyMemory<byte>[] results = await Task.WhenAll(tasks);
 
         return results;
+    }
+
+    private async Task<ReadOnlyMemory<byte>> Test(int count, CancellationToken cancellationToken)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            await Task.Delay(1000, cancellationToken);
+            Console.WriteLine(i);
+        }
+
+        return Array.Empty<byte>();  
     }
 
     private static SpeechRequest CreateRequest(string input, string model, SpeechVoice voice, double speed)

@@ -41,6 +41,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
+        services.AddSingleton<ITaskManager, TaskManager>();
 
         AddServicesWithHttpClient(services);
 

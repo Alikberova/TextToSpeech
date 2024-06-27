@@ -8,7 +8,7 @@ public sealed class Enums
         Processing,
         Completed,
         Failed,
-        Cancelled
+        Canceled
     }
 
     public enum AudioType

@@ -9,6 +9,7 @@ using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Infra.SignalR;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -20,6 +21,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     ILogger<SpeechService> _logger,
     IMetaDataService _metaDataService,
     IAudioFileRepository _audioFileRepository,
+    ITaskManager _taskManager,
     IRedisCacheProvider _redisCacheProvider) : ISpeechService
 {
 
@@ -49,16 +51,26 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         audioFileId = Guid.NewGuid();
 
-        _ = ProcessSpeechAsync(request, audioFileId.Value, fileText, hash);
+        var cts = new CancellationTokenSource();
+        _taskManager.AddTask(audioFileId.Value, cts);
+
+        _ = ProcessSpeechAsync(request, audioFileId.Value, fileText, hash, cts.Token);
 
         return audioFileId.Value;
     }
 
-    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, Guid fileId, string fileText, string hash)
+    internal async Task ProcessSpeechAsync(Core.Dto.SpeechRequest request, //todo make private
+        Guid fileId,
+        string fileText,
+        string hash,
+        CancellationToken cancellationToken)
     {
         AudioFile audioFile = null!;
+        string? errorMessage = null;
         try
         {
+            _logger.LogInformation($"Processing speech for {fileId}");
+
             audioFile = AudioFileBuilder.Create([],
             request.Voice,
             request.LanguageCode,
@@ -73,13 +85,13 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
 
-            var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, request.Speed, request.Model);
+            var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks, request.Voice, cancellationToken, request.Speed, request.Model);
 
             var bytes = AudioFileService.ConcatenateMp3Files(bytesCollection);
 
             var localFilePath = _pathService.GetFilePathInFileStorage($"{audioFile.Id}.mp3");
 
-            await File.WriteAllBytesAsync(localFilePath, bytes);
+            await File.WriteAllBytesAsync(localFilePath, bytes, cancellationToken);
 
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
@@ -92,12 +104,22 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
         }
+        catch (OperationCanceledException)
+        {
+            audioFile.Status = Status.Canceled;
+            _logger.LogInformation($"Speech processing was canceled for {fileId}");
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error on processing speech");
-            audioFile.Status = Status.Failed; //todo track status while processing, throw as needed
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString(), ex.Message);
+            audioFile.Status = Status.Failed;
+            errorMessage = ex.Message;
+            _logger.LogError(ex, $"Error on processing speech {fileId}");
+             //todo track status while processing, throw as needed
             throw;
+        }
+        finally
+        {
+            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString(), errorMessage);
         }
     }
 
@@ -125,7 +147,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
 
         var bytesCollection = await _ttsServiceFactory.Get(request.TtsApi)
-            .RequestSpeechChunksAsync([request.Input], request.Voice, request.Speed, request.Model);
+            .RequestSpeechChunksAsync([request.Input], request.Voice, CancellationToken.None, request.Speed, request.Model);
 
         if (bytesCollection.Length is not 1)
         {

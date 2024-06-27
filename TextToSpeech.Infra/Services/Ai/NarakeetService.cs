@@ -18,14 +18,18 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     /// <param name="voice"></param>
     /// <param name="speed">value between 0.3 and 2 or fast, normal, slow</param>
     /// <returns></returns>
-    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks, string voice, double speed, string? model = null)
+    public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
+        string voice,
+        CancellationToken cancellationToken,
+        double speed,
+        string? model = null)
     {
         if (textChunks.Count == 1)
         {
-            return [await RequestLongContent(textChunks.First(), voice, speed)];
+            return [await RequestLongContent(textChunks.First(), voice, speed, cancellationToken)];
         }
 
-        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed));
+        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken));
 
         return await Task.WhenAll(tasks);
     }
@@ -46,7 +50,8 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return voices;
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed)
+    // todo try short content for speech sample
+    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, CancellationToken cancellationToken)
     {
         AudioTaskRequest request = new()
         {
@@ -56,29 +61,29 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
             Text = text
         };
 
-        var buildTask = await RequestAudioTaskAsync(request);
+        var buildTask = await RequestAudioTaskAsync(request, cancellationToken);
 
-        var taskResult = await PollUntilFinishedAsync(buildTask);
+        var taskResult = await PollUntilFinishedAsync(buildTask, cancellationToken);
 
         if (!taskResult.Succeeded)
         {
             throw new Exception($"{nameof(NarakeetService)}: Error creating audio - {taskResult.Message}");
         }
 
-        var response = await _httpClient.GetAsync(taskResult.Result);
+        var response = await _httpClient.GetAsync(taskResult.Result, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
     }
 
-    public async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest)
+    public async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest, CancellationToken cancellationToken)
     {
         var url = $"/text-to-speech/{audioTaskRequest.Format}?voice={audioTaskRequest.Voice}&voice-speed={audioTaskRequest.Speed}";
 
         StringContent requestBody = new(audioTaskRequest.Text, Encoding.UTF8, "text/plain");
 
-        using HttpResponseMessage response = await _httpClient.PostAsync(url, requestBody);
+        using HttpResponseMessage response = await _httpClient.PostAsync(url, requestBody, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
@@ -94,11 +99,13 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return result;
     }
 
-    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask, Action<BuildTaskStatus>? progressCallback = null)
+    public async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
+        CancellationToken cancellationToken,
+        Action<BuildTaskStatus>? progressCallback = null)
     {
         while (true)
         {
-            var response = await _httpClient.GetAsync(buildTask.StatusUrl);
+            var response = await _httpClient.GetAsync(buildTask.StatusUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);

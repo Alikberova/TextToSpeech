@@ -18,6 +18,7 @@ internal static class ITtsServiceMock
             service.RequestSpeechChunksAsync(
                 It.IsAny<List<string>>(),
                 It.IsAny<string>(),
+                It.IsAny<CancellationToken>(),
                 It.IsAny<double>(),
                 It.IsAny<string>()))
             .ReturnsAsync([new ReadOnlyMemory<byte>(AudioFileService.GenerateSilentMp3(3))]);
