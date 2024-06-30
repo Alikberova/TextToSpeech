@@ -20,7 +20,7 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
-
+        
         services.AddScoped<AuthenticationService>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
@@ -42,8 +42,12 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, EpubProcessor>();
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
         services.AddSingleton<ITaskManager, TaskManager>();
+        services.AddSingleton<IProgressTracker, ProgressTracker>();
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
         AddServicesWithHttpClient(services);
+
+        services.AddHostedService<QueuedHostedService>();
 
         return services;
     }

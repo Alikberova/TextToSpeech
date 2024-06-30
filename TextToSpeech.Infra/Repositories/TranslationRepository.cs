@@ -4,7 +4,7 @@ using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.Infra.Repositories;
 
-public class TranslationRepository(AppDbContext context) : ITranslationRepository
+public sealed class TranslationRepository(AppDbContext context) : ITranslationRepository
 {
     private readonly AppDbContext _context = context;
 

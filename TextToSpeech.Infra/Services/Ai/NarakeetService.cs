@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
@@ -22,9 +23,11 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     /// <returns></returns>
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,
-        CancellationToken cancellationToken,
+        Guid fileId,
         double speed,
-        string? model = null)
+        string? model = null,
+        IProgress<ProgressReport>? progress = null,
+        CancellationToken cancellationToken = default)
     {
         if (textChunks.Count == 1)
         {
@@ -36,7 +39,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
             return [await RequestLongContent(textChunks.First(), voice, speed, cancellationToken)];
         }
 
-        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken));
+        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken)).ToList();
 
         return await Task.WhenAll(tasks);
     }
@@ -60,6 +63,8 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     // todo try short content for speech sample
     private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         AudioTaskRequest request = new()
         {
             Format = Mp3,

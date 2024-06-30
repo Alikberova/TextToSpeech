@@ -47,7 +47,10 @@
   </mat-form-field>
 
   <div class="progress-bar-container">
-    <mat-progress-bar *ngIf="isTextConversionLoading" mode="indeterminate"></mat-progress-bar>
+    <div *ngIf="isTextConversionLoading && getUploadedFile()">
+    <mat-progress-bar mode="determinate" [value]="ttsProgress"></mat-progress-bar>
+    <p>{{ttsProgress | number}}% completed</p>
+    </div>
   </div>
 
   <div class="form-element button-container">

@@ -15,8 +15,7 @@ RUN dotnet publish "${API_NAME}/${API_NAME}.csproj" --no-restore -c Release -o /
 # Stage 2: Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 
-#todo health endpoint
-HEALTHCHECK CMD curl --fail http://localhost:7057/${API_NAME} || exit 1
+HEALTHCHECK CMD curl --fail https://localhost:7057/health || exit 1
 
 # Install apps for debugging purposes
 RUN apk update && apk add nano && apk add curl

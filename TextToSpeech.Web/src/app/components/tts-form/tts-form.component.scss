@@ -42,8 +42,12 @@ app-dropdown {
 }
 
 .progress-bar-container {
-  height: 3px;
+  height: 43px;
   width: 100%;
+  p {
+    padding-top: 5px;
+    color: $label-text-color;
+  }
 }
 
 .file-selected {
