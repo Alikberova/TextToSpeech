@@ -16,7 +16,7 @@ public sealed class TextToSpeechTests : TestBase
     }
 
     [Fact]
-    public void TestTextToSpeechForm_ShouldDownloadSpeech()
+    public void TestFileExistInDb_ShouldDownloadSpeech()
     {
         File.WriteAllText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting);
 
@@ -36,7 +36,7 @@ public sealed class TextToSpeechTests : TestBase
     }
 
     [Fact]
-    public async Task TestTextToSpeechForm_ShouldCancelSpeechProcessingAsync()
+    public async Task TestFileDoesntExistInDb_ShouldStartProcessing()
     {
         await WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000);
 
