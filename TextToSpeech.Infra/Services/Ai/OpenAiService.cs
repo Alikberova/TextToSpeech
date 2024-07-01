@@ -19,7 +19,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
     /// <summary>
     /// Client shouldn't be initialized in constructor because the key is absent in tests and this will crash
     /// </summary>
-    private OpenAIClient Client { get; set; }
+    private OpenAIClient Client { get; set; } = default!;
 
     private const string Model = "tts-1";
 
