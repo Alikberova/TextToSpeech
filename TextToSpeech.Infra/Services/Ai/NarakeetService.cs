@@ -9,9 +9,10 @@ using TextToSpeech.Core;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, HttpClient _httpClient) : INarakeetService
+public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
+    HttpClient _httpClient) : INarakeetService
 {
-    public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
+    public int MaxLengthPerApiRequest { get; init; } = 500; //23 kb
     private const int MaxLengthForShortContent = 565;
     private const string Mp3 = "mp3";
     
@@ -28,7 +29,9 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken)).ToList();
+        var tasks = textChunks
+            .Select(chunk => RequestLongContent(chunk, voice, speed, fileId, progress,cancellationToken))
+            .ToList();
 
         return await Task.WhenAll(tasks);
     }
@@ -57,7 +60,9 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     }
 
     // todo try short content for speech sample
-    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, CancellationToken cancellationToken)
+    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, Guid fileId,
+        IProgress<ProgressReport>? progress = null,
+        CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -71,7 +76,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
 
         var buildTask = await RequestAudioTaskAsync(request, cancellationToken);
 
-        var taskResult = await PollUntilFinishedAsync(buildTask, cancellationToken);
+        var taskResult = await PollUntilFinishedAsync(buildTask, fileId, progress, cancellationToken);
 
         if (!taskResult.Succeeded)
         {
@@ -94,7 +99,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
 
         response.EnsureSuccessStatusCode();
 
-        var responseJson = await response.Content.ReadAsStringAsync();
+        var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var result = JsonSerializer.Deserialize<BuildTask>(responseJson);
 
@@ -107,11 +112,14 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     }
 
     private async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
-        CancellationToken cancellationToken,
-        Action<BuildTaskStatus>? progressCallback = null)
+        Guid fileId,
+        IProgress<ProgressReport>? progressCallback = null,
+        CancellationToken cancellationToken = default)
     {
         while (true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var response = await _httpClient.GetAsync(buildTask.StatusUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -128,8 +136,8 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
                 return buildTaskStatus;
             }
 
-            progressCallback?.Invoke(buildTaskStatus);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            progressCallback?.Report(new ProgressReport { FileId = fileId, ProgressPercentage = buildTaskStatus.Percent });
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         }
     }
 

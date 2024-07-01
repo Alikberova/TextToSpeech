@@ -30,7 +30,9 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        if (!_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
+        var isTestMode = HostingEnvironment.IsTestMode();
+
+        if (!isTestMode)
         {
             Client ??= GetClient();
         }
@@ -41,19 +43,18 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
 
         var tasks = textChunks.Select((chunk, index) =>
         {
-            return Task.Run(async () =>
+            return Task.Run(() =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 completedChunks++;
                 ReportProgress(fileId, progress, totalChunks, completedChunks);
-                _logger.LogInformation("IsTestMode: " + _configuration.GetValue<bool>(ConfigConstants.IsTestMode).ToString());
-                if (_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
+                if (isTestMode)
                 {
-                    return await Test(chunk);
+                    return Test(chunk);
                 }
-                return await RequestSpeechWIthRetries(fileId, completedChunks, CreateRequest(chunk, Model, voiceEnum, speed));
+                return RequestSpeechWithRetries(fileId, completedChunks, CreateRequest(chunk, Model, voiceEnum, speed));
             }, cancellationToken);
-        }).ToList(); // Convert to list to materialize the tasks;
+        }).ToList(); // Convert to list to materialize the tasks
 
         // Await all tasks to complete
         return await Task.WhenAll(tasks);
@@ -67,7 +68,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         return await Client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestSpeechWIthRetries(Guid fileId, int completedChunks, SpeechRequest request)
+    private async Task<ReadOnlyMemory<byte>> RequestSpeechWithRetries(Guid fileId, int completedChunks, SpeechRequest request)
     {
         int attempt = 0;
         const int maxAttempts = 3;
