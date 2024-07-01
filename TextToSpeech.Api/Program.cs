@@ -12,6 +12,7 @@ using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.SignalR;
+using TextToSpeech.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,15 @@ static void ConfigureLogging(WebApplicationBuilder builder)
 
     builder.Host.UseSerilog((context, loggerConfig) =>
     {
+        loggerConfig.Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day);
+
+        if (HostingEnvironment.IsDevelopment())
+        {
+            return;
+        }
+
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
         var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
 
@@ -131,10 +141,7 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             }
         };
 
-        loggerConfig.Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
-            .WriteTo.Elasticsearch(elasticSinkOptions)
+        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
             .Enrich.WithProperty("Environment", environment)
             .ReadFrom.Configuration(builder.Configuration);
     });

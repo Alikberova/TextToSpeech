@@ -17,44 +17,16 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
     public int MaxLengthPerApiRequest { get; init; } = 4096;
 
     private readonly OpenAIClient _client = new(_configuration[ConfigConstants.OpenAiApiKey]);
+    private const string Model = "tts-1";
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,
         Guid fileId,
         double speed,
-        string? model = null,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        model ??= "tts-1";
-
-        var parsed = Enum.TryParse<SpeechVoice>(voice, true, out var voiceEnum);
-
-        if (!parsed)
-        {
-            throw new Exception("Cannot parse voice " + voice);
-        }
-
-        // Check if there's only one chunk, then just process it
-        if (textChunks.Count == 1)
-        {
-            var textChunk = textChunks.First();
-
-            return [await _client.AudioEndpoint.CreateSpeechAsync(CreateRequest(textChunks.First(), model, voiceEnum, speed),
-                cancellationToken: cancellationToken)];
-        }
-
-        return await RequestSpeechCollection(textChunks, fileId, voiceEnum, speed, model, progress, cancellationToken);
-    }
-
-    private async Task<ReadOnlyMemory<byte>[]> RequestSpeechCollection(List<string> textChunks,
-        Guid fileId,
-        SpeechVoice voiceEnum,
-        double speed,
-        string model,
-        IProgress<ProgressReport>? progress,
-        CancellationToken cancellationToken)
-    {
+        var voiceEnum = GetVoiceEnum(voice);
         var totalChunks = textChunks.Count;
         var completedChunks = 0;
 
@@ -65,12 +37,19 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
                 cancellationToken.ThrowIfCancellationRequested();
                 completedChunks++;
                 ReportProgress(fileId, progress, totalChunks, completedChunks);
-                return await RequestSpeechWIthRetries(fileId, completedChunks, CreateRequest(chunk, model, voiceEnum, speed));
+                return await RequestSpeechWIthRetries(fileId, completedChunks, CreateRequest(chunk, Model, voiceEnum, speed));
             }, cancellationToken);
         }).ToList(); // Convert to list to materialize the tasks;
 
         // Await all tasks to complete
         return await Task.WhenAll(tasks);
+    }
+
+    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+        string voice,
+        double speed)
+    {
+        return await _client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
     }
 
     private async Task<ReadOnlyMemory<byte>> RequestSpeechWIthRetries(Guid fileId, int completedChunks, SpeechRequest request)
@@ -82,15 +61,15 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         {
             try
             {
-                if (!HostingEnvironment.IsDevelopment())
-                {
-                    result = await _client.AudioEndpoint.CreateSpeechAsync(request);
-                }
-                else
+                if (_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
                 {
                     result = await Test(request.Input);
                 }
-                
+                else
+                {
+                    result = await _client.AudioEndpoint.CreateSpeechAsync(request);
+                }
+
                 break; // Successful, break out of retry loop
             }
             catch (HttpRequestException ex) when (ex.Message.Contains("The server had an error processing your request. Sorry about that!"))
@@ -128,12 +107,19 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         //Thread.Sleep(100);
         //Console.WriteLine(chunk[..15]);
         //Console.WriteLine("Test");
-        await Task.Delay(500);
+        await Task.Delay(1000);
         return Array.Empty<byte>();  
     }
 
     private static SpeechRequest CreateRequest(string input, string model, SpeechVoice voice, double speed)
     {
         return new SpeechRequest(input, new Model(model), voice, SpeechResponseFormat.MP3, Convert.ToSingle(speed));
+    }
+
+    private static SpeechVoice GetVoiceEnum(string voice)
+    {
+        return Enum.TryParse<SpeechVoice>(voice, true, out var voiceEnum) 
+            ? voiceEnum
+            : throw new Exception("Cannot parse voice " + voice);
     }
 }

@@ -65,7 +65,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         {
             token = cts.Token;
             using var scope = _serviceScopeFactory.CreateScope();
-            var speechService = _serviceScopeFactory.CreateScope().ServiceProvider.GetRequiredService<ISpeechService>();
+            var speechService = scope.ServiceProvider.GetRequiredService<ISpeechService>();
             await speechService.ProcessSpeechAsync(request, audioFileId.Value, fileText, hash, token);
         });
 
@@ -93,7 +93,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             request.File!.FileName,
             fileId);
 
-            // todo handle errors
             var ttsService = _ttsServiceFactory.Get(request.TtsApi);
 
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
@@ -112,7 +111,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 request.Voice,
                 fileId,
                 request.Speed,
-                request.Model,
                 progress,
                 cancellationToken);
 
@@ -130,8 +128,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);
-
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
         }
         catch (OperationCanceledException)
         {
@@ -152,18 +148,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
     }
 
-    private bool ShouldTriggerUpdate(Guid fileId, int progress)
-    {
-        if (!_lastProgressDictionary.TryGetValue(fileId, out var lastProgress))
-        {
-            // If no last progress is recorded, always trigger the update
-            return true;
-        }
-
-        // Compare with the last reported progress
-        return progress > lastProgress;
-    }
-
     public async Task<MemoryStream> CreateSpeechSample(Core.Dto.SpeechRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Input))
@@ -179,7 +163,11 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         if (audioFile is null)
         {
             audioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
-            await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
+
+            if (audioFile is not null)
+            {
+                await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
+            }
         }
 
         if (audioFile is not null)
@@ -188,14 +176,9 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
 
         var bytesCollection = await _ttsServiceFactory.Get(request.TtsApi)
-            .RequestSpeechChunksAsync([request.Input], request.Voice, audioFile!.Id, request.Speed, request.Model);
+            .RequestSpeechSample(request.Input, request.Voice, request.Speed);
 
-        if (bytesCollection.Length is not 1)
-        {
-            throw new Exception($"Bytes collection length is not as expected - expected  1, got: {bytesCollection.Length}");
-        }
-
-        audioFile = AudioFileBuilder.Create(bytesCollection[0].ToArray(),
+        audioFile = AudioFileBuilder.Create(bytesCollection.ToArray(),
             request.Voice,
             request.LanguageCode,
             request.Speed,
@@ -224,7 +207,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     /// </summary>
     private async Task UpdateAudioStatus(Guid audioFileId,
         string status,
-        double? progressPercentage = null,
+        int? progressPercentage = null,
         string? errorMessage = null,
         int? delayMs = null)
     {
@@ -236,4 +219,16 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
     }
     // todo Ensure that your repository services (_audioFileRepositoryService) handle concurrency and transaction management effectively, especially in the UpdateAudioFileAsync method.
+
+    private bool ShouldTriggerUpdate(Guid fileId, int progress)
+    {
+        if (!_lastProgressDictionary.TryGetValue(fileId, out var lastProgress))
+        {
+            // If no last progress is recorded, always trigger the update
+            return true;
+        }
+
+        // Compare with the last reported progress
+        return progress > lastProgress;
+    }
 }

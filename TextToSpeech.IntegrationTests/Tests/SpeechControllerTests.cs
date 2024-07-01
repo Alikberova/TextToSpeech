@@ -63,13 +63,21 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var status = string.Empty;
         string? errorMessage = null;
         Guid? fileId = null;
+        var progressReports = new List<int?>();
 
-        hubConnection.On<Guid, string, string>(SharedConstants.AudioStatusUpdated, (fileIdResult, updatedStatus, errorMessageResult) =>
+        hubConnection.On<Guid, string, int?, string?>(SharedConstants.AudioStatusUpdated, (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
         {
             status = updatedStatus;
             errorMessage = errorMessageResult;
             fileId = fileIdResult;
-            spechStatusUpdated.SetResult(true);
+            if (progressPercentage.HasValue)
+            {
+                progressReports.Add(progressPercentage);
+            }
+            if (updatedStatus == Status.Completed.ToString())
+            {
+                spechStatusUpdated.SetResult(true);
+            }
         });
 
         await hubConnection.StartAsync();
@@ -94,6 +102,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         Assert.Equal(respStringFileId, fileId);
         Assert.True(Mp3FileUtilities.IsMp3Valid(audioFilePath), InvalidMp3Error);
         Assert.Null(errorMessage);
+        Assert.NotEmpty(progressReports);
 
         // Cleanup
 

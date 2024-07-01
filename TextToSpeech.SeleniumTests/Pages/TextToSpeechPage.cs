@@ -25,6 +25,7 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
     private IWebElement VoiceToChangeDropdownButton => GetDropdownButton(TextToSpeechFormConstants.NarakeetVoiceHans);
     private IWebElement FileInput => _driver.FindElement(By.Id("upload-input"));
     private IWebElement DownloadBtn => _driver.FindElement(By.Id(DownloadButtonId));
+    private IWebElement Snackbar => _driver.FindElement(By.TagName("simple-snack-bar"));
 
     public void SelectVoice()
     {
@@ -86,5 +87,28 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
     {
         return DownloadBtn.Enabled;
     }
-}
 
+    public bool IsSnackbarPresent()
+    {
+        try
+        {
+            return Snackbar is null;
+        }
+        catch (WebDriverException)
+        {
+            return false;
+        }
+    }
+
+    public string? GetProgressBarValue()
+    {
+        var progressBar = _wait.Until(d =>
+        {
+            var progressBarElement = d.FindElement(By.TagName("mat-progress-bar"));
+            var valueNow = progressBarElement.GetAttribute("aria-valuenow");
+            return valueNow != "0" ? progressBarElement : null;
+        });
+
+        return progressBar?.GetAttribute("aria-valuenow");
+    }
+}

@@ -7,7 +7,9 @@ public interface ITtsService
         string voice,
         Guid fileId,
         double speed = 1,
-        string? model = null,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default);
+    Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+        string voice,
+        double speed);
 }

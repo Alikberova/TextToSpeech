@@ -25,23 +25,19 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         string voice,
         Guid fileId,
         double speed,
-        string? model = null,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        if (textChunks.Count == 1)
-        {
-            if (textChunks[0].Length <= MaxLengthForShortContent)
-            {
-                return [await RequestShortContent(textChunks.First(), voice, speed)];
-            }
-
-            return [await RequestLongContent(textChunks.First(), voice, speed, cancellationToken)];
-        }
-
         var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken)).ToList();
 
         return await Task.WhenAll(tasks);
+    }
+
+    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+        string voice,
+        double speed)
+    {
+        return await RequestShortContent(text, voice, speed);
     }
 
     public async Task<List<VoiceResponse>?> GetAvailableVoices() //todo move redis from here
