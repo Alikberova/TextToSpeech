@@ -16,7 +16,10 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
 
-    private OpenAIClient Client { get; init; } = new(_configuration[ConfigConstants.OpenAiApiKey]);
+    /// <summary>
+    /// Client shouldn't be initialized in constructor because the key is absent in tests and this will crash
+    /// </summary>
+    private OpenAIClient Client { get; set; }
 
     private const string Model = "tts-1";
 
@@ -27,6 +30,11 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
+        if (!_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
+        {
+            Client ??= GetClient();
+        }
+
         var voiceEnum = GetVoiceEnum(voice);
         var totalChunks = textChunks.Count;
         var completedChunks = 0;
@@ -38,6 +46,11 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
                 cancellationToken.ThrowIfCancellationRequested();
                 completedChunks++;
                 ReportProgress(fileId, progress, totalChunks, completedChunks);
+                _logger.LogInformation("IsTestMode: " + _configuration.GetValue<bool>(ConfigConstants.IsTestMode).ToString());
+                if (_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
+                {
+                    return await Test(chunk);
+                }
                 return await RequestSpeechWIthRetries(fileId, completedChunks, CreateRequest(chunk, Model, voiceEnum, speed));
             }, cancellationToken);
         }).ToList(); // Convert to list to materialize the tasks;
@@ -50,6 +63,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         string voice,
         double speed)
     {
+        Client ??= GetClient();
         return await Client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
     }
 
@@ -62,15 +76,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         {
             try
             {
-                _logger.LogInformation("IsTestMode: " + _configuration.GetValue<bool>(ConfigConstants.IsTestMode).ToString());
-                if (_configuration.GetValue<bool>(ConfigConstants.IsTestMode))
-                {
-                    result = await Test(request.Input);
-                }
-                else
-                {
-                    result = await Client.AudioEndpoint.CreateSpeechAsync(request);
-                }
+                result = await Client.AudioEndpoint.CreateSpeechAsync(request);
 
                 break; // Successful, break out of retry loop
             }
@@ -120,4 +126,6 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
             ? voiceEnum
             : throw new Exception("Cannot parse voice " + voice);
     }
+
+    private OpenAIClient GetClient() => new(_configuration[ConfigConstants.OpenAiApiKey]);
 }
