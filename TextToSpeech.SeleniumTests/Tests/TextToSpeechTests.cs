@@ -1,5 +1,5 @@
+using System.Text;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Infra;
 using TextToSpeech.SeleniumTests.Pages;
 
 namespace TextToSpeech.SeleniumTests.Tests;
@@ -38,7 +38,8 @@ public sealed class TextToSpeechTests : TestBase
     [Fact]
     public async Task TestTextToSpeechForm_ShouldCancelSpeechProcessingAsync()
     {
-        await File.WriteAllTextAsync(_sourceFilePath, TestData.GetTestFullFableContent());
+        await WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000);
+
         _page.ClickMenu();
         _page.SelectVoice();
         _page.UploadFile();
@@ -50,5 +51,17 @@ public sealed class TextToSpeechTests : TestBase
         Assert.False(_page.IsSnackbarPresent(), "Snack bar expected to be not present");
         Assert.True(int.TryParse(progressValue, out int progress), $"Cannot parse progress {progressValue}");
         Assert.True(progress > 0, "Progress is negative or zero");
+    }
+
+    private static async Task WriteBigFileText(string filePath, string content, int repetitions)
+    {
+        var stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < repetitions; i++)
+        {
+            stringBuilder.Append(content);
+        }
+
+        await File.WriteAllTextAsync(filePath, stringBuilder.ToString());
     }
 }

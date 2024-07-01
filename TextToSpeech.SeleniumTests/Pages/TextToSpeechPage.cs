@@ -102,15 +102,13 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
     public string? GetProgressBarValue()
     {
-        const string ariaValueNow = "aria-valuenow";
-
         var progressBar = _wait.Until(d =>
         {
             var progressBarElement = d.FindElement(By.TagName("mat-progress-bar"));
-            var valueNow = progressBarElement.GetAttribute(ariaValueNow);
+            var valueNow = progressBarElement.GetAttribute("aria-valuenow");
             return valueNow != "0" ? progressBarElement : null;
         });
 
-        return progressBar?.GetAttribute(ariaValueNow);
+        return progressBar?.GetAttribute("aria-valuenow");
     }
 }

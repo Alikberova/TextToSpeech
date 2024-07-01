@@ -47,7 +47,6 @@ public sealed class AudioFile
 
     public override string ToString()
     {
-        return $"{Id}: {Description}";
-        // return $"{Id}_{Type}_{Voice}_{LanguageCode}_{Speed}_{TtsApi?.Name}";
+        return $"{Id}: {Description}"; 
     }
 }

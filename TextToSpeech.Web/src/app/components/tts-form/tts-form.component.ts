@@ -251,12 +251,12 @@ export class TtsFormComponent implements OnInit {
     if (this.currentAudioFileId !== fileId) {
       return;
     }
-    console.log(progress); //todo remove
+    console.log(progress);
     if (status === 'Processing') {
       this.ttsProgress = progress;
       return;
     }
-    else {
+    else{
       console.log(status);
     }
     this.ttsProgress = 0;
