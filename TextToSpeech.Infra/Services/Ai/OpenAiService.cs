@@ -80,7 +80,6 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
 
                 if (attempt == maxAttempts)
                 {
-                    // Max retries reached, log or handle appropriately
                     throw new Exception($"Failed after {maxAttempts} retries. Failed chunk: {completedChunks + 1}. Audio: {fileId}. " +
                         $"Last exception: {ex.Message}", ex);
                 }
@@ -104,9 +103,6 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
     private async Task<ReadOnlyMemory<byte>> Test(string chunk)
     {
         // simulate processing
-        //Thread.Sleep(100);
-        //Console.WriteLine(chunk[..15]);
-        //Console.WriteLine("Test");
         await Task.Delay(1000);
         return Array.Empty<byte>();  
     }

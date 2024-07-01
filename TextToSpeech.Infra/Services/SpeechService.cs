@@ -224,11 +224,9 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     {
         if (!_lastProgressDictionary.TryGetValue(fileId, out var lastProgress))
         {
-            // If no last progress is recorded, always trigger the update
             return true;
         }
 
-        // Compare with the last reported progress
         return progress > lastProgress;
     }
 }
