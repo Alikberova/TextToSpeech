@@ -16,7 +16,8 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
 
-    private readonly OpenAIClient _client = new(_configuration[ConfigConstants.OpenAiApiKey]);
+    private OpenAIClient Client { get; init; } = new(_configuration[ConfigConstants.OpenAiApiKey]);
+
     private const string Model = "tts-1";
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
@@ -49,7 +50,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
         string voice,
         double speed)
     {
-        return await _client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
+        return await Client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
     }
 
     private async Task<ReadOnlyMemory<byte>> RequestSpeechWIthRetries(Guid fileId, int completedChunks, SpeechRequest request)
@@ -68,7 +69,7 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
                 }
                 else
                 {
-                    result = await _client.AudioEndpoint.CreateSpeechAsync(request);
+                    result = await Client.AudioEndpoint.CreateSpeechAsync(request);
                 }
 
                 break; // Successful, break out of retry loop
