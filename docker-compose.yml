@@ -67,6 +67,11 @@ services:
       - db:/var/lib/postgresql/data
     networks:
       - proxy_elk
+    healthcheck:
+      test: [ "CMD", "pg_isready -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   proxy_elk:
