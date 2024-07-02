@@ -95,3 +95,11 @@ app-dropdown {
     width: 100%;
   }
 }
+
+.cancel-btn:not(:disabled) {
+  background-color: #d7c8e7ee;
+}
+
+.cancel-btn:not(:disabled), .download-btn:not(:disabled) {
+  color: $dark-gray;
+}

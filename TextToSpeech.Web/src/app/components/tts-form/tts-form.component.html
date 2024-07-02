@@ -58,12 +58,12 @@
       [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
     </button>
 
-    <button type="button" mat-raised-button color="accent" class="app-button" id="download" (click)="downloadFile()"
+    <button type="button" mat-raised-button color="accent" class="app-button download-btn" id="download" (click)="downloadFile()"
       [disabled]="!isSpeechReady">
       Download
     </button>
 
-    <button type="button" mat-raised-button class="app-button" [disabled]="!isTextConversionLoading"
+    <button type="button" mat-raised-button class="app-button cancel-btn" [disabled]="!isTextConversionLoading"
       (click)="cancelProcessing()">
       Cancel
     </button>
