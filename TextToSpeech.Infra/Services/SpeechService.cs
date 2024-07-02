@@ -38,7 +38,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     /// <param name="request"></param>
     /// <returns>ID of the newly created audio file</returns>
     /// <exception cref="ArgumentException"></exception>
-    public async Task<Guid> CreateSpeech(Core.Dto.SpeechRequest request) // todo rename GetOrInitiateSpeech
+    public async Task<Guid> GetOrInitiateSpeech(Core.Dto.SpeechRequest request)
     {
         ArgumentNullException.ThrowIfNull(request.File);
 

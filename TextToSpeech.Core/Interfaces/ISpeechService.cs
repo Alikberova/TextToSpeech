@@ -4,7 +4,7 @@ namespace TextToSpeech.Core.Interfaces;
 
 public interface ISpeechService
 {
-    Task<Guid> CreateSpeech(SpeechRequest request);
+    Task<Guid> GetOrInitiateSpeech(SpeechRequest request);
     Task<MemoryStream> CreateSpeechSample(SpeechRequest request);
     Task ProcessSpeechAsync(SpeechRequest request,
         Guid fileId,
