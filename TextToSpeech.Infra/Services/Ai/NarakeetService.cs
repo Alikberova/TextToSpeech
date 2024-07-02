@@ -12,7 +12,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
     HttpClient _httpClient) : INarakeetService
 {
-    public int MaxLengthPerApiRequest { get; init; } = 500; //23 kb
+    public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
     private const int MaxLengthForShortContent = 565;
     private const string Mp3 = "mp3";
     
