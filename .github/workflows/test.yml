@@ -62,7 +62,7 @@ jobs:
           IMAGE_TAG_VERSION=${{ env.image_tag_version }} docker compose up -d
 
       - name: Temp delay
-        run: sleep 10
+        run: sleep 60
 
       - name: Cache NuGet Packages
         uses: actions/cache@v4
