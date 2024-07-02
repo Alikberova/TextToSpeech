@@ -56,7 +56,7 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
 
         Thread.Sleep(750);
         DownloadBtn.Click();
-        Thread.Sleep(1000);
+        Thread.Sleep(2000);
     }
 
     public void ChangeApiToNarakeet()
