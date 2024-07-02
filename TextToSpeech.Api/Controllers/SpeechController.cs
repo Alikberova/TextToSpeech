@@ -21,8 +21,6 @@ public sealed class SpeechController : ControllerBase
     {
         var fileId = await _speechService.GetOrInitiateSpeech(request);
 
-        Console.WriteLine("returning id " + fileId);
-
         return Ok(fileId);
     }
 

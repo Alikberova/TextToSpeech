@@ -27,16 +27,7 @@ public sealed class AudioController : ControllerBase
         {
             var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
 
-            Console.WriteLine("file id" + dbAudioFile.Id);
-            Console.WriteLine("file Description " + dbAudioFile.Description);
-            Console.WriteLine("file FileName " + dbAudioFile.FileName);
-            Console.WriteLine("file Hash " + dbAudioFile.Hash);
-            Console.WriteLine("file count " + dbAudioFile.Data.Count());
-            Console.WriteLine("file CreatedAt " + dbAudioFile.CreatedAt);
-            Console.WriteLine("file LanguageCode " + dbAudioFile.LanguageCode);
-            Console.WriteLine("file Speed " + dbAudioFile.Speed);
-
-            if (dbAudioFile != null)
+            if (dbAudioFile is not null)
             {
                 SetHeader(fileName);
                 return File(dbAudioFile.Data, "audio/mpeg");
