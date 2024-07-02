@@ -22,8 +22,10 @@ services:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   web:
     build:
@@ -43,7 +45,8 @@ services:
     networks:
       - proxy_elk
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
   redis:
     image: redis:alpine
@@ -54,6 +57,7 @@ services:
       - redis_data:/data
     networks:
       - proxy_elk
+    restart: always
 
   db:
     image: postgres:alpine
@@ -67,6 +71,11 @@ services:
       - db:/var/lib/postgresql/data
     networks:
       - proxy_elk
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   proxy_elk:
