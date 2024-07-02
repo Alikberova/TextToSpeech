@@ -54,7 +54,7 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
             return elem is not null && elem.GetAttribute("disabled") is not "true";
         });
 
-        Thread.Sleep(1000);
+        Thread.Sleep(1500);
         DownloadBtn.Click();
         Thread.Sleep(2500);
     }
