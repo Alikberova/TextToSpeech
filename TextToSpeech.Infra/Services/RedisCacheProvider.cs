@@ -4,7 +4,7 @@ using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 
-public class RedisCacheProvider : IRedisCacheProvider
+public sealed class RedisCacheProvider : IRedisCacheProvider
 {
     private readonly ConnectionMultiplexer? _redisConnection;
 

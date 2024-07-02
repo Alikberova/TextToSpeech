@@ -3,7 +3,7 @@ using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 
-public class MetaDataService() : IMetaDataService
+public sealed class MetaDataService() : IMetaDataService
 {
     public void AddMetaData(string pathFile, string title)
     {
