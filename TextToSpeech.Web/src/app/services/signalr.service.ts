@@ -21,9 +21,9 @@ export class SignalRService {
       .catch(err => console.log('Error while starting connection: ' + err));
   };
 
-  addAudioStatusListener(callback: (fileId: string, status: string, errorMessage: string | undefined) => void) {
-    this.hubConnection.on('AudioStatusUpdated', (fileId, status, errorMessage) => {
-      callback(fileId, status, errorMessage);
+  addAudioStatusListener(callback: (fileId: string, status: string, progress: number, errorMessage: string | undefined) => void) {
+    this.hubConnection.on('AudioStatusUpdated', (fileId, status, progress, errorMessage) => {
+      callback(fileId, status, progress, errorMessage);
     });
   }
 

@@ -27,7 +27,7 @@ public sealed class AudioController : ControllerBase
         {
             var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
 
-            if (dbAudioFile != null)
+            if (dbAudioFile is not null)
             {
                 SetHeader(fileName);
                 return File(dbAudioFile.Data, "audio/mpeg");

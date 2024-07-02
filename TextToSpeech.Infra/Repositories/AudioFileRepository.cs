@@ -43,7 +43,7 @@ public sealed class AudioFileRepository(AppDbContext context) : IAudioFileReposi
     public async Task DeleteAudioFileAsync(Guid id)
     {
         var audioFile = await _context.AudioFiles.FindAsync(id);
-        if (audioFile != null)
+        if (audioFile is not null)
         {
             _context.AudioFiles.Remove(audioFile);
             await _context.SaveChangesAsync();

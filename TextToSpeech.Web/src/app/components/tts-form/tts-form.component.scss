@@ -42,8 +42,12 @@ app-dropdown {
 }
 
 .progress-bar-container {
-  height: 3px;
+  height: 43px;
   width: 100%;
+  p {
+    padding-top: 5px;
+    color: $label-text-color;
+  }
 }
 
 .file-selected {
@@ -90,4 +94,12 @@ app-dropdown {
   @media (max-width: 400px) {
     width: 100%;
   }
+}
+
+.cancel-btn:not(:disabled) {
+  background-color: #d7c8e7ee;
+}
+
+.cancel-btn:not(:disabled), .download-btn:not(:disabled) {
+  color: $dark-gray;
 }

@@ -1,6 +1,6 @@
 ﻿namespace TextToSpeech.Api.Services;
 
-public static class HttpHeaderHelper
+internal static class HttpHeaderHelper
 {
     public static void SetCacheControl(HttpResponse response, int maxAgeSeconds)
     {

@@ -74,6 +74,7 @@ export class TtsFormComponent implements OnInit {
   dropdownConfigApi!: DropdownConfig;
   dropdownConfigLanguage!: DropdownConfig;
   dropdownConfigVoice!: DropdownConfig;
+  ttsProgress: number = 0;
 
   private currentlyPlayingVoice: string | null = null;
   private currentlyPlayingSpeed: number | null = null;
@@ -246,10 +247,19 @@ export class TtsFormComponent implements OnInit {
     this.clickedVoiceMatIconClass = DropdownComponent.activeMatIconClass;
   }
 
-  private handleAudioStatusUpdate(fileId: string, status: string, errorMessage: string | undefined) {
+  private handleAudioStatusUpdate(fileId: string, status: string, progress: number, errorMessage: string | undefined) {
     if (this.currentAudioFileId !== fileId) {
       return;
     }
+    console.log(progress); //todo remove
+    if (status === 'Processing') {
+      this.ttsProgress = progress;
+      return;
+    }
+    else {
+      console.log(status);
+    }
+    this.ttsProgress = 0;
     this.isTextConversionLoading = false;
     if (status !== 'Completed') {
       const langMismatchError = "Select a different voice matching the language of your text";

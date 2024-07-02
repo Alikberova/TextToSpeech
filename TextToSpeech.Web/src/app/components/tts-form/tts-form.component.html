@@ -47,7 +47,10 @@
   </mat-form-field>
 
   <div class="progress-bar-container">
-    <mat-progress-bar *ngIf="isTextConversionLoading" mode="indeterminate"></mat-progress-bar>
+    <div *ngIf="isTextConversionLoading && getUploadedFile()">
+    <mat-progress-bar mode="determinate" [value]="ttsProgress"></mat-progress-bar>
+    <p>{{ttsProgress | number}}% completed</p>
+    </div>
   </div>
 
   <div class="form-element button-container">
@@ -55,12 +58,12 @@
       [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
     </button>
 
-    <button type="button" mat-raised-button color="accent" class="app-button" id="download" (click)="downloadFile()"
+    <button type="button" mat-raised-button color="accent" class="app-button download-btn" id="download" (click)="downloadFile()"
       [disabled]="!isSpeechReady">
       Download
     </button>
 
-    <button type="button" mat-raised-button class="app-button" [disabled]="!isTextConversionLoading"
+    <button type="button" mat-raised-button class="app-button cancel-btn" [disabled]="!isTextConversionLoading"
       (click)="cancelProcessing()">
       Cancel
     </button>

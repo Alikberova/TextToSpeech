@@ -5,10 +5,12 @@ using System.Text.Json;
 using System.Text;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, HttpClient _httpClient) : INarakeetService
+public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
+    HttpClient _httpClient) : INarakeetService
 {
     public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
     private const int MaxLengthForShortContent = 565;
@@ -22,23 +24,23 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     /// <returns></returns>
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         string voice,
-        CancellationToken cancellationToken,
+        Guid fileId,
         double speed,
-        string? model = null)
+        IProgress<ProgressReport>? progress = null,
+        CancellationToken cancellationToken = default)
     {
-        if (textChunks.Count == 1)
-        {
-            if (textChunks[0].Length <= MaxLengthForShortContent)
-            {
-                return [await RequestShortContent(textChunks.First(), voice, speed)];
-            }
-
-            return [await RequestLongContent(textChunks.First(), voice, speed, cancellationToken)];
-        }
-
-        var tasks = textChunks.Select(chunk => RequestLongContent(chunk, voice, speed, cancellationToken));
+        var tasks = textChunks
+            .Select(chunk => RequestLongContent(chunk, voice, speed, fileId, progress,cancellationToken))
+            .ToList();
 
         return await Task.WhenAll(tasks);
+    }
+
+    public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
+        string voice,
+        double speed)
+    {
+        return await RequestShortContent(text, voice, speed);
     }
 
     public async Task<List<VoiceResponse>?> GetAvailableVoices() //todo move redis from here
@@ -57,9 +59,12 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
         return voices;
     }
 
-    // todo try short content for speech sample
-    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, CancellationToken cancellationToken)
+    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, Guid fileId,
+        IProgress<ProgressReport>? progress = null,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         AudioTaskRequest request = new()
         {
             Format = Mp3,
@@ -70,7 +75,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
 
         var buildTask = await RequestAudioTaskAsync(request, cancellationToken);
 
-        var taskResult = await PollUntilFinishedAsync(buildTask, cancellationToken);
+        var taskResult = await PollUntilFinishedAsync(buildTask, fileId, progress, cancellationToken);
 
         if (!taskResult.Succeeded)
         {
@@ -93,7 +98,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
 
         response.EnsureSuccessStatusCode();
 
-        var responseJson = await response.Content.ReadAsStringAsync();
+        var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var result = JsonSerializer.Deserialize<BuildTask>(responseJson);
 
@@ -106,11 +111,14 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
     }
 
     private async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
-        CancellationToken cancellationToken,
-        Action<BuildTaskStatus>? progressCallback = null)
+        Guid fileId,
+        IProgress<ProgressReport>? progressCallback = null,
+        CancellationToken cancellationToken = default)
     {
         while (true)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var response = await _httpClient.GetAsync(buildTask.StatusUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -127,8 +135,8 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider, Htt
                 return buildTaskStatus;
             }
 
-            progressCallback?.Invoke(buildTaskStatus);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            progressCallback?.Report(new ProgressReport { FileId = fileId, ProgressPercentage = buildTaskStatus.Percent });
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         }
     }
 
