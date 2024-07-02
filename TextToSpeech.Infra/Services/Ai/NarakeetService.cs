@@ -59,7 +59,6 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
         return voices;
     }
 
-    // todo try short content for speech sample
     private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, Guid fileId,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)

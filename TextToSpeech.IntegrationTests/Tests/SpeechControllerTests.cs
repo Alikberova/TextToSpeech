@@ -17,7 +17,6 @@ using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.IntegrationTests.Tests;
 
-// todo Unit tests for Signalr if speech ready - need to mock the rest
 public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Program>>
 {
     private const string AudioMpeg = "audio/mpeg";

@@ -139,7 +139,6 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = Status.Failed;
             errorMessage = ex.Message;
             _logger.LogError(ex, $"Error on processing speech {fileId}");
-             //todo track status while processing, throw as needed
             throw;
         }
         finally
