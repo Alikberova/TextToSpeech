@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { SpeechRequest } from '../models/dto/text-to-speech';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../services/config.service';
-import { ApiService } from './base-client';
+import { BaseClient } from './base-client';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ export class SpeechClient {
   
   private apiUrl = `${this.configService.apiUrl}/speech`;
 
-  constructor(private apiService: ApiService, private configService: ConfigService) {}
+  constructor(private apiService: BaseClient, private configService: ConfigService) {}
 
   createSpeech(request: SpeechRequest): Observable<string> {
     if (!request.file) {

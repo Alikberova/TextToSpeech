@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../services/config.service';
 import { TranslationRequest } from '../models/dto/translation-request';
-import { ApiService } from './base-client';
+import { BaseClient } from './base-client';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ import { ApiService } from './base-client';
 export class TranslationClient {
   private apiUrl = `${this.configService.apiUrl}/translation`;
 
-  constructor(private apiService: ApiService, private configService: ConfigService) {}
+  constructor(private apiService: BaseClient, private configService: ConfigService) {}
 
   translate(request: TranslationRequest): Observable<string> {
     const headers = new HttpHeaders({

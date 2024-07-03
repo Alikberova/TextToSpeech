@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../services/config.service';
 import { NarakeetVoice } from '../models/dto/narakeet-voice';
-import { ApiService } from './base-client';
+import { BaseClient } from './base-client';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ import { ApiService } from './base-client';
 export class VoiceClient {
   private apiUrl = `${this.configService.apiUrl}/voices`;
 
-  constructor(private apiService: ApiService, private configService: ConfigService) {}
+  constructor(private apiService: BaseClient, private configService: ConfigService) {}
 
   getVoices(apiName: string): Observable<NarakeetVoice[]> {
     return this.apiService.get<NarakeetVoice[]>(`${this.apiUrl}/${apiName}`);

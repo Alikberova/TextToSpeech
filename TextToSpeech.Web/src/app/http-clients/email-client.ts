@@ -1,7 +1,7 @@
 import {  Injectable } from "@angular/core";
 import { FeedbackRequest } from "../models/dto/feedback"
 import { ConfigService } from "../services/config.service";
-import { ApiService } from "./base-client";
+import { BaseClient } from "./base-client";
 
 @Injectable({
   providedIn: "root"
@@ -10,7 +10,7 @@ import { ApiService } from "./base-client";
 export class EmailClient {
   private apiUrl = `${this.configService.apiUrl}/email`;
 
-  constructor(private apiService: ApiService, private configService: ConfigService) {}
+  constructor(private apiService: BaseClient, private configService: ConfigService) {}
 
   sendEmail(request: FeedbackRequest) {
     const body = {

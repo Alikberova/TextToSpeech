@@ -2,7 +2,7 @@ import { Observable } from "rxjs";
 import { User } from "../models/dto/user";
 import { Injectable } from "@angular/core";
 import { ConfigService } from "../services/config.service";
-import { ApiService } from "./base-client";
+import { BaseClient } from "./base-client";
 
 @Injectable({
     providedIn: 'root',
@@ -11,7 +11,7 @@ import { ApiService } from "./base-client";
 export class UserClient {
   private apiUrl = `${this.configService.apiUrl}/users`;
 
-  constructor(private apiService: ApiService, private configService: ConfigService) {}
+  constructor(private apiService: BaseClient, private configService: ConfigService) {}
 
   loginUser(credentials: { userName: string; password: string }): Observable<any> {
     return this.apiService.post<any>(`${this.apiUrl}/login`, credentials);
