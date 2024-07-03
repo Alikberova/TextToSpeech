@@ -23,6 +23,8 @@ import { SnackbarService } from '../../ui-services/snackbar-service';
 import { DropdownService } from '../../services/dropdown.service';
 import { FileInputService } from '../../services/file-input.service';
 import { AcceptableFileTypes } from "../../constants/tts-constants";
+import { SelectADifferentVoiceMatchingLanguage, ErrorOnCreatingSpeech } from '../../constants/content/errors';
+import { AudioFileReady, YouNeedSelectFilwFirst } from '../../constants/content/messages';
 
 @Component({
     selector: 'app-tts-form',
@@ -56,6 +58,7 @@ export class TtsFormComponent implements OnInit {
     this.signalRService.addAudioStatusListener(this.handleAudioStatusUpdate.bind(this));
   }
 
+  readonly youNeedSelectFilwFirst = YouNeedSelectFilwFirst;
   readonly acceptableFileTypes = AcceptableFileTypes;
   readonly acceptableFileTypesString = this.acceptableFileTypes.map(s => s.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ' and $1');
   readonly icons = { 
@@ -262,15 +265,15 @@ export class TtsFormComponent implements OnInit {
     this.ttsProgress = 0;
     this.isTextConversionLoading = false;
     if (status !== 'Completed') {
-      const langMismatchError = "Select a different voice matching the language of your text";
+      const langMismatchError = SelectADifferentVoiceMatchingLanguage;
       const error = errorMessage && errorMessage.includes(langMismatchError)
         ? "Please, " + langMismatchError.charAt(0).toLowerCase() + langMismatchError.slice(1)
-        : "Oopsie-daisy! Our talking robot hit a snag creating your speech. Let's try again!"
+        : ErrorOnCreatingSpeech
       this.snackBarService.showError(error);
       return;
     }
     this.isSpeechReady = true;
-    this.snackBarService.showSuccess('The audio file is ready, you can download it');
+    this.snackBarService.showSuccess(AudioFileReady);
   }
 
   private setCurrentlyPlayingData(voice: string | null, speed: number | null, languageCode: string | null) {

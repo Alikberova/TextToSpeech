@@ -1,18 +1,18 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { SpeechRequest } from '../models/dto/text-to-speech';
 import { Observable } from 'rxjs';
 import { ConfigService } from '../services/config.service';
+import { ApiService } from './base-client';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpeechClient {
-  private configService = inject(ConfigService);
   
   private apiUrl = `${this.configService.apiUrl}/speech`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private apiService: ApiService, private configService: ConfigService) {}
 
   createSpeech(request: SpeechRequest): Observable<string> {
     if (!request.file) {
@@ -21,7 +21,7 @@ export class SpeechClient {
 
     const formData = new FormData();
     formData.append('ttsApi', request.ttsApi!);
-    formData.append("languageCode", request.languageCode);
+    formData.append('languageCode', request.languageCode);
     formData.append('file', request.file);
     if (request.model) {
       formData.append('model', request.model);
@@ -32,23 +32,24 @@ export class SpeechClient {
     if (request.speed) {
       formData.append('speed', request.speed!.toString());
     }
-    
-    return this.http.post<string>(`${this.apiUrl}`, formData);
+
+    return this.apiService.postFormData<string>(this.apiUrl, formData);
   }
 
   getSpeechSample(request: SpeechRequest): Observable<Blob> {
     if (!request.input ||
-      !request.languageCode ||
-      !request.speed ||
-      !request.ttsApi ||
-      !request.voice) {
-        throw new Error("Some data in SpeechRequest is missed")
+        !request.languageCode ||
+        !request.speed ||
+        !request.ttsApi ||
+        !request.voice) {
+      throw new Error('Some data in SpeechRequest is missed');
     }
-    return this.http.post(`${this.apiUrl}/sample`, request, {
+
+    return this.apiService.post(`${this.apiUrl}/sample`, request, {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       }),
       responseType: 'blob'
-    })
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {MatExpansionModule} from '@angular/material/expansion';
-import { QaList } from '../../constants/content/qa-constants';
+import { QaList } from '../../constants/content/qa';
 
 @Component({
   selector: 'app-qa',
