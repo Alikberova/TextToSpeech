@@ -4,6 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { NGXLogger } from 'ngx-logger';
 import { SnackbarService } from '../ui-services/snackbar-service';
 import { inject } from '@angular/core';
+import { SomethingWentWrong } from '../constants/content/errors';
 
 export const errorInterceptor: HttpInterceptorFn = (request, next) => {
   const logger = inject(NGXLogger);
@@ -11,7 +12,7 @@ export const errorInterceptor: HttpInterceptorFn = (request, next) => {
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error(error);
-      snackbarService.showError("Oops! Something went wobbly. We're on it!")
+      snackbarService.showError(SomethingWentWrong)
       return throwError(() => new Error('Unhandled exception ocurred'));
     })
   );

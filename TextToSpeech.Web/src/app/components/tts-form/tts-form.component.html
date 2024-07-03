@@ -55,7 +55,7 @@
 
   <div class="form-element button-container">
     <button mat-raised-button color="primary" class="submit-btn app-button" [disabled]="!getUploadedFile()"
-      [matTooltip]="getUploadedFile() || isSpeechReady ? '' : 'You need to select file first'">Submit
+      [matTooltip]="getUploadedFile() || isSpeechReady ? '' : youNeedSelectFilwFirst">Submit
     </button>
 
     <button type="button" mat-raised-button color="accent" class="app-button download-btn" id="download" (click)="downloadFile()"
