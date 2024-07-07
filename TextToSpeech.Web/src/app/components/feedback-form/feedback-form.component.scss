@@ -2,17 +2,21 @@
 @import "colors";
 @import "base/color-pallete";
 
-.feedback-card {
+.feedback-card-container {
     display: flex;
+    align-items: center; 
+    justify-content: flex-start;
     flex-direction: column;
-    align-items: center;
+}
+
+.feedback-card {
     box-shadow: none !important;
+    margin-top: 40px;
 }
 
 mat-card-title {
     color: $primary;
     font-weight: bold;
-    margin: 4vh;
 }
 
 .feedback-card mat-form-field {
@@ -31,13 +35,6 @@ mat-card-title {
 
 mat-card-content {
     @include containers.white-rounded-container;
-    @media screen and (max-width: 900px) {
-        max-width: 75vw;
-        // margin-bottom: 100px;
-    }
-    @media screen and (max-width: 768px) {
-        max-width: 65vw;
-    }
 }
 
 button {
@@ -48,5 +45,23 @@ button {
 
     &:hover {
         background: $gradient-vibrant-sunset;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    mat-card-content {
+        max-width: 80vw;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    mat-card-content {
+        max-width: 70vw;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    mat-card-header {
+        margin-top: 40px;
     }
 }

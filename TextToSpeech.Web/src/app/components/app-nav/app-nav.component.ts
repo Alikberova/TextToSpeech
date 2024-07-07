@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -9,18 +9,36 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { RoutesConstants } from '../../constants/route-constants';
 import { AuthService } from '../../services/auth/auth.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { FooterComponent } from "../footer/footer.component";
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './app-nav.component.html',
-  styleUrls: ['./app-nav.component.scss'],
-  standalone: true,
-  imports: [CommonModule, RouterModule, MatMenuModule, MatToolbarModule, MatButtonModule]
+    selector: 'app-nav',
+    templateUrl: './app-nav.component.html',
+    styleUrls: ['./app-nav.component.scss'],
+    standalone: true,
+    imports: [CommonModule,
+        RouterModule,
+        MatMenuModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSidenavModule,
+        MatListModule,
+        FooterComponent]
 })
-export class AppNavComponent {
+export class AppNavComponent implements OnInit {
 
   constructor(private breakpointObserver: BreakpointObserver, private authService: AuthService,
     private router: Router) {}
+
+  ngOnInit(): void {
+    // if (!this.isLoggedIn) {
+    //   this.menu.push({ name: 'Login', route: `/${RoutesConstants.login}` })
+    // }
+  }
 
   menu = [
       { name: 'Generate Speech', route: `/${RoutesConstants.ttsForm}` },

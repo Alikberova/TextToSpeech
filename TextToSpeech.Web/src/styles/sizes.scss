@@ -1,6 +1,8 @@
-$appnav-height: 64px;
+$header-height: 64px;
+$footer-height: 70px;
+$container-padding: 25px;
 
-$container-height: calc(100vh - $appnav-height);
+$desktop-container-height: calc(100vh - $header-height - $footer-height - $container-padding * 2); // x 2 for top and bottom
 
 $quarter-vw: 25vw;
 $quarter-vh: 25vh;

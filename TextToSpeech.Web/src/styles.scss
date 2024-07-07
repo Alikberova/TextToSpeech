@@ -1,4 +1,5 @@
 @import "colors";
+@import "sizes";
 
 * {
   margin: 0;
@@ -19,16 +20,13 @@ a {
 }
 
 .content {
-  height: 100%;
+  min-height: $desktop-container-height;
   background: inherit !important;
+  padding: $container-padding;
 }
 
 .snackbar {
   margin-bottom: 80px !important;
-
-  @media (max-width: 600px) {
-    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
-  }
 }
 
 .snackbar-success {
@@ -40,6 +38,16 @@ a {
   --mdc-snackbar-container-color: #{$snackbar-color--error};
 }
 
-//todo колесо очікування: https://cssgradient.io/gradient-backgrounds/
-// font-family: 'Comfortaa', sans-serif; //maybe buttons
-// font-family: 'Noto Sans Display', sans-serif;
+:root {
+  --mat-toolbar-mobile-height: #{$header-height}; // override from 56 because of white strip
+}
+
+@media (max-width: 600px) {
+  .snackbar {
+    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
+  }
+  .content {
+    min-height: 100vh;
+    padding: 13px;
+  }
+}

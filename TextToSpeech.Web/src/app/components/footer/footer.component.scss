@@ -1,8 +1,12 @@
 @import "colors";
+@import "sizes";
 
 .footer {
   background-color: $footer-background-color;
-  padding: 20px 0;
+  height: $footer-height;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer-content {
@@ -11,19 +15,17 @@
   align-items: center;
   flex-wrap: wrap;
   max-width: 800px;
-  margin: auto;
-  padding: 0 15px;
+  width: 100%;
+  gap: 10px;
 }
 
 .footer-content span, .footer-content a {
   font-size: 0.9rem;
-  line-height: 1.6;
   color: $light-gray;
 }
 
 .footer-content a {
   text-decoration: none;
-  padding: 5px;
   transition: color 0.3s ease;
 }
 
@@ -31,14 +33,21 @@
   color: $white;
 }
 
+@media screen and (max-width: 850px) {
+  .footer-content {
+    max-width: 600px;
+  }
+}
+
 @media screen and (max-width: 600px) {
+  .footer {
+    height: auto;
+  }
   .footer-content {
     flex-direction: column;
     align-items: center;
     text-align: center;
-  }
-
-  .footer-content span, .footer-content a {
-    margin-top: 10px;
+    gap: 20px;
+    padding: 30px;
   }
 }
