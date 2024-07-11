@@ -1,9 +1,10 @@
-@import "colors";
-@import "sizes";
+@use 'breakpoints';
+@use 'colors';
+@use 'sizes';
 
 .footer {
-  background-color: $footer-background-color;
-  height: $footer-height;
+  background-color: colors.$footer-background-color;
+  height: sizes.$footer-height;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,7 +22,7 @@
 
 .footer-content span, .footer-content a {
   font-size: 0.9rem;
-  color: $light-gray;
+  color: colors.$light-gray;
 }
 
 .footer-content a {
@@ -30,16 +31,16 @@
 }
 
 .footer-content a:hover {
-  color: $white;
+  color: colors.$white;
 }
 
-@media screen and (max-width: 850px) {
+@include breakpoints.resize(breakpoints.$m) {
   .footer-content {
     max-width: 600px;
   }
 }
 
-@media screen and (max-width: 600px) {
+@include breakpoints.resize(breakpoints.$s) {
   .footer {
     height: auto;
   }

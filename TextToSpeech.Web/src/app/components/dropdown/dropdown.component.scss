@@ -1,4 +1,4 @@
-@import "colors";
+@use 'base/color-pallete' as base-colors;
 
 mat-form-field {
   width: 100%;
@@ -8,15 +8,15 @@ mat-icon {
   cursor: pointer;
   float: right;
   margin-left: 8px; /* Spacing between the text and icon */
-  color: $color-blue-gem;
+  color: base-colors.$color-blue-gem;
   transition: transform 0.3s ease-in-out, color 0.3s ease;
 
   &:hover {
-    color: lighten(adjust-hue($color-blue-gem, 10deg), 10%);
+    color: lighten(adjust-hue(base-colors.$color-blue-gem, 10deg), 10%);
     transform: scale(1.2);
   }
   
   &.active-mat-icon {
-    color: lighten(adjust-hue($color-blue-gem, 10deg), 20%);
+    color: lighten(adjust-hue(base-colors.$color-blue-gem, 10deg), 20%);
   }
 }

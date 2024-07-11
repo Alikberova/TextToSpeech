@@ -1,5 +1,6 @@
-@import "colors";
-@import "sizes";
+@use 'breakpoints';
+@use 'colors';
+@use 'sizes';
 
 mat-toolbar {
   justify-content: space-between;
@@ -21,7 +22,7 @@ mat-toolbar {
 }
 
 .sidenav-container {
-  margin-top: $header-height;
+  margin-top: sizes.$header-height;
 }
 
 .sidenav {
@@ -54,10 +55,10 @@ mat-toolbar {
 .logo-stripe {
   width: 100%;
   height: 2px;
-  background: $white;
+  background: colors.$white;
 }
 
-@media (max-width: 768px) {
+@include breakpoints.resize(breakpoints.$m) {
   .menu-items {
     display: none;
   }

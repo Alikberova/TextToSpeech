@@ -1,4 +1,4 @@
-@import "colors";
+@use 'colors';
 
 :host {
     display: block;
@@ -18,7 +18,7 @@ input[type="checkbox"] {
   left: 0.1rem;
   width: 50%; /* Use 50% of parent width */
   height: calc(100% - 0.2rem); /* Height minus offset */
-  background-color: $white;
+  background-color: colors.$white;
   border-radius: 20px;
   cursor: pointer;
   z-index: 100;
@@ -28,13 +28,13 @@ input[type="checkbox"] {
   font-family: Lato, sans-serif;
   font-size: medium;
   font-weight: bold;
-  color: $color-vivid-magenta;
+  color: colors.$secondary;
   text-align: center;
 }
 
 .toggle-button-container {
   overflow: hidden;
-  background: linear-gradient(to right, $color-vivid-magenta, $color-indigo-dye);
+  background: linear-gradient(to right, colors.$secondary, colors.$tertiary);
   border-radius: 20px;
   box-shadow: 2px 2px 5px 0 rgba(50, 50, 50, 0.75);
   transition: background-color 0.3s;
@@ -48,5 +48,5 @@ input[type="checkbox"]:checked ~ .toggle-button-switch {
 }
 
 input[type="checkbox"]:checked ~ .toggle-button-container {
-  background: linear-gradient(to right, $color-vivid-magenta, $color-indigo-dye);
+  background: linear-gradient(to right, colors.$secondary, colors.$tertiary);
 }

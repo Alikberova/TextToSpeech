@@ -1,5 +1,6 @@
-@import "colors";
-@import "sizes";
+@use 'breakpoints';
+@use 'colors';
+@use 'sizes';
 
 * {
   margin: 0;
@@ -7,22 +8,22 @@
 }
 
 body {
-  background: $background-color;
+  background: colors.$background-color;
 }
 
  h1, h2, h3, h4 {
-  color: $heading-color;
+  color: colors.$heading-color;
 }
 
 a {
-  color: $link-color;
+  color: colors.$link-color;
   text-decoration: none;
 }
 
 .content {
-  min-height: $desktop-container-height;
+  min-height: sizes.$desktop-container-height;
   background: inherit !important;
-  padding: $container-padding;
+  padding: sizes.$desktop-container-padding;
 }
 
 .snackbar {
@@ -30,24 +31,24 @@ a {
 }
 
 .snackbar-success {
-  --mdc-snackbar-container-color: #{$snackbar-color--success};
-  --mat-snack-bar-button-color: #{$snackbar-color--success-action};
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--success};
+  --mat-snack-bar-button-color: #{colors.$snackbar-color--success-action};
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: #{$snackbar-color--error};
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--error};
 }
 
 :root {
-  --mat-toolbar-mobile-height: #{$header-height}; // override from 56 because of white strip
+  --mat-toolbar-mobile-height: #{sizes.$header-height}; // override from 56 because of white strip
 }
 
-@media (max-width: 600px) {
+@include breakpoints.resize(breakpoints.$s) {
   .snackbar {
     margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
   }
   .content {
-    min-height: 100vh;
-    padding: 13px;
+    min-height: sizes.$mobile-container-height;
+    padding: sizes.$mobile-container-padding;
   }
 }
