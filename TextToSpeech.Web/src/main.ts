@@ -3,12 +3,17 @@ import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { importProvidersFrom, APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { InMemoryScrollingOptions, provideRouter, withInMemoryScrolling } from '@angular/router';
 import { INGXLoggerConfig, LoggerModule, NGXLogger, NgxLoggerLevel } from 'ngx-logger';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
 import { ConfigService } from './app/services/config.service';
 import { errorInterceptor } from './app/interceptors/error.interceptor';
+
+const scrollConfig: InMemoryScrollingOptions = {
+  scrollPositionRestoration: 'enabled',
+  anchorScrolling: 'enabled',
+};
 
 const appConfig: ApplicationConfig = {
   providers: [ 
@@ -17,7 +22,7 @@ const appConfig: ApplicationConfig = {
         getLoggerConfig('')
       )
     ),
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling(scrollConfig)),
     provideHttpClient(withInterceptors([ authInterceptor, errorInterceptor ])),
     {
       provide: APP_INITIALIZER,
