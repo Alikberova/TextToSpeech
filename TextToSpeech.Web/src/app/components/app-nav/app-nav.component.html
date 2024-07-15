@@ -15,7 +15,7 @@
   </span>
 </mat-toolbar>
 
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container>
   <mat-sidenav #sidenav mode="over" class="sidenav">
     <mat-nav-list>
       <mat-list-item *ngFor="let item of menu" [routerLink]="item.route">{{ item.name }}</mat-list-item>

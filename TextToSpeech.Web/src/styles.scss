@@ -43,7 +43,7 @@ a {
   --mat-toolbar-mobile-height: #{sizes.$header-height}; // override from 56 because of white strip
 }
 
-@include breakpoints.resize(breakpoints.$s) {
+@include breakpoints.resize(breakpoints.$m) {
   .snackbar {
     margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
   }
