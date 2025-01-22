@@ -1,4 +1,6 @@
-@import "colors";
+@use 'breakpoints';
+@use 'colors';
+@use 'base/color-pallete' as base-colors;
 
 .login-container {
     display: flex;
@@ -8,7 +10,7 @@
   
 .login-card {
   padding: 20px 25px;
-  background-color: $color-indigo-dye;
+  background-color: colors.$tertiary;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -18,13 +20,13 @@
     margin-top: 20px;
 
     mat-icon {
-      color: $color-indigo-dye;
+      color: colors.$tertiary;
     }
   }
 }
   
 .button-primary {
-  background-color: $color-vivid-magenta;
+  background-color: colors.$secondary;
   color: white;
   cursor: pointer;
   width: 50%;
@@ -37,7 +39,7 @@
 }
   
 .button-primary:hover {
-  background-color: $color-deep-fuchsia;
+  background-color: base-colors.$color-deep-fuchsia;
 }
 
 .input-field {
@@ -53,7 +55,10 @@
   width: 40%;
   pointer-events: none;
   user-select: none;
-  @media (max-width: 768px) {
+}
+
+@include breakpoints.resize(breakpoints.$m) {
+  .svg-background {
     display: none;
   }
 }

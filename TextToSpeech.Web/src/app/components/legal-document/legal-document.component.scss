@@ -1,3 +1,5 @@
+@use 'breakpoints';
+
 mat-card {
     margin: 20px 18vw;
     padding: 50px 50px 20px;
@@ -24,9 +26,21 @@ p {
     text-align: justify;
 }
 
-@media screen and (max-width: 768px) {
+@include breakpoints.resize(breakpoints.$xl) {
     mat-card {
-        margin: 10px;
+        margin: 20px 14vw;
+    }
+}
+
+@include breakpoints.resize(breakpoints.$l) {
+    mat-card {
+        margin: 20px 9vw;
+    }
+}
+
+@include breakpoints.resize(breakpoints.$m) {
+    mat-card {
+        margin: 10px 3vw;
         padding: 15px;
     }
 

@@ -1,4 +1,6 @@
-@import "colors";
+@use 'breakpoints';
+@use 'colors';
+@use 'sizes';
 
 * {
   margin: 0;
@@ -6,40 +8,47 @@
 }
 
 body {
-  background: $background-color;
+  background: colors.$background-color;
 }
 
  h1, h2, h3, h4 {
-  color: $heading-color;
+  color: colors.$heading-color;
 }
 
 a {
-  color: $link-color;
+  color: colors.$link-color;
   text-decoration: none;
 }
 
 .content {
-  height: 100%;
+  min-height: sizes.$desktop-container-height;
   background: inherit !important;
+  padding: sizes.$desktop-container-padding;
 }
 
 .snackbar {
   margin-bottom: 80px !important;
-
-  @media (max-width: 600px) {
-    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
-  }
 }
 
 .snackbar-success {
-  --mdc-snackbar-container-color: #{$snackbar-color--success};
-  --mat-snack-bar-button-color: #{$snackbar-color--success-action};
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--success};
+  --mat-snack-bar-button-color: #{colors.$snackbar-color--success-action};
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: #{$snackbar-color--error};
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--error};
 }
 
-//todo колесо очікування: https://cssgradient.io/gradient-backgrounds/
-// font-family: 'Comfortaa', sans-serif; //maybe buttons
-// font-family: 'Noto Sans Display', sans-serif;
+:root {
+  --mat-toolbar-mobile-height: #{sizes.$header-height}; // override from 56 because of white strip
+}
+
+@include breakpoints.resize(breakpoints.$m) {
+  .snackbar {
+    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
+  }
+  .content {
+    min-height: sizes.$mobile-container-height;
+    padding: sizes.$mobile-container-padding;
+  }
+}
