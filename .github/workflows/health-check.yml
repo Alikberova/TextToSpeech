@@ -1,0 +1,41 @@
+name: Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *' # Runs day at 1 am
+
+env:
+  environment: Staging
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Backend health
+        id: backend-check
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER_NAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            curl -f -k https://localhost:7057/health
+
+      - name: Check Frontend health
+        id: frontend-check
+        if: always()
+        run: curl -f https://texttospeech.duckdns.org
+
+      - name: Notify if services are down
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+                ...context.repo,
+                title: 'Health Check Alert: some service/s are down',
+                body: 'One or more services are down. Backend: ${{ steps.backend-check.outcome }}, frotend: ${{ steps.frontend-check.outcome }}. \nPlease investigate.',
+                labels: ['alert', 'health-check']
+            });

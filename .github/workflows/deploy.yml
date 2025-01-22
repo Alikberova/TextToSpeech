@@ -2,15 +2,15 @@ name: Deployment
 
 on:
   push:
-    branches: [ "master", "deploy"]
+    branches: master
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       environment: Staging
-      branch: ${{ github.head_ref || github.ref_name }} 
 
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
     - name: Fill env file
       run: |
         echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
-        echo IMAGE_TAG_VERSION="${{ env.branch }}" >> .env
+        echo IMAGE_TAG_VERSION="${{ env.environment }}" >> .env
 
     - name: Build and Push Docker Compose services
       run: |

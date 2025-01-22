@@ -1,5 +1,0 @@
-{
-    "baseUrl": "http://localhost:7057",
-    "serverLoggingUrl": "http://localhost:7057/log",
-    "apiEndpoint": "/api"
-}

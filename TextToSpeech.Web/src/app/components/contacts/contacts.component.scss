@@ -1,0 +1,71 @@
+@use 'containers';
+@use 'breakpoints';
+
+$container-width: 90%;
+
+.contact-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.contacts-container {
+    @include containers.white-rounded-container;
+    width: $container-width;
+    max-width: 600px;
+    margin-bottom: 2rem; 
+}
+
+h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+
+    a,
+    address {
+        margin-left: 1rem;
+        font-style: normal;
+    }
+}
+
+.svg-background {
+    background-image: url('../../../assets/svg/undraw_cat_epte.svg');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: $container-width;
+    max-width: 600px;
+    height: auto;
+    margin-bottom: 2rem;
+    min-height: 300px; 
+    pointer-events: none;
+    user-select: none;
+}
+
+@include breakpoints.resize(breakpoints.$l) {
+    .contacts-container {
+        max-width: 75vw;
+    }
+}
+
+@include breakpoints.resize(breakpoints.$m) {
+    .svg-background {
+        height: 200px;
+    }
+}
+
+@include breakpoints.resize(breakpoints.$s) {
+    .svg-background {
+        height: 100px;
+    }
+    .contacts-container {
+        margin-bottom: 0; 
+    }
+}

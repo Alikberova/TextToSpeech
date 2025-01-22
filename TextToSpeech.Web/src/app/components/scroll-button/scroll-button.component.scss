@@ -1,0 +1,30 @@
+@use 'base/color-pallete' as base-colors;
+@use 'breakpoints';
+
+.scroll-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: base-colors.$gradient-vibrant-sunset;
+    color: white;
+    opacity: 0.95;
+
+    &:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transform: translateY(-1px);
+    }
+  
+    mat-icon {
+      font-size: 24px;
+      font-weight: bolder;
+      opacity: 1;
+    }
+}
+  
+@include breakpoints.resize(breakpoints.$m) {
+    .scroll-button {
+        bottom: 15px;
+        right: 10px;
+    }
+}

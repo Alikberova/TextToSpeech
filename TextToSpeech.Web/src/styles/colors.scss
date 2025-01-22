@@ -1,0 +1,24 @@
+@use 'base/theme' as theme;
+@use '@angular/material' as mat;
+@use 'base/color-pallete' as base-colors;
+
+$primary: mat.get-theme-color(theme.$deeppurple-amber-theme, 'primary');
+$secondary: base-colors.$color-vivid-magenta;
+$tertiary: base-colors.$color-indigo-dye;
+$accent: mat.get-theme-color(theme.$deeppurple-amber-theme, 'accent');
+$warn: mat.get-theme-color(theme.$deeppurple-amber-theme, 'warn');
+
+$white: #fff;
+$light-gray: #bbb;
+$dark-gray: #333;
+
+$background-color: base-colors.$gradient-soft-dawn;
+$footer-background-color: $dark-gray;
+
+$heading-color: $dark-gray;
+$link-color: base-colors.$color-electric-indigo;
+$label-text-color: var(--mdc-filled-text-field-label-text-color); // grey
+
+$snackbar-color--success: #008080; //$tertiary;
+$snackbar-color--success-action: #f8b7b7; //todo didn't work
+$snackbar-color--error: #bc3b14; //#cf4848, E91E63; initial: FF5722 > d3491f bc3b14

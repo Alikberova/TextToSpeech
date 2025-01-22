@@ -1,0 +1,54 @@
+@use 'breakpoints';
+@use 'colors';
+@use 'sizes';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: colors.$background-color;
+}
+
+ h1, h2, h3, h4 {
+  color: colors.$heading-color;
+}
+
+a {
+  color: colors.$link-color;
+  text-decoration: none;
+}
+
+.content {
+  min-height: sizes.$desktop-container-height;
+  background: inherit !important;
+  padding: sizes.$desktop-container-padding;
+}
+
+.snackbar {
+  margin-bottom: 80px !important;
+}
+
+.snackbar-success {
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--success};
+  --mat-snack-bar-button-color: #{colors.$snackbar-color--success-action};
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: #{colors.$snackbar-color--error};
+}
+
+:root {
+  --mat-toolbar-mobile-height: #{sizes.$header-height}; // override from 56 because of white strip
+}
+
+@include breakpoints.resize(breakpoints.$m) {
+  .snackbar {
+    margin-bottom: 8px !important; // use default value when the footer is rebuilt into a column
+  }
+  .content {
+    min-height: sizes.$mobile-container-height;
+    padding: sizes.$mobile-container-padding;
+  }
+}

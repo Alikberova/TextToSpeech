@@ -1,9 +1,0 @@
-<mat-card class="content">
-    <mat-card-subtitle>Last Updated: {{ lastUpdatedDate | date: 'longDate' }} <a href="#whats-new">(What's New)</a></mat-card-subtitle>
-    <mat-card-content>
-        <div *ngFor="let section of document.sections">
-            <h2>{{ section.heading }}</h2>
-            <p>{{ section.content }}</p>
-          </div>
-    </mat-card-content>
-</mat-card>

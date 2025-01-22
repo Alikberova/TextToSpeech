@@ -6,6 +6,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
     - uses: actions/checkout@v4
@@ -18,7 +19,7 @@ jobs:
 
     - name: Fill env file
       run: |
-        echo "Elasticsearch__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
+        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
 
     - name: Copy files to server
       uses: appleboy/scp-action@master

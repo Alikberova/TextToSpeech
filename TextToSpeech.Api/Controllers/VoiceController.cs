@@ -1,0 +1,34 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using TextToSpeech.Api.Services;
+using TextToSpeech.Core.Interfaces.Ai;
+
+namespace TextToSpeech.Api.Controllers
+{
+    [Route("api/voices")]
+    [ApiController]
+    public class VoiceController : ControllerBase
+    {
+        private readonly INarakeetService _narraketService;
+
+        public VoiceController(INarakeetService narraketService)
+        {
+            _narraketService = narraketService;
+        }
+
+        [HttpGet("narakeet")]
+        public async Task<IActionResult> Get()
+        {
+            var result = await _narraketService.GetAvailableVoices();
+
+            if (result is null)
+            {
+                return NotFound();
+            }
+
+            // for 2 weeks
+            HttpHeaderHelper.SetCacheControl(Response, 1209600);
+
+            return Ok(result);
+        }
+    }
+}

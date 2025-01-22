@@ -4,26 +4,36 @@ services:
       context: .
       dockerfile: docker/api.Dockerfile
       cache_from:
-        - alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
+        - alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
       args:
-        API_NAME: BookToAudio.Api
-    image: alikberova/booktoaudio.api:${IMAGE_TAG_VERSION}
+        API_NAME: TextToSpeech.Api
+    image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
     env_file: .env
+    environment:
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
+      ASPNETCORE_URLS: "https://+"
     container_name: api
     ports:
-      - "7057:7057"
+      - "7057:443"
     networks:
       - proxy_elk
     volumes:
-      - /${HOME}/logs:/${AppDataPath}/logs
+      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
+      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   web:
     build:
-      context: BookToAudio.Web
+      context: TextToSpeech.Web
       dockerfile: ../docker/web.Dockerfile
       cache_from:
-        - alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
-    image: alikberova/booktoaudio.web:${IMAGE_TAG_VERSION}
+        - alikberova/texttospeech.web:${IMAGE_TAG_VERSION}
+    image: alikberova/texttospeech.web:${IMAGE_TAG_VERSION}
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
     container_name: web
@@ -34,8 +44,44 @@ services:
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     networks:
       - proxy_elk
+    depends_on:
+      api:
+        condition: service_healthy
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - proxy_elk
+    restart: always
+
+  db:
+    image: postgres:alpine
+    container_name: db
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db:/var/lib/postgresql/data
+    networks:
+      - proxy_elk
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   proxy_elk:
     external: true
     name: elk
+
+volumes:
+  redis_data:
+  db:

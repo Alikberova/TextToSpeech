@@ -1,0 +1,42 @@
+$xl: 'xl';
+$l: 'l';
+$m: 'm';
+$s: 's';
+$xs: 'xs';
+$xxs: 'xxs';
+$xxxs: 'xxxs';
+$t: 'tall';
+$mh: 'medium-height';
+$sh: 'short';
+
+$breakpoints: (
+  $xl: 1200px,
+  $l: 992px,
+  $m: 768px,
+  $s: 600px,
+  $xs: 480px,
+  $xxs: 412px,
+  $xxxs: 320px,
+  $t: 800px,
+  $mh: 667px,
+  $sh: 400px,
+);
+
+@mixin resize($breakpoint) {
+  $heights: ($t, $mh, $sh);
+
+  @if map-has-key($breakpoints, $breakpoint) {
+    $size: map-get($breakpoints, $breakpoint);
+    @if index($heights, $breakpoint) {
+      @media (max-height: $size) {
+        @content;
+      }
+    } @else {
+      @media (max-width: $size) {
+        @content;
+      }
+    }
+  } @else {
+    @warn "No breakpoint found for `#{$breakpoint}` in $breakpoints map.";
+  }
+}
