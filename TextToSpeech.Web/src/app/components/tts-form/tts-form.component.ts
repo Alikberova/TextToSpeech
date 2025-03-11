@@ -28,7 +28,6 @@ import { AudioFileReady, YouNeedSelectFilwFirst } from '../../constants/content/
 
 @Component({
     selector: 'app-tts-form',
-    standalone: true,
     templateUrl: './tts-form.component.html',
     styleUrl: './tts-form.component.scss',
     imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, DropdownComponent]

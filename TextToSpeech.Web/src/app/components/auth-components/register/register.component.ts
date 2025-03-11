@@ -8,7 +8,6 @@ import { RoutesConstants } from '../../../constants/route-constants';
 
 @Component({
     selector: 'app-register',
-    standalone: true,
     templateUrl: './register.component.html',
     styleUrl: './register.component.scss',
     imports: [AuthFormComponent]

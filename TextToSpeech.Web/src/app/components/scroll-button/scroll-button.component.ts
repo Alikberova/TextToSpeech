@@ -4,11 +4,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-scroll-button',
-  standalone: true,
-  imports: [ NgIf, MatIconModule, MatButtonModule ],
-  templateUrl: './scroll-button.component.html',
-  styleUrl: './scroll-button.component.scss'
+    selector: 'app-scroll-button',
+    imports: [NgIf, MatIconModule, MatButtonModule],
+    templateUrl: './scroll-button.component.html',
+    styleUrl: './scroll-button.component.scss'
 })
 export class ScrollButtonComponent {
   isScrolled: boolean = false;

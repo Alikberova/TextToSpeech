@@ -9,10 +9,9 @@ import { ScrollButtonComponent } from "./components/scroll-button/scroll-button.
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
-  imports: [CommonModule, FormsModule, RouterOutlet, AppNavComponent, HomeComponent, FooterComponent, ScrollButtonComponent]
+    styleUrl: './app.component.scss',
+    imports: [CommonModule, FormsModule, RouterOutlet, AppNavComponent, HomeComponent, FooterComponent, ScrollButtonComponent]
 })
 export class AppComponent {
 }

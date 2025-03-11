@@ -8,11 +8,10 @@ import { ValidationService } from '../../../services/validation.service';
 import { ToggleButtonComponent } from '../toggle-button/toggle-button.component';
 
 @Component({
-  selector: 'app-auth-form',
-  standalone: true,
-  imports: [MatIconModule, MatInputModule, FormsModule, ToggleButtonComponent, MatFormFieldModule, ReactiveFormsModule, CommonModule],
-  templateUrl: './auth-form.component.html',
-  styleUrl: './auth-form.component.scss'
+    selector: 'app-auth-form',
+    imports: [MatIconModule, MatInputModule, FormsModule, ToggleButtonComponent, MatFormFieldModule, ReactiveFormsModule, CommonModule],
+    templateUrl: './auth-form.component.html',
+    styleUrl: './auth-form.component.scss'
 })
 export class AuthFormComponent {
   authForm: FormGroup;
