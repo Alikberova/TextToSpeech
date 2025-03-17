@@ -1,3 +1,4 @@
+@use "sass:color";
 @use 'breakpoints';
 @use 'colors';
 @use 'sizes';
@@ -41,14 +42,16 @@ app-dropdown {
   }
 }
 
+$adjusted-primary: color.scale(color.adjust(colors.$primary, $saturation: -15%), $lightness: 10%);
+
 .file-selected {
-  background-color: lighten(desaturate(colors.$primary, 15%),10%);
+  background-color: $adjusted-primary;
 }
 
 .mat-information {
   display: flex;
   align-items: center;
-  color: lighten(desaturate(colors.$primary, 15%),10%); //second option #607D8B
+  color: $adjusted-primary; //second option #607D8B
 }
 
 .mat-information mat-icon {
