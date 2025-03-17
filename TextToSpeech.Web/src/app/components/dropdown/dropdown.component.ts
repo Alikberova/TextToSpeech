@@ -3,7 +3,6 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-
 import { DropdownConfig, DropdownItem } from '../../models/dropdown-config';
 
 @Component({
