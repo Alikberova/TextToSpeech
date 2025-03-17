@@ -1,3 +1,4 @@
+@use "sass:color";
 @use 'containers';
 @use 'breakpoints';
 
@@ -11,10 +12,10 @@ $container-width: 90%;
 }
 
 .contacts-container {
-    @include containers.white-rounded-container;
     width: $container-width;
     max-width: 600px;
-    margin-bottom: 2rem; 
+    margin-bottom: 2rem;
+    @include containers.white-rounded-container;
 }
 
 h2 {

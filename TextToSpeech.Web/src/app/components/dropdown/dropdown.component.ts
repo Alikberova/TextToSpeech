@@ -6,11 +6,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { DropdownConfig, DropdownItem } from '../../models/dropdown-config';
 
 @Component({
-  selector: 'app-dropdown',
-  standalone: true,
-  imports: [FormsModule, MatIconModule, MatSelectModule, CommonModule],
-  templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss']
+    selector: 'app-dropdown',
+    imports: [FormsModule, MatIconModule, MatSelectModule, CommonModule],
+    templateUrl: './dropdown.component.html',
+    styleUrls: ['./dropdown.component.scss']
 })
 
 export class DropdownComponent implements OnChanges {

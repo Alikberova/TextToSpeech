@@ -9,11 +9,10 @@ import { EmailClient } from '../../http-clients/email-client';
 import { SnackbarService } from '../../ui-services/snackbar-service';
 
 @Component({
-  selector: 'app-feedback-form',
-  standalone: true,
-  imports: [MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, CommonModule, ReactiveFormsModule],
-  templateUrl: './feedback-form.component.html',
-  styleUrl: './feedback-form.component.scss'
+    selector: 'app-feedback-form',
+    imports: [MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, CommonModule, ReactiveFormsModule],
+    templateUrl: './feedback-form.component.html',
+    styleUrl: './feedback-form.component.scss'
 })
 
 export class FeedbackFormComponent {

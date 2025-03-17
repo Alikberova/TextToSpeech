@@ -6,11 +6,10 @@ import { Router } from '@angular/router';
 import { RoutesConstants } from '../../../constants/route-constants';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
-  imports: [AuthFormComponent],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    imports: [AuthFormComponent]
 })
 export class LoginComponent {
   constructor(private userClient: UserClient, private authService: AuthService,

@@ -1,3 +1,4 @@
+@use "sass:color";
 @use 'base/color-pallete' as base-colors;
 
 mat-form-field {
@@ -12,11 +13,11 @@ mat-icon {
   transition: transform 0.3s ease-in-out, color 0.3s ease;
 
   &:hover {
-    color: lighten(adjust-hue(base-colors.$color-blue-gem, 10deg), 10%);
+    color: color.scale(color.adjust(base-colors.$color-blue-gem, $hue: 10deg), $lightness: 10%);
     transform: scale(1.2);
   }
   
   &.active-mat-icon {
-    color: lighten(adjust-hue(base-colors.$color-blue-gem, 10deg), 20%);
+    color: color.scale(color.adjust(base-colors.$color-blue-gem, $hue: 10deg), $lightness: 20%);
   }
 }
