@@ -21,11 +21,23 @@ public sealed class AudioController : ControllerBase
     [HttpGet("downloadmp3/{fileId}/{fileName}")]
     public async Task<IActionResult> DownloadMp3(string fileId, string fileName)
     {
-        string filePath = _pathService.GetFilePathInFileStorage($"{fileId}.mp3");
-
-        if (!System.IO.File.Exists(filePath))
+        if (!Guid.TryParse(fileId, out Guid parsedFileId))
         {
-            var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
+            return BadRequest("Invalid file ID.");
+        }
+
+        string filePath = _pathService.GetFilePathInFileStorage($"{parsedFileId}.mp3");
+        string safeDirectory = _pathService.GetSafeDirectory();
+        string fullPath = Path.GetFullPath(filePath);
+
+        if (!fullPath.StartsWith(safeDirectory))
+        {
+            return BadRequest("Invalid file path.");
+        }
+
+        if (!System.IO.File.Exists(fullPath))
+        {
+            var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(parsedFileId);
 
             if (dbAudioFile is not null)
             {
@@ -38,7 +50,7 @@ public sealed class AudioController : ControllerBase
 
         SetHeader(fileName);
 
-        return File(System.IO.File.ReadAllBytes(filePath), "audio/mpeg");
+        return File(System.IO.File.ReadAllBytes(fullPath), "audio/mpeg");
     }
 
     private void SetHeader(string fileName)
