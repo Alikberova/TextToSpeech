@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.TestingInfra.Utils;
+namespace TextToSpeech.TestingInfra.Utils;
 
 public static class Mp3FileUtilities
 {
@@ -10,7 +10,7 @@ public static class Mp3FileUtilities
 
         var bytes = new byte[MinBufferLength];
 
-        fileStream.Read(bytes, 0, bytes.Length);
+        fileStream.ReadExactly(bytes);
 
         return IsMp3Valid(bytes);
     }
