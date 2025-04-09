@@ -91,7 +91,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
         var audioFilePath = _factory.Services.GetRequiredService<IPathService>()
-            .GetFilePathInFileStorage($"{fileId}.mp3");
+            .ResolveFilePathForStorage($"{fileId}.mp3");
 
         //Assert
 

@@ -21,7 +21,7 @@ public sealed class AudioController : ControllerBase
     [HttpGet("downloadmp3/{fileId}/{fileName}")]
     public async Task<IActionResult> DownloadMp3(string fileId, string fileName)
     {
-        string filePath = _pathService.GetFilePathInFileStorage($"{fileId}.mp3");
+        string filePath = _pathService.ResolveFilePathForStorage($"{fileId}.mp3");
 
         if (!System.IO.File.Exists(filePath))
         {

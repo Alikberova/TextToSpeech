@@ -2,6 +2,6 @@
 
 public interface IPathService
 {
-    string GetFilePathInFileStorage(string fileName);
+    string ResolveFilePathForStorage(string fileName);
     string GetFileStoragePath();
 }
