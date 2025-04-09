@@ -16,7 +16,7 @@ public class SpeechRequestGenerator
         var faker = new Faker<SpeechRequest>()
             .RuleFor(o => o.Model, f => ttsApi is SharedConstants.OpenAI ? "tts-1" : string.Empty)
             .RuleFor(o => o.TtsApi, f => ttsApi)
-            .RuleFor(o => o.Speed, f => f.Random.Double(0.5, 2))
+            .RuleFor(o => o.Speed, f => Math.Round(f.Random.Double(0.5, 2), 1))
             .RuleFor(o => o.Input, f => f.Lorem.Sentence());
 
         if (addFile)
