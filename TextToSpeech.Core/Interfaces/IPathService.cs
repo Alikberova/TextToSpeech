@@ -2,6 +2,6 @@
 
 public interface IPathService
 {
-    string ResolveFilePathForStorage(string fileName);
+    string ResolveFilePathForStorage(Guid fileId, string fileExtension = ".mp3");
     string GetFileStoragePath();
 }

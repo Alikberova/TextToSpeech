@@ -21,7 +21,12 @@ public sealed class AudioController : ControllerBase
     [HttpGet("downloadmp3/{fileId}/{fileName}")]
     public async Task<IActionResult> DownloadMp3(string fileId, string fileName)
     {
-        string filePath = _pathService.ResolveFilePathForStorage($"{fileId}.mp3");
+        if (!Guid.TryParse(fileId, out Guid parsedFileId))
+        {
+            return BadRequest("Invalid file ID.");
+        }
+
+        string filePath = _pathService.ResolveFilePathForStorage(parsedFileId);
 
         if (!System.IO.File.Exists(filePath))
         {

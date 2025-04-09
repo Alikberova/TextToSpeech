@@ -6,14 +6,9 @@ namespace TextToSpeech.Infra.Services.Common;
 
 public sealed class PathService(IConfiguration _configuration) : IPathService
 {
-    public string ResolveFilePathForStorage(string fileId)
+    public string ResolveFilePathForStorage(Guid fileId, string fileExtension = ".mp3")
     {
-        if (!Guid.TryParse(fileId, out _))
-        {
-            throw new ArgumentException("Invalid file ID.");
-        }
-
-        var path = Path.Combine(GetFileStoragePath(), fileId);
+        var path = Path.Combine(GetFileStoragePath(), $"{fileId}{fileExtension}");
 
         var fullPath = Path.GetFullPath(path);
         var basePath = Path.GetFullPath(GetFileStoragePath());
