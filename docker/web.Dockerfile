@@ -10,7 +10,7 @@ COPY . /src
 RUN npm run build
 
 # Stage 2: Serve the app with Nginx
-FROM nginx:latest
+FROM nginx:stable-alpine
 
 # Copy the build output to replace the default Nginx contents
 COPY --from=build /src/dist/text-to-speech.web/browser /usr/share/nginx/html
