@@ -76,3 +76,7 @@ jobs:
       - name: Log Backend Logs (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
         run: docker logs api
+
+      - name: Log Frontend Logs (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: docker logs web
