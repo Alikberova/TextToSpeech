@@ -23,6 +23,6 @@ RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Install Nano
-RUN bash -c "apt-get update && apt-get install nano -y"
+RUN /bin/sh -c "apt-get update && apt-get install nano -y"
 
 ENTRYPOINT ["/entrypoint.sh"]
