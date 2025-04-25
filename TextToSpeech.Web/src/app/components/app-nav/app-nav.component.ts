@@ -18,7 +18,6 @@ import { FooterComponent } from "../footer/footer.component";
     selector: 'app-nav',
     templateUrl: './app-nav.component.html',
     styleUrls: ['./app-nav.component.scss'],
-    standalone: true,
     imports: [CommonModule,
         RouterModule,
         MatMenuModule,

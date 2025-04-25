@@ -6,9 +6,19 @@ namespace TextToSpeech.Infra.Services.Common;
 
 public sealed class PathService(IConfiguration _configuration) : IPathService
 {
-    public string GetFilePathInFileStorage(string fileName)
+    public string ResolveFilePathForStorage(Guid fileId, string fileExtension = ".mp3")
     {
-        return Path.Combine(GetFileStoragePath(), fileName);
+        var path = Path.Combine(GetFileStoragePath(), $"{fileId}{fileExtension}");
+
+        var fullPath = Path.GetFullPath(path);
+        var basePath = Path.GetFullPath(GetFileStoragePath());
+
+        if (!fullPath.StartsWith(basePath, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("Unsafe path detected.");
+        }
+
+        return path;
     }
 
     public string GetFileStoragePath()

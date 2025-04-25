@@ -84,14 +84,17 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         // Act
         var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
 
-        response.EnsureSuccessStatusCode();
-
         var responseString = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception(responseString);
+        }
 
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
         var audioFilePath = _factory.Services.GetRequiredService<IPathService>()
-            .GetFilePathInFileStorage($"{fileId}.mp3");
+            .ResolveFilePathForStorage(fileId!.Value);
 
         //Assert
 
@@ -157,7 +160,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
             { new StringContent(speechRequest.TtsApi), nameof(speechRequest.TtsApi) },
             { new StringContent(speechRequest.Model!), nameof(speechRequest.Model) },
             { new StringContent(speechRequest.Voice.ToString()), nameof(speechRequest.Voice) },
-            { new StringContent(speechRequest.Speed.ToString(CultureInfo.InvariantCulture)), nameof(speechRequest.Speed) },
+            { new StringContent(speechRequest.Speed.ToString(CultureInfo.CurrentCulture)), nameof(speechRequest.Speed) },
             { fileContent, nameof(speechRequest.File), speechRequest.File.FileName }
         };
         return formData;

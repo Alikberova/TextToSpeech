@@ -6,11 +6,10 @@ import { DocumentType } from '../../constants/route-constants';
 import { DocumentService } from '../../services/document.service';
 
 @Component({
-  selector: 'app-legal-document',
-  standalone: true,
-  imports: [ CommonModule, MatCardModule ],
-  templateUrl: './legal-document.component.html',
-  styleUrl: './legal-document.component.scss'
+    selector: 'app-legal-document',
+    imports: [CommonModule, MatCardModule],
+    templateUrl: './legal-document.component.html',
+    styleUrl: './legal-document.component.scss'
 })
 export class LegalDocumentComponent {
   document: any;

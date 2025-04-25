@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { RoutesConstants } from '../../constants/route-constants';
 
 @Component({
-  selector: 'app-footer',
-  standalone: true,
-  imports: [ CommonModule, RouterModule],
-  templateUrl: './footer.component.html',
-  styleUrl: './footer.component.scss'
+    selector: 'app-footer',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './footer.component.html',
+    styleUrl: './footer.component.scss'
 })
 
 export class FooterComponent {

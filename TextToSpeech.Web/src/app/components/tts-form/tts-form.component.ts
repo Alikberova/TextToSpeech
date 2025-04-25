@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,10 +27,9 @@ import { AudioFileReady, YouNeedSelectFilwFirst } from '../../constants/content/
 
 @Component({
     selector: 'app-tts-form',
-    standalone: true,
     templateUrl: './tts-form.component.html',
     styleUrl: './tts-form.component.scss',
-    imports: [FormsModule, CommonModule, RouterOutlet, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, DropdownComponent]
+    imports: [FormsModule, CommonModule, MatTooltipModule, MatProgressBarModule, MatButtonModule, MatIconModule, MatSelectModule, MatInputModule, DropdownComponent]
 })
 
 export class TtsFormComponent implements OnInit {
