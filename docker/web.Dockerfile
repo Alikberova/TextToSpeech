@@ -15,9 +15,9 @@ FROM nginx:stable-alpine
 # Copy the build output to replace the default Nginx contents
 COPY --from=build /src/dist/text-to-speech.web/browser /usr/share/nginx/html
 
-# Fix and copy the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+# # Fix and copy the entrypoint script
+# COPY entrypoint.sh /entrypoint.sh
+# RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
@@ -25,4 +25,4 @@ COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 # Install Nano
 RUN apk update && apk add nano
 
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
