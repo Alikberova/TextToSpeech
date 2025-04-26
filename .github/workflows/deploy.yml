@@ -49,7 +49,7 @@ jobs:
         script: |
           cd /usr/bta
           docker compose pull
-          docker compose down --remove-orphans|| true
+          docker compose down --remove-orphans || true
           docker network remove elk || true
           docker network create elk || true
           docker compose up -d --force-recreate
