@@ -36,8 +36,12 @@ jobs:
           echo Env file is ${{ format('{0}_env_file', env.environment) }}
           echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
           echo "CERTS_PATH=${{ env.certs-path }}" >> .env
-          SANITIZED_REF=$(echo "${{env.github_ref}}" | sed 's/\//-/g') # replace slashes to "-""
-          echo "IMAGE_TAG_VERSION=$SANITIZED_REF" >> .env
+
+          ### replace slashes to "-""
+          normalized_ref=$(echo "${{env.github_ref}}" | sed 's/\//-/g')
+          echo "IMAGE_TAG_VERSION=$normalized_ref" >> .env
+          echo Image tag version: $IMAGE_TAG_VERSION
+
           echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
           echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
 
