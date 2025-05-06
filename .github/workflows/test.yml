@@ -37,7 +37,7 @@ jobs:
           echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
           echo "CERTS_PATH=${{ env.certs-path }}" >> .env
 
-          ### replace slashes to "-""
+          ### replace slashes to "-"
           normalized_ref=$(echo "${{env.github_ref}}" | sed 's/\//-/g')
           echo Normalized Github Ref: $normalized_ref
           echo "IMAGE_TAG_VERSION=$normalized_ref" >> .env
