@@ -9,7 +9,7 @@ updates:
     directory: "/TextToSpeech.Web"
     schedule:
       interval: "weekly"
-    target-branch: "Alikberova-patch-1"
+    target-branch: "dev"
 
   - package-ecosystem: "nuget"
     directories:
@@ -21,4 +21,4 @@ updates:
       - "/TextToSpeech.SeleniumTests"
     schedule:
       interval: "weekly"
-    target-branch: "Alikberova-patch-1"
+    target-branch: "dev"
