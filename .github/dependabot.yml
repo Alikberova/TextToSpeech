@@ -6,13 +6,31 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/" # Location of package manifests
+    directory: "/TextToSpeech.Web"
     schedule:
       interval: "weekly"
-    target-branch: "dev"
+    target-branch: "Alikberova-patch-1"
 
   - package-ecosystem: "nuget"
-    directory: "/"
+    directory: "/TextToSpeech.Api"
     schedule:
       interval: "weekly"
-    target-branch: "dev"
+    target-branch: "Alikberova-patch-1"
+
+  - package-ecosystem: "nuget"
+    directory: "/TextToSpeech.UnitTests"
+    schedule:
+      interval: "weekly"
+    target-branch: "Alikberova-patch-1"
+
+  - package-ecosystem: "nuget"
+    directory: "/TextToSpeech.IntegrationTests"
+    schedule:
+      interval: "weekly"
+    target-branch: "Alikberova-patch-1"
+
+  - package-ecosystem: "nuget"
+    directory: "/TextToSpeech.SeleniumTests"
+    schedule:
+      interval: "weekly"
+    target-branch: "Alikberova-patch-1"
