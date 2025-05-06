@@ -12,25 +12,13 @@ updates:
     target-branch: "Alikberova-patch-1"
 
   - package-ecosystem: "nuget"
-    directory: "/TextToSpeech.Api"
-    schedule:
-      interval: "weekly"
-    target-branch: "Alikberova-patch-1"
-
-  - package-ecosystem: "nuget"
-    directory: "/TextToSpeech.UnitTests"
-    schedule:
-      interval: "weekly"
-    target-branch: "Alikberova-patch-1"
-
-  - package-ecosystem: "nuget"
-    directory: "/TextToSpeech.IntegrationTests"
-    schedule:
-      interval: "weekly"
-    target-branch: "Alikberova-patch-1"
-
-  - package-ecosystem: "nuget"
-    directory: "/TextToSpeech.SeleniumTests"
+    directories:
+      - "/TextToSpeech.Api"
+      - "/TextToSpeech.Core"
+      - "/TextToSpeech.Infra"
+      - "/TextToSpeech.UnitTests"
+      - "/TextToSpeech.IntegrationTests"
+      - "/TextToSpeech.SeleniumTests"
     schedule:
       interval: "weekly"
     target-branch: "Alikberova-patch-1"
