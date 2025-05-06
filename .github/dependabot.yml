@@ -12,7 +12,7 @@ updates:
     target-branch: "dev"
 
   - package-ecosystem: "nuget"
-    directory: "/TextToSpeech*"
+    directory: "/"
     schedule:
       interval: "weekly"
     target-branch: "dev"
