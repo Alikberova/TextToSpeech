@@ -41,7 +41,7 @@ jobs:
           echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
           echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
 
-      - name: Import environment variables from an env file 
+      - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true
