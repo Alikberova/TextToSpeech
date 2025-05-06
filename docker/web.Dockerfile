@@ -1,4 +1,4 @@
-FROM node:lts-alpine as build
+FROM node:22.15.0-alpine as build
 
 WORKDIR /src
 COPY package*.json /src/
@@ -10,19 +10,19 @@ COPY . /src
 RUN npm run build
 
 # Stage 2: Serve the app with Nginx
-FROM nginx:latest
+FROM nginx:stable-alpine
 
 # Copy the build output to replace the default Nginx contents
 COPY --from=build /src/dist/text-to-speech.web/browser /usr/share/nginx/html
 
-# Fix and copy the entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+# # Fix and copy the entrypoint script
+# COPY entrypoint.sh /entrypoint.sh
+# RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Install Nano
-RUN bash -c "apt-get update && apt-get install nano -y"
+RUN apk update && apk add nano
 
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
