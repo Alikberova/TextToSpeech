@@ -6,13 +6,19 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/" # Location of package manifests
+    directory: "/TextToSpeech.Web"
     schedule:
       interval: "weekly"
     target-branch: "dev"
 
   - package-ecosystem: "nuget"
-    directory: "/"
+    directories:
+      - "/TextToSpeech.Api"
+      - "/TextToSpeech.Core"
+      - "/TextToSpeech.Infra"
+      - "/TextToSpeech.UnitTests"
+      - "/TextToSpeech.IntegrationTests"
+      - "/TextToSpeech.SeleniumTests"
     schedule:
       interval: "weekly"
     target-branch: "dev"
