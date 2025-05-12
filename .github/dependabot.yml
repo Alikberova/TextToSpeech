@@ -6,12 +6,50 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/" # Location of package manifests
+    directory: "/TextToSpeech.Web"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+    groups:
+    # Specify a name for the group, which will be used in pull request titles and branch names
+      angular:
+        applies-to: version-updates
+        patterns:
+          - "@angular*"
+        update-types:
+          - "minor"
+
+  - package-ecosystem: "nuget"
+    directories:
+      - "/TextToSpeech.Api"
+      - "/TextToSpeech.Core"
+      - "/TextToSpeech.Infra"
+      - "/TextToSpeech.UnitTests"
+      - "/TextToSpeech.IntegrationTests"
+      - "/TextToSpeech.SeleniumTests"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "weekly"
     target-branch: "dev"
 
-  - package-ecosystem: "nuget"
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+
+  - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "weekly"
