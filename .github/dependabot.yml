@@ -8,8 +8,8 @@ updates:
   - package-ecosystem: "npm"
     directory: "/TextToSpeech.Web"
     schedule:
-      interval: "weekly"
-    target-branch: "dev"
+      interval: "daily"
+    target-branch: "dependabot"
 
   - package-ecosystem: "nuget"
     directories:
@@ -20,5 +20,5 @@ updates:
       - "/TextToSpeech.IntegrationTests"
       - "/TextToSpeech.SeleniumTests"
     schedule:
-      interval: "weekly"
-    target-branch: "dev"
+      interval: "daily"
+    target-branch: "dependabot"
