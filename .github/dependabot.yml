@@ -10,6 +10,18 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "dependabot"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+    groups:
+    # Specify a name for the group, which will be used in pull request titles
+    # and branch names
+      angular:
+        applies-to: version-updates
+        patterns:
+          - "@angular*"
+        update-types:
+          - "minor"
 
   - package-ecosystem: "nuget"
     directories:
@@ -19,6 +31,27 @@ updates:
       - "/TextToSpeech.UnitTests"
       - "/TextToSpeech.IntegrationTests"
       - "/TextToSpeech.SeleniumTests"
+    schedule:
+      interval: "daily"
+    target-branch: "dependabot"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "dependabot"
+
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "daily"
+    target-branch: "dependabot"
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
     schedule:
       interval: "daily"
     target-branch: "dependabot"
