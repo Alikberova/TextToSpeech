@@ -15,13 +15,12 @@ updates:
         update-types: ["version-update:semver-patch"]
     groups:
     # Specify a name for the group, which will be used in pull request titles and branch names
-    angular:
-      applies-to: version-updates
-      patterns:
-        - "@angular*"
-      update-types:
-        - "minor"
-        - "patch"
+      angular:
+        applies-to: version-updates
+        patterns:
+          - "@angular*"
+        update-types:
+          - "minor"
 
   - package-ecosystem: "nuget"
     directories:
