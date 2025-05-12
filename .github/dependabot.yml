@@ -24,3 +24,4 @@ updates:
       interval: "cron"
       cronjob: "*/10 * * * *" # every 10 mins
     target-branch: "dependabot"
+    # test
