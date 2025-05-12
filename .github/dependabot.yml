@@ -42,7 +42,7 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "dev"
-    
+
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
