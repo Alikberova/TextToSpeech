@@ -8,8 +8,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/TextToSpeech.Web"
     schedule:
-      interval: "cron"
-      cronjob: "*/10 * * * *" # every 10 mins
+      interval: "daily"
     target-branch: "dependabot"
 
   - package-ecosystem: "nuget"
@@ -21,7 +20,5 @@ updates:
       - "/TextToSpeech.IntegrationTests"
       - "/TextToSpeech.SeleniumTests"
     schedule:
-      interval: "cron"
-      cronjob: "*/10 * * * *" # every 10 mins
+      interval: "daily"
     target-branch: "dependabot"
-    # test
