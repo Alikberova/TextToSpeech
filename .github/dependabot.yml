@@ -9,10 +9,19 @@ updates:
     directory: "/TextToSpeech.Web"
     schedule:
       interval: "daily"
-    target-branch: "dependabot"
+    target-branch: "dev"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
+    groups:
+    # Specify a name for the group, which will be used in pull request titles and branch names
+    angular:
+      applies-to: version-updates
+      patterns:
+        - "@angular*"
+      update-types:
+        - "minor"
+        - "patch"
 
   - package-ecosystem: "nuget"
     directories:
@@ -24,7 +33,7 @@ updates:
       - "/TextToSpeech.SeleniumTests"
     schedule:
       interval: "daily"
-    target-branch: "dependabot"
+    target-branch: "dev"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
@@ -33,16 +42,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "dependabot"
+    target-branch: "dev"
 
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
       interval: "daily"
-    target-branch: "dependabot"
+    target-branch: "dev"
 
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "dependabot"
+    target-branch: "dev"
