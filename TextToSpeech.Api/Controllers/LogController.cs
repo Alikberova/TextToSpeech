@@ -1,5 +1,8 @@
 ﻿using TextToSpeech.Core.Dto;
 using Microsoft.AspNetCore.Mvc;
+using TextToSpeech.Infra.Services.Common;
+
+namespace TextToSpeech.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -11,9 +14,9 @@ public class LogController(ILogger<LogController> logger) : ControllerBase
         logger.Log(log.MappedLogLevel,
             "{Timestamp} {Message}" +
             "\nFileName: {FileName}, line {LineNumber}, column {ColumnNumber}" +
-            "\nAdditional: {Additional}",
-            log.Timestamp, log.Message, log.FileName, log.LineNumber, log.ColumnNumber, 
-            log.Additional?.Replace("\n", "").Replace("\r", ""));
+            "\nhas Additional: {HasAdditional}",
+            log.Timestamp, log.Message.RemoveLineBreaks(), log.FileName.RemoveLineBreaks(), log.LineNumber, log.ColumnNumber, 
+            log.Additional.Count != 0);
 
         return Ok();
     }
