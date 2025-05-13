@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using TextToSpeech.Infra.Constants;
 using System.Text.Json;
+using System.Net;
 using System.Text;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
@@ -142,7 +143,8 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
 
     private async Task<ReadOnlyMemory<byte>> RequestShortContent(string text, string voice, double speed)
     {
-        StringContent requestBody = new(text, Encoding.UTF8, "text/plain");
+        string sanitizedText = System.Net.WebUtility.HtmlEncode(text);
+        StringContent requestBody = new(sanitizedText, Encoding.UTF8, "text/plain");
 
         _httpClient.DefaultRequestHeaders.Add("accept", "application/octet-stream");
 
