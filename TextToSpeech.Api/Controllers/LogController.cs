@@ -19,7 +19,8 @@ public class LogController : ControllerBase
             "{Timestamp} {Message}" +
             "\nFileName: {FileName}, line {LineNumber}, column {ColumnNumber}" +
             "\nAdditional: {Additional}",
-            log.Timestamp, log.Message, log.FileName, log.LineNumber, log.ColumnNumber, log.Additional);
+            log.Timestamp, log.Message, log.FileName, log.LineNumber, log.ColumnNumber, 
+            log.Additional?.Replace("\n", "").Replace("\r", ""));
 
         return Ok();
     }
