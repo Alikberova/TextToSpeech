@@ -1,5 +1,10 @@
 name: Tests Execution
 
+permissions:
+  contents: read
+  packages: read
+  id-token: write
+
 on:
   push:
     branches:
