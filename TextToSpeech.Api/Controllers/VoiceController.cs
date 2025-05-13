@@ -2,33 +2,25 @@
 using TextToSpeech.Api.Services;
 using TextToSpeech.Core.Interfaces.Ai;
 
-namespace TextToSpeech.Api.Controllers
+namespace TextToSpeech.Api.Controllers;
+
+[Route("api/voices")]
+[ApiController]
+public class VoiceController(INarakeetService narraketService) : ControllerBase
 {
-    [Route("api/voices")]
-    [ApiController]
-    public class VoiceController : ControllerBase
+    [HttpGet("narakeet")]
+    public async Task<IActionResult> Get()
     {
-        private readonly INarakeetService _narraketService;
+        var result = await narraketService.GetAvailableVoices();
 
-        public VoiceController(INarakeetService narraketService)
+        if (result is null)
         {
-            _narraketService = narraketService;
+            return NotFound();
         }
 
-        [HttpGet("narakeet")]
-        public async Task<IActionResult> Get()
-        {
-            var result = await _narraketService.GetAvailableVoices();
+        // for 2 weeks
+        HttpHeaderHelper.SetCacheControl(Response, 1209600);
 
-            if (result is null)
-            {
-                return NotFound();
-            }
-
-            // for 2 weeks
-            HttpHeaderHelper.SetCacheControl(Response, 1209600);
-
-            return Ok(result);
-        }
+        return Ok(result);
     }
 }
