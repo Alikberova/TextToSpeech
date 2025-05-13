@@ -1,12 +1,33 @@
-﻿namespace TextToSpeech.Infra.Services.Common;
+﻿using System.Text;
+
+namespace TextToSpeech.Core.Extensions;
 
 public static class StringExtensions
 {
-    public static string RemoveLineBreaks(this string input)
+    /// <summary>
+    /// Escapes characters that could enable code injection
+    /// </summary>
+    public static string Sanitize(this string input)
     {
         if (string.IsNullOrEmpty(input))
+        {
             return input;
+        }
 
-        return input.Replace("\r", "").Replace("\n", "");
+        var builder = new StringBuilder(input.Length);
+
+        foreach (char c in input)
+        {
+            if (char.IsControl(c))
+            {
+                builder.Append($"\\u{(int)c:x4}");
+            }
+            else
+            {
+                builder.Append(c);
+            }
+        }
+
+        return builder.ToString();
     }
 }
