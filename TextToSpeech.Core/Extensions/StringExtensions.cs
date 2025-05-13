@@ -18,7 +18,7 @@ public static class StringExtensions
 
         foreach (char c in input)
         {
-            if (char.IsControl(c))
+            if (char.IsControl(c) || c == '\n' || c == '\r' || c == '\t')
             {
                 builder.Append($"\\u{(int)c:x4}");
             }
