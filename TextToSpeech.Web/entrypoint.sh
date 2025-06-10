@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh
 
 # Check for the ASPNETCORE_ENVIRONMENT variable and replace the file based on that
 if [[ $ASPNETCORE_ENVIRONMENT = "Staging" ]]; then
