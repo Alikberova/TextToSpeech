@@ -126,10 +126,11 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
-        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
+        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
+            $"-{DateTime.UtcNow:yyyy-MM}";
 
-        var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig)).Get<ElasticsearchConfig>()!;
+        var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))
+            .Get<ElasticsearchConfig>()!;
 
         var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
         {
@@ -142,7 +143,7 @@ static void ConfigureLogging(WebApplicationBuilder builder)
         };
 
         loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
-            .Enrich.WithProperty("Environment", environment)
+            .Enrich.WithProperty("Environment", HostingEnvironment.Current)
             .ReadFrom.Configuration(builder.Configuration);
     });
 }
