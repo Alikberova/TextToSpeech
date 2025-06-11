@@ -22,7 +22,7 @@ jobs:
     environment: ${{ inputs.environment }}
     timeout-minutes: 5
     env:
-      image-tag-version: ${{ inputs.environment }}
+      IMAGE_TAG_VERSION: ${{ inputs.environment }}
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}.
 
     steps:
