@@ -22,7 +22,8 @@ jobs:
     environment: ${{ inputs.environment }}
     timeout-minutes: 5
     env:
-      environment: Staging
+      image-tag-version: ${{ inputs.environment }}
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}.
 
     steps:
     - uses: actions/checkout@v4
