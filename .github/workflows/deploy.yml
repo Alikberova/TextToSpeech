@@ -19,9 +19,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
-      url: https://github.com
+    environment: ${{ inputs.environment }}
     timeout-minutes: 5
     env:
       environment: Staging
