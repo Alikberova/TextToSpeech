@@ -1,0 +1,64 @@
+name: Deployment
+run-name: "Deploy to ${{ inputs.environment }} from ${{ github.head_ref || github.ref_name }} by @${{ github.actor }}"
+
+on:
+  push:
+    branches: master, deploy2
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        type: choice
+        options:
+          - staging
+          - prod
+        default: staging
+        required: true
+        
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: https://github.com
+    timeout-minutes: 5
+    env:
+      environment: Staging
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Compose services
+      run: |
+        docker compose build
+        docker compose push
+
+    - name: Copy files to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER_NAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: docker-compose.yml,.env
+        target: /usr/bta
+
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER_NAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /usr/bta
+          docker compose pull
+          docker compose down --remove-orphans || true
+          docker network remove elk || true
+          docker network create elk || true
+          docker compose up -d --force-recreate
