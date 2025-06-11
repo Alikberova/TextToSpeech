@@ -14,7 +14,6 @@ on:
           - staging
           - prod
         default: staging
-        required: true
         
 jobs:
   deploy:
@@ -23,7 +22,10 @@ jobs:
     timeout-minutes: 5
     env:
       IMAGE_TAG_VERSION: ${{ inputs.environment }}
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}.
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      APPDATAPATH: ${{ secrets.AppDataPath }}
+
 
     steps:
     - uses: actions/checkout@v4
