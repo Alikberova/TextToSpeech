@@ -60,20 +60,20 @@ jobs:
     - name: Copy files to server
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.TTS_SERVER_HOST }}
+        host: ${{ vars.TTS_SERVER_HOST }}
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         source: docker-compose.yml,.env
-        target: ${{ env.APP_DATA_PATH }}
+        target: ${{ vars.APP_DATA_PATH }}
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.TTS_SERVER_HOST }}
-        username: ${{ secrets.TTS_SERVER_USER }}
+        host: ${{ vars.TTS_SERVER_HOST }}
+        username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
-          cd ${{ env.APP_DATA_PATH }}
+          cd ${{ vars.APP_DATA_PATH }}
           docker compose pull
           docker compose down --remove-orphans || true
           docker network remove elk || true
