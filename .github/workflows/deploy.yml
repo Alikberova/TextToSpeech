@@ -39,7 +39,7 @@ jobs:
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
         echo "CERTS_PATH=${{ vars.CERTS_PATH }}" >> .env
-        echo "CONNECTIONSTRINGS__REDIS=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
+        echo "ConnectionStrings__Redis =${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
         echo "JWTCONFIG__AUDIENCE=${{ vars.JWTCONFIG__AUDIENCE }}" >> .env
         echo "JWTCONFIG__EXPIRATIONMINUTES=${{ vars.JWTCONFIG__EXPIRATIONMINUTES }}" >> .env
         echo "JWTCONFIG__ISSUER=${{ vars.JWTCONFIG__ISSUER }}" >> .env
