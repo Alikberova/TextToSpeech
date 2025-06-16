@@ -20,12 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     timeout-minutes: 5
-    env:
-      IMAGE_TAG_VERSION: ${{ inputs.environment }}
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      APPDATAPATH: ${{ secrets.AppDataPath }}
-
 
     steps:
     - uses: actions/checkout@v4
@@ -34,7 +28,29 @@ jobs:
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Create .env file
+      run: |
+        echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
+        echo "ASPNETCORE_ENVIRONMENT=${{ inputs.environment }}" >> .env
+
+        # Vars (non-secrets)
+        echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
+        echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
+        echo "CERTS_PATH=${{ vars.CERTS_PATH }}" >> .env
+        echo "CONNECTIONSTRINGS__REDIS=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
+        echo "JWTCONFIG__AUDIENCE=${{ vars.JWTCONFIG__AUDIENCE }}" >> .env
+        echo "JWTCONFIG__EXPIRATIONMINUTES=${{ vars.JWTCONFIG__EXPIRATIONMINUTES }}" >> .env
+        echo "JWTCONFIG__ISSUER=${{ vars.JWTCONFIG__ISSUER }}" >> .env
+        echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
+
+        # Environment secrets
+        echo "ELASTICSEARCHCONFIG__PASSWORD=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}" >> .env
+        echo "GOOGLECLOUDAPIKEY=${{ secrets.GOOGLECLOUDAPIKEY }}" >> .env
+        echo "NARAKEETCONFIG__APIKEY=${{ secrets.NARAKEETCONFIG__APIKEY }}" >> .env
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
 
     - name: Build and Push Docker Compose services
       run: |
@@ -44,20 +60,20 @@ jobs:
     - name: Copy files to server
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER_NAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.TTS_SERVER_HOST }}
+        username: ${{ vars.TTS_SERVER_USER }}
+        key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         source: docker-compose.yml,.env
-        target: /usr/bta
+        target: ${{ env.APP_DATA_PATH }}
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER_NAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.TTS_SERVER_HOST }}
+        username: ${{ secrets.TTS_SERVER_USER }}
+        key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
-          cd /usr/bta
+          cd ${{ env.APP_DATA_PATH }}
           docker compose pull
           docker compose down --remove-orphans || true
           docker network remove elk || true
