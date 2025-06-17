@@ -8,6 +8,7 @@ services:
       args:
         API_NAME: TextToSpeech.Api
     image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
+    env_file: .env
     environment:
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
