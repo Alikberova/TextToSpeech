@@ -45,7 +45,7 @@ jobs:
           echo "DUMMY FULLCHAIN CERT" > $CERTS_PATH/fullchain.pem
 
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" > .env
-          echo "ConnectionStrings__DefaultConnection='User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;'" >> .env
+          echo "ConnectionStrings__DefaultConnection=User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;" >> .env
           echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
           echo "JwtConfig__Issuer=https://localhost:7057" >> .env
           echo "JwtConfig__Audience=https://localhost:7057" >> .env
