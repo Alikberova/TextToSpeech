@@ -10,7 +10,7 @@ public static class HostingEnvironment
 
     public static bool IsDevelopment()
     {
-        return Current.Equals(Environments.Development, StringComparison.OrdinalIgnoreCase);
+        return Current == Environments.Development;
     }
 
     public static bool IsWindows()

@@ -33,7 +33,7 @@ jobs:
     - name: Create .env file
       run: |
         echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
-        echo "ASPNETCORE_ENVIRONMENT=${{ inputs.environment }}" >> .env
+        echo $(echo ${ASPNETCORE_ENVIRONMENT:0:1} | tr '[:lower:]' '[:upper:]')${ASPNETCORE_ENVIRONMENT:1} >> .env # capitalize 1st letter
 
         # Vars (non-secrets)
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
