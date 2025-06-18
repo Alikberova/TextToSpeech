@@ -35,8 +35,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create .env file for tests
+        env:
+          github_ref: ${{ github.head_ref || github.ref_name }}
         run: |
+          ### Normalize the ref (replace slashes with hyphens)
+          normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
+          IMAGE_TAG_VERSION="test-${normalized_ref}"
+
           cat << EOF > .env
+          IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION
           ConnectionStrings__DefaultConnection=User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;
           ConnectionStrings__Redis=redis:6379,allowAdmin=true
           JwtConfig__Issuer=https://localhost:7057
