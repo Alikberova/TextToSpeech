@@ -21,7 +21,6 @@ concurrency:
 
 env:
   environment: Development
-  certs-path: /home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
 
 jobs:
   tests:
