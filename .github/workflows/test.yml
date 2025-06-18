@@ -43,6 +43,7 @@ jobs:
           IMAGE_TAG_VERSION="test-${normalized_ref}"
 
           cat << EOF > .env
+          ASPNETCORE_ENVIRONMENT=Development
           IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION
           ConnectionStrings__DefaultConnection='User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;'
           ConnectionStrings__Redis=redis:6379,allowAdmin=true
@@ -54,7 +55,6 @@ jobs:
           EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
           EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}
           OPENAI_API_KEY=###
-          ASPNETCORE_ENVIRONMENT=Development
           ANGULAR_PORT=4000
           NarakeetConfig__ApiUrl=https://mock.api
           NarakeetConfig__ApiKey=###
