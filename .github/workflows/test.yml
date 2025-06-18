@@ -41,7 +41,7 @@ jobs:
           IMAGE_TAG_VERSION="test-${normalized_ref}"
 
           CERTS_PATH=/home/runner/work
-          echo "DUMMY PRIVATE KEY"" > $CERTS_PATH/privkey.pem
+          echo "DUMMY PRIVATE KEY" > $CERTS_PATH/privkey.pem
           echo "DUMMY FULLCHAIN CERT" > $CERTS_PATH/fullchain.pem
 
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" > .env
@@ -70,7 +70,7 @@ jobs:
           keys-case: bypass
           
       - name: Debug env
-        run: printenv | grep ASPNETCORE
+        run: printenv
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
