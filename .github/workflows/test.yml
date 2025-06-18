@@ -38,29 +38,26 @@ jobs:
         env:
           github_ref: ${{ github.head_ref || github.ref_name }}
         run: |
-          ### Normalize the ref (replace slashes with hyphens)
           normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
           IMAGE_TAG_VERSION="test-${normalized_ref}"
 
-          cat << EOF > .env
-          ASPNETCORE_ENVIRONMENT=Development
-          IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION
-          ConnectionStrings__DefaultConnection='User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;'
-          ConnectionStrings__Redis=redis:6379,allowAdmin=true
-          JwtConfig__Issuer=https://localhost:7057
-          JwtConfig__Audience=https://localhost:7057
-          JwtConfig__ExpirationMinutes=5
-          JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890
-          EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}
-          EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
-          EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}
-          OPENAI_API_KEY=###
-          ANGULAR_PORT=4000
-          NarakeetConfig__ApiUrl=https://mock.api
-          NarakeetConfig__ApiKey=###
-          POSTGRES_PASSWORD=devpassword
-          IsTestMode=true
-          EOF
+          echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" > .env
+          echo "ConnectionStrings__DefaultConnection='User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;'" >> .env
+          echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
+          echo "JwtConfig__Issuer=https://localhost:7057" >> .env
+          echo "JwtConfig__Audience=https://localhost:7057" >> .env
+          echo "JwtConfig__ExpirationMinutes=5" >> .env
+          echo "JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890" >> .env
+          echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
+          echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
+          echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
+          echo "OPENAI_API_KEY=###" >> .env
+          echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
+          echo "ANGULAR_PORT=4000" >> .env
+          echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
+          echo "NarakeetConfig__ApiKey=###" >> .env
+          echo "POSTGRES_PASSWORD=devpassword" >> .env
+          echo "IsTestMode=true" >> .env
 
       - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
