@@ -54,7 +54,7 @@ jobs:
           EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
           EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}
           OPENAI_API_KEY=###
-          ASPNETCORE_ENVIRONMENT=${{ env.environment }}
+          ASPNETCORE_ENVIRONMENT=Development
           ANGULAR_PORT=4000
           NarakeetConfig__ApiUrl=https://mock.api
           NarakeetConfig__ApiKey=###
@@ -66,7 +66,6 @@ jobs:
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true
-          # mask-variables: true  
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
