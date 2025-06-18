@@ -51,11 +51,11 @@ jobs:
           echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
           echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
           echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
-          echo "OPENAI_API_KEY=###" >> .env
+          echo "OPENAI_API_KEY=test_api_kye" >> .env
           echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
           echo "ANGULAR_PORT=4000" >> .env
           echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
-          echo "NarakeetConfig__ApiKey=###" >> .env
+          echo "NarakeetConfig__ApiKey=test_api_kye" >> .env
           echo "POSTGRES_PASSWORD=devpassword" >> .env
           echo "IsTestMode=true" >> .env
 
@@ -63,6 +63,7 @@ jobs:
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true
+          keys-case: bypass
           
       - name: Debug env
         run: printenv | grep ASPNETCORE
