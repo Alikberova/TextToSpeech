@@ -34,21 +34,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fill env file and SSL certificate from secrets
-        env:
-          github_ref: ${{ github.head_ref || github.ref_name }}
+      - name: Create .env file for tests
         run: |
-          echo Env file is ${{ format('{0}_env_file', env.environment) }}
-          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
-          echo "CERTS_PATH=${{ env.certs-path }}" >> .env
-
-          ### replace slashes to "-"
-          normalized_ref=$(echo "${{env.github_ref}}" | sed 's/\//-/g')
-          echo Normalized Github Ref: $normalized_ref
-          echo "IMAGE_TAG_VERSION=$normalized_ref" >> .env
-
-          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
-          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
+          cat << EOF > .env
+          ConnectionStrings__DefaultConnection=User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;
+          ConnectionStrings__Redis=redis:6379,allowAdmin=true
+          JwtConfig__Issuer=https://localhost:7057
+          JwtConfig__Audience=https://localhost:7057
+          JwtConfig__ExpirationMinutes=5
+          JwtConfig__Symmetric__Key=###
+          EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}
+          EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
+          EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}
+          OPENAI_API_KEY=###
+          ASPNETCORE_ENVIRONMENT=${{ env.environment }}
+          ANGULAR_PORT=4000
+          NarakeetConfig__ApiUrl=https://mock.api
+          NarakeetConfig__ApiKey=###
+          POSTGRES_PASSWORD=devpassword
+          IsTestMode=true
+          EOF
 
       - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
