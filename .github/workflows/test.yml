@@ -49,7 +49,7 @@ jobs:
           JwtConfig__Issuer=https://localhost:7057
           JwtConfig__Audience=https://localhost:7057
           JwtConfig__ExpirationMinutes=5
-          JwtConfig__Symmetric__Key=###
+          JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890
           EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}
           EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
           EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}
@@ -61,12 +61,6 @@ jobs:
           POSTGRES_PASSWORD=devpassword
           IsTestMode=true
           EOF
-
-      - name: Export environment variables from an env file 
-        uses: falti/dotenv-action@v1.1
-        with:
-          export-variables: true
-          mask-variables: true  
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
