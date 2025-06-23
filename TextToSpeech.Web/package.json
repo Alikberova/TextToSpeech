@@ -18,7 +18,7 @@
     "@angular/forms": "19.2.10",
     "@angular/material": "19.2.15",
     "@angular/platform-browser": "19.2.10",
-    "@angular/platform-browser-dynamic": "19.2.10",
+    "@angular/platform-browser-dynamic": "20.0.4",
     "@angular/router": "19.2.10",
     "@microsoft/signalr": "^7.0.14",
     "ngx-logger": "^5.0.12",
