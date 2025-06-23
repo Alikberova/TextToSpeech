@@ -54,11 +54,11 @@ jobs:
           echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
           echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
           echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
-          echo "OPENAI_API_KEY=test_api_key" >> .env
+          echo "OPENAI_API_KEY=test_api_kye" >> .env
           echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
           echo "ANGULAR_PORT=4000" >> .env
           echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
-          echo "NarakeetConfig__ApiKey=test_api_key" >> .env
+          echo "NarakeetConfig__ApiKey=test_api_kye" >> .env
           echo "POSTGRES_PASSWORD=devpassword" >> .env
           echo "IsTestMode=true" >> .env
           echo "CERTS_PATH=$CERTS_PATH" >> .env
