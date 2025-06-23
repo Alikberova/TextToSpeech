@@ -34,7 +34,7 @@ jobs:
       run: |
         echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
         echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env >> .env # capitalize 1st letter
-
+        
         ### Vars (non-secrets)
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
