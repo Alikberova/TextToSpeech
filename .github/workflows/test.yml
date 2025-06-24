@@ -36,6 +36,7 @@ jobs:
       - name: Create .env file for tests
         env:
           github_ref: ${{ github.head_ref || github.ref_name }}
+          POSTGRES_PASSWORD: devpassword
         run: |
           normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
           IMAGE_TAG_VERSION="test-${normalized_ref}"
@@ -45,7 +46,8 @@ jobs:
           echo "DUMMY FULLCHAIN CERT" > $CERTS_PATH/fullchain.pem
 
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" > .env
-          echo "ConnectionStrings__DefaultConnection=User ID=dev;Password=devpassword;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;" >> .env
+          echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+          echo "ConnectionStrings__DefaultConnection=User ID=dev;Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;" >> .env
           echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
           echo "JwtConfig__Issuer=https://localhost:7057" >> .env
           echo "JwtConfig__Audience=https://localhost:7057" >> .env
@@ -59,7 +61,6 @@ jobs:
           echo "ANGULAR_PORT=4000" >> .env
           echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
           echo "NarakeetConfig__ApiKey=test_api_kye" >> .env
-          echo "POSTGRES_PASSWORD=devpassword" >> .env
           echo "IsTestMode=true" >> .env
           echo "CERTS_PATH=$CERTS_PATH" >> .env
 
