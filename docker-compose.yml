@@ -58,7 +58,7 @@ services:
       - redis_data:/data
     networks:
       - proxy_elk
-    restart: always
+    # restart: always
 
   db:
     image: postgres:17-alpine
