@@ -112,6 +112,11 @@ jobs:
         run: |
           docker logs api || true
 
+      - name: Show inspect api (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker inspect api || true     
+
       - name: Show logs web (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
         run: |
@@ -121,6 +126,11 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs db || true
+
+      - name: Show docker inspect db (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker inspect db
 
       - name: Show logs redis (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
