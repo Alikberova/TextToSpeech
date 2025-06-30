@@ -23,8 +23,8 @@ services:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     depends_on:
-      # db:
-      #   condition: service_healthy
+      db:
+        condition: service_healthy
       redis:
         condition: service_started
 
@@ -61,7 +61,7 @@ services:
     restart: always
 
   db:
-    image: postgres:17-alpine
+    image: postgres:alpine
     container_name: db
     environment:
       - POSTGRES_USER=dev
