@@ -18,6 +18,11 @@ services:
       - "7057:443"
     networks:
       - proxy_elk
+    healthcheck:
+      test: ["CMD-SHELL", "curl --silent --fail -k https://localhost/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
@@ -47,11 +52,6 @@ services:
     depends_on:
       api:
         condition: service_healthy
-      healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail -k https://localhost/health || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   redis:
     image: redis:7-alpine
