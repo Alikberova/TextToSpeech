@@ -40,12 +40,13 @@ jobs:
         run: |
           normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
           IMAGE_TAG_VERSION="test-${normalized_ref}"
+          echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
 
           CERTS_PATH=/home/runner/work
-          echo "DUMMY PRIVATE KEY" > $CERTS_PATH/privkey.pem
-          echo "DUMMY FULLCHAIN CERT" > $CERTS_PATH/fullchain.pem
+          echo "DUMMY PRIVATE KEY" >> $CERTS_PATH/privkey.pem
+          echo "DUMMY FULLCHAIN CERT" >> $CERTS_PATH/fullchain.pem
+          echo "CERTS_PATH=$CERTS_PATH" >> .env
 
-          echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" > .env
           echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
           echo "ConnectionStrings__DefaultConnection=User ID=dev;Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=tts;Pooling=true;Include Error Detail=true;" >> .env
           echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
@@ -62,7 +63,6 @@ jobs:
           echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
           echo "NarakeetConfig__ApiKey=test_api_key" >> .env
           echo "IsTestMode=true" >> .env
-          echo "CERTS_PATH=$CERTS_PATH" >> .env
 
       - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
