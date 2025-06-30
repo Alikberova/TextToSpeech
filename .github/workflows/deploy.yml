@@ -1,6 +1,9 @@
 name: Deployment
 run-name: "Deploy to ${{ inputs.environment }} from ${{ github.head_ref || github.ref_name }} by @${{ github.actor }}"
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: master, deploy2
