@@ -43,8 +43,7 @@ jobs:
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
 
           CERTS_PATH=/home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
-          echo "DUMMY PRIVATE KEY" >> $CERTS_PATH/privkey.pem
-          echo "DUMMY FULLCHAIN CERT" >> $CERTS_PATH/fullchain.pem
+          mkdir -p $CERTS_PATH
           echo "CERTS_PATH=$CERTS_PATH" >> .env
 
           echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
