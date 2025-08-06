@@ -44,9 +44,9 @@ services:
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     networks:
       - proxy_elk
-    # depends_on:
-    #   api:
-    #     condition: service_started
+    depends_on:
+      api:
+        condition: service_healthy
 
   redis:
     image: redis:7-alpine
