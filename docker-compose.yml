@@ -23,8 +23,8 @@ services:
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     depends_on:
       db:
-        condition: service_healthy	
-      redis:	
+        condition: service_healthy
+      redis:
         condition: service_started
 
   web:
@@ -63,7 +63,6 @@ services:
     image: postgres:17-alpine
     container_name: db
     environment:
-      - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
