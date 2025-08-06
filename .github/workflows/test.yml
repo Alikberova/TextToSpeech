@@ -21,7 +21,6 @@ concurrency:
 
 env:
   environment: Development
-  certs-path: /home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
 
 jobs:
   tests:
@@ -34,34 +33,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fill env file and SSL certificate from secrets
+      - name: Create .env file for tests
         env:
           github_ref: ${{ github.head_ref || github.ref_name }}
+          POSTGRES_PASSWORD: devpassword
         run: |
-          echo Env file is ${{ format('{0}_env_file', env.environment) }}
-          echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
-          echo "CERTS_PATH=${{ env.certs-path }}" >> .env
+          normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
+          IMAGE_TAG_VERSION="test-${normalized_ref}"
+          echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
 
-          ### replace slashes to "-"
-          normalized_ref=$(echo "${{env.github_ref}}" | sed 's/\//-/g')
-          echo Normalized Github Ref: $normalized_ref
-          echo "IMAGE_TAG_VERSION=$normalized_ref" >> .env
+          CERTS_PATH=/home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
+          echo "CERTS_PATH=$CERTS_PATH" >> .env
 
-          echo "${{ secrets.SSL_ANGULAR_PRIVKEY}}" > ${{ env.certs-path }}/privkey.pem
-          echo "${{ secrets.SSL_ANGULAR_FULLCHAIN}}" > ${{ env.certs-path }}/fullchain.pem
+          echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+          echo "ConnectionStrings__DefaultConnection=User ID=postgres;Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=postgres;Pooling=true;Include Error Detail=true;" >> .env
+          echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
+          echo "JwtConfig__Issuer=https://localhost:7057" >> .env
+          echo "JwtConfig__Audience=https://localhost:7057" >> .env
+          echo "JwtConfig__ExpirationMinutes=5" >> .env
+          echo "JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890" >> .env
+          echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
+          echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
+          echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
+          echo "OPENAI_API_KEY=test_api_key" >> .env
+          echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
+          echo "ANGULAR_PORT=4000" >> .env
+          echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
+          echo "NarakeetConfig__ApiKey=test_api_key" >> .env
+          echo "IsTestMode=true" >> .env
 
       - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true
-          mask-variables: true  
+          keys-case: bypass
+          log-variables: true
+
+      - name: Generate test SSL certs
+        if: matrix.test_type == 'Selenium'
+        run: |
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -subj "/CN=localhost" \
+            -addext "subjectAltName=DNS:localhost" \
+            -keyout $CERTS_PATH/privkey.pem \
+            -out $CERTS_PATH/fullchain.pem
 
       - name: Log in to Docker Hub
         if: matrix.test_type == 'Selenium'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and start containers for tests
         if: matrix.test_type == 'Selenium'
@@ -72,7 +94,7 @@ jobs:
           docker network create elk
           docker compose up -d
 
-      - name: Cache NuGet Packages #test
+      - name: Cache NuGet Packages
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -89,3 +111,28 @@ jobs:
         run: |
           docker logs api || true
           docker logs web || true
+
+      # - name: Show inspect api (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker inspect api || true     
+
+      # - name: Show logs web (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker logs web || true
+
+      # - name: Show logs db (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker logs db || true
+
+      # - name: Show docker inspect db (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker inspect db
+
+      # - name: Show docker inspect elk (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker network inspect elk 

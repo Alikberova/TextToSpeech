@@ -1,16 +1,28 @@
 name: Deployment
+run-name: "Deploy to ${{ inputs.environment }} from ${{ github.head_ref || github.ref_name }} by @${{ github.actor }}"
+
+permissions:
+  contents: read
 
 on:
   push:
-    branches: master
-  workflow_dispatch:
+    branches: master, deploy2
 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        type: choice
+        options:
+          - staging
+          - prod
+        default: staging
+        
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     timeout-minutes: 5
-    env:
-      environment: Staging
 
     steps:
     - uses: actions/checkout@v4
@@ -19,12 +31,33 @@ jobs:
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.DOCKER_TOKEN }}
 
-    - name: Fill env file
+    - name: Create .env file
       run: |
-        echo "${{ secrets[format('{0}_env_file', env.environment)]}}" > .env
-        echo IMAGE_TAG_VERSION="${{ env.environment }}" >> .env
+        echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
+        echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env >> .env # capitalize 1st letter
+
+        # Non-secret variables
+        echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
+        echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
+        echo "CERTS_PATH=${{ vars.CERTS_PATH }}" >> .env
+        echo "ConnectionStrings__Redis=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
+        echo "JWTCONFIG__AUDIENCE=${{ vars.JWTCONFIG__AUDIENCE }}" >> .env
+        echo "JWTCONFIG__EXPIRATIONMINUTES=${{ vars.JWTCONFIG__EXPIRATIONMINUTES }}" >> .env
+        echo "JWTCONFIG__ISSUER=${{ vars.JWTCONFIG__ISSUER }}" >> .env
+        echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
+
+        # Environment secrets
+        echo "ELASTICSEARCHCONFIG__PASSWORD=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}" >> .env
+        echo "GOOGLECLOUDAPIKEY=${{ secrets.GOOGLECLOUDAPIKEY }}" >> .env
+        echo "NARAKEETCONFIG__APIKEY=${{ secrets.NARAKEETCONFIG__APIKEY }}" >> .env
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+        echo "JWTCONFIG__SYMMETRIC__KEY=${{ secrets.JWTCONFIG__SYMMETRIC__KEY }}" >> .env
+        echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
+        echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
+        echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
 
     - name: Build and Push Docker Compose services
       run: |
@@ -34,20 +67,20 @@ jobs:
     - name: Copy files to server
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER_NAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ vars.TTS_SERVER_HOST }}
+        username: ${{ vars.TTS_SERVER_USER }}
+        key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         source: docker-compose.yml,.env
-        target: /usr/bta
+        target: ${{ vars.APP_DATA_PATH }}
 
     - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USER_NAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ vars.TTS_SERVER_HOST }}
+        username: ${{ vars.TTS_SERVER_USER }}
+        key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
-          cd /usr/bta
+          cd ${{ vars.APP_DATA_PATH }}
           docker compose pull
           docker compose down --remove-orphans || true
           docker network remove elk || true
