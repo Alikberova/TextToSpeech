@@ -24,8 +24,6 @@ services:
     depends_on:
       db:
         condition: service_started
-      redis:
-        condition: service_healthy
 
   web:
     build:
