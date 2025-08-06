@@ -42,7 +42,7 @@ jobs:
           IMAGE_TAG_VERSION="test-${normalized_ref}"
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
 
-          CERTS_PATH=/home/runner/work
+          CERTS_PATH=/home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
           echo "DUMMY PRIVATE KEY" >> $CERTS_PATH/privkey.pem
           echo "DUMMY FULLCHAIN CERT" >> $CERTS_PATH/fullchain.pem
           echo "CERTS_PATH=$CERTS_PATH" >> .env
@@ -131,6 +131,16 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker inspect db
+
+      - name: Show logs redis (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker logs redis || true
+
+      - name: Show docker inspect redis (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker inspect redis
 
       # - name: Show logs (if Selenium tests failed)
       #   if: matrix.test_type == 'Selenium' && failure()
