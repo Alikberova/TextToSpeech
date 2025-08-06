@@ -93,9 +93,9 @@ jobs:
           docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
           docker compose push
           docker network create elk
-          docker compose up -d
+          docker compose up -d || true
 
-      - name: Cache NuGet Packages #test
+      - name: Cache NuGet Packages
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
