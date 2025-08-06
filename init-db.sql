@@ -1,1 +1,0 @@
-ALTER USER dev CREATEDB;
