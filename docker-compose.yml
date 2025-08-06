@@ -23,6 +23,8 @@ services:
       - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     depends_on:
       db:
+        condition: service_healthy	
+      redis:	
         condition: service_started
 
   web:
