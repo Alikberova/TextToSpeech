@@ -54,7 +54,7 @@ jobs:
         echo "NARAKEETCONFIG__APIKEY=${{ secrets.NARAKEETCONFIG__APIKEY }}" >> .env
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-        echo "ConnectionStrings__DefaultConnection=${{ secrets.POSTGRES_CONNECTION_STRING }}" >> .env
+        echo "ConnectionStrings__DefaultConnection=User ID=postgres;Password=${{ secrets.POSTGRES_PASSWORD }};Host=db;Port=5432;Database=postgres;Pooling=true;Include Error Detail=true;" >> .env
         echo "JWTCONFIG__SYMMETRIC__KEY=${{ secrets.JWTCONFIG__SYMMETRIC__KEY }}" >> .env
         echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
         echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
