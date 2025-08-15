@@ -36,7 +36,7 @@ jobs:
     - name: Create .env file
       run: |
         echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
-        echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env >> .env # capitalize 1st letter
+        echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env # capitalize 1st letter
 
         # Non-secret variables
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
@@ -86,3 +86,4 @@ jobs:
           docker network remove elk || true
           docker network create elk || true
           docker compose up -d --force-recreate
+          docker compose -f docker-compose-elk.yml up -d  # start kibana
