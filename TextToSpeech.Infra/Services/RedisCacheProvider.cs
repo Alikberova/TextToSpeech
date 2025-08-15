@@ -8,8 +8,13 @@ public sealed class RedisCacheProvider : IRedisCacheProvider
 {
     private readonly ConnectionMultiplexer? _redisConnection;
 
-    public RedisCacheProvider(string connectionString)
+    public RedisCacheProvider(string? connectionString)
     {
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
         try
         {
             _redisConnection = ConnectionMultiplexer.Connect(connectionString);

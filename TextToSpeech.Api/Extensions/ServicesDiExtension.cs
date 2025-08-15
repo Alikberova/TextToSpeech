@@ -40,7 +40,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
+        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")));
         services.AddSingleton<ITaskManager, TaskManager>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
