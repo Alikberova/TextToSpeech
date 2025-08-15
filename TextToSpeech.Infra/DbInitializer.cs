@@ -6,18 +6,11 @@ using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra;
 
-public sealed class DbInitializer : IDbInitializer
+public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
 {
-    private readonly AppDbContext _dbContext;
-
-    public DbInitializer(AppDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task Initialize()
     {
-        await _dbContext.Database.MigrateAsync();
+        await dbContext.Database.MigrateAsync();
 
         await Seed();
     }
@@ -26,7 +19,7 @@ public sealed class DbInitializer : IDbInitializer
     {
         foreach (var keyValue in SharedConstants.TtsApis)
         {
-            if (!_dbContext.TtsApis.Any(s => s.Id == keyValue.Value))
+            if (!dbContext.TtsApis.Any(s => s.Id == keyValue.Value))
             {
                 var service = new TtsApi()
                 {
@@ -34,13 +27,13 @@ public sealed class DbInitializer : IDbInitializer
                     Id = keyValue.Value,
                 };
 
-                await _dbContext.TtsApis.AddAsync(service);
+                await dbContext.TtsApis.AddAsync(service);
             }
         }
 
         if (!HostingEnvironment.IsDevelopment())
         {
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return;
         }
 
@@ -52,12 +45,12 @@ public sealed class DbInitializer : IDbInitializer
 
         foreach (var audio in audios)
         {
-            if (!_dbContext.AudioFiles.Any(a => a.Id == audio.Id))
+            if (!dbContext.AudioFiles.Any(a => a.Id == audio.Id))
             {
-                await _dbContext.AudioFiles.AddAsync(audio);
+                await dbContext.AudioFiles.AddAsync(audio);
             }
         }
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
     }
 }

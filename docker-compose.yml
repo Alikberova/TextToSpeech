@@ -63,7 +63,6 @@ services:
     image: postgres:17-alpine
     container_name: db
     environment:
-      - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
@@ -72,7 +71,7 @@ services:
     networks:
       - proxy_elk
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5

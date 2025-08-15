@@ -5,9 +5,12 @@ namespace TextToSpeech.Core;
 
 public static class HostingEnvironment
 {
+    public static string Current { get; private set; } = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+        ?? throw new Exception("ASPNETCORE_ENVIRONMENT is not set");
+
     public static bool IsDevelopment()
     {
-        return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == Environments.Development;
+        return Current == Environments.Development;
     }
 
     public static bool IsWindows()
@@ -17,7 +20,7 @@ public static class HostingEnvironment
 
     public static bool IsTestMode()
     {
-        var re = Environment.GetEnvironmentVariable(ConfigConstants.IsTestMode);
-        return bool.TryParse(Environment.GetEnvironmentVariable(ConfigConstants.IsTestMode)?.Trim(), out var isTestMode) && isTestMode;
+        return bool.TryParse(Environment.GetEnvironmentVariable(ConfigConstants.IsTestMode)?.Trim(), out var isTestMode)
+            && isTestMode;
     }
 }
