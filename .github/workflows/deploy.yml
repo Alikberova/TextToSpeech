@@ -86,4 +86,3 @@ jobs:
           docker network remove elk || true
           docker network create elk || true
           docker compose up -d --force-recreate
-          docker compose -f docker-compose-elk.yml up -d  # start kibana

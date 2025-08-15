@@ -41,4 +41,3 @@ jobs:
           docker compose -f docker-compose-elk.yml build
           docker compose -f docker-compose-elk.yml down || true
           docker compose -f docker-compose-elk.yml up -d --force-recreate
-          docker compose up -d  # start tts services
