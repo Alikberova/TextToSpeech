@@ -18,7 +18,7 @@ services:
       - ELASTIC_PASSWORD=${ElasticsearchConfig__Password} 
     env_file: .env
     networks:
-      - elk_nework
+      - proxy_elk
 
   kibana:
     image: kibana:7.9.1
@@ -35,7 +35,7 @@ services:
       - ELASTICSEARCH_PASSWORD=${ElasticsearchConfig__Password} 
     env_file: .env
     networks:
-      - elk_nework
+      - proxy_elk
     depends_on:
       - elasticsearch
 
