@@ -31,12 +31,12 @@ a {
 }
 
 .snackbar-success {
-  --mdc-snackbar-container-color: #{colors.$snackbar-color--success};
+  --mat-snackbar-container-color: #{colors.$snackbar-color--success};
   --mat-snack-bar-button-color: #{colors.$snackbar-color--success-action};
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: #{colors.$snackbar-color--error};
+  --mat-snackbar-container-color: #{colors.$snackbar-color--error};
 }
 
 :root {
