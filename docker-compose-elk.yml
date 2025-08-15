@@ -40,9 +40,9 @@ services:
       - elasticsearch
 
 networks:
-   elk_nework:
+  proxy_elk:
+    external: true
     name: elk
-    driver: bridge
 
 volumes:
   test_data:

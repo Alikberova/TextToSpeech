@@ -81,8 +81,7 @@ jobs:
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
           cd ${{ vars.APP_DATA_PATH }}
+          docker network inspect elk >/dev/null 2>&1 || docker network create elk
           docker compose pull
           docker compose down --remove-orphans || true
-          docker network remove elk || true
-          docker network create elk || true
           docker compose up -d --force-recreate
