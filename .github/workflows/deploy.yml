@@ -47,10 +47,10 @@ jobs:
         echo "JWTCONFIG__EXPIRATIONMINUTES=${{ vars.JWTCONFIG__EXPIRATIONMINUTES }}" >> .env
         echo "JWTCONFIG__ISSUER=${{ vars.JWTCONFIG__ISSUER }}" >> .env
         echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
+        echo "ELASTICSEARCHCONFIG__USERNAME=${{ vars.ELASTICSEARCHCONFIG__USERNAME }}" >> .env
 
         # Environment secrets
         echo "ELASTICSEARCHCONFIG__PASSWORD=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}" >> .env
-        echo "ELASTICSEARCHCONFIG__USERNAME=${{ secrets.ELASTICSEARCHCONFIG__USERNAME }}" >> .env
         echo "GOOGLECLOUDAPIKEY=${{ secrets.GOOGLECLOUDAPIKEY }}" >> .env
         echo "NARAKEETCONFIG__APIKEY=${{ secrets.NARAKEETCONFIG__APIKEY }}" >> .env
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
