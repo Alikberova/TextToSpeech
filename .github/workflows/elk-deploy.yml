@@ -28,7 +28,7 @@ jobs:
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         source: docker-compose-elk.yml,.env
-        target: ${{ vars.APP_DATA_PATH }}
+        target: ${{ vars.APP_DATA_PATH }}/elk
 
     - name: Build and deploy to Server
       uses: appleboy/ssh-action@master
