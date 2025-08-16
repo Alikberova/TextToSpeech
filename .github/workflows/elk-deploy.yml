@@ -37,7 +37,7 @@ jobs:
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
-          cd ${{ vars.APP_DATA_PATH }}
+          cd ${{ vars.APP_DATA_PATH }}/elk
           docker network inspect elk >/dev/null 2>&1 || docker network create elk
           docker compose -f docker-compose-elk.yml build
           docker compose -f docker-compose-elk.yml down || true
