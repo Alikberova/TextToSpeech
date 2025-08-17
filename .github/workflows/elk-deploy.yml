@@ -19,9 +19,8 @@ jobs:
 
     - name: Fill .env file
       run: |
-        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
-        echo "ElasticsearchConfig__Username=${{ vars.ELASTICSEARCHCONFIG__USERNAME }}" >> .env
-
+        echo "ElasticsearchConfig__Password=${{ secrets.ElasticsearchConfig__Password}}" > .env
+        echo "KIBANA_SERVICE_TOKEN=${{ secrets.KIBANA_SERVICE_TOKEN }}" >> .env
 
     - name: Copy files to server
       uses: appleboy/scp-action@master

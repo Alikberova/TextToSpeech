@@ -31,8 +31,7 @@ services:
       - server.name=kibana
       - server.host=0.0.0.0
       - elasticsearch.hosts=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=${ElasticsearchConfig__Username}
-      - ELASTICSEARCH_PASSWORD=${ElasticsearchConfig__Password} 
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=${KIBANA_SERVICE_TOKEN}
     env_file: .env
     networks:
       - proxy_elk
