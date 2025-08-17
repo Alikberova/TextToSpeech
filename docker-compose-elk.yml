@@ -6,7 +6,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - test_data:/usr/share/elasticsearch/data/
+      - elastic_data:/usr/share/elasticsearch/data/
     environment:
       - discovery.type=single-node
       - http.host=0.0.0.0
@@ -45,6 +45,6 @@ networks:
     name: elk
 
 volumes:
-  test_data:
+  elastic_data:
   ls_data:
   kb_data:

@@ -20,7 +20,7 @@ jobs:
     - name: Fill .env file
       run: |
         echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
-        echo "ELASTICSEARCHCONFIG__USERNAME=${{ vars.ELASTICSEARCHCONFIG__USERNAME }}" >> .env
+        echo "ElasticsearchConfig__Username=${{ vars.ELASTICSEARCHCONFIG__USERNAME }}" >> .env
 
 
     - name: Copy files to server
