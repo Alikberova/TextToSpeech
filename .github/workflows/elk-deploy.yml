@@ -59,7 +59,7 @@ jobs:
 
           echo "Waiting for containers to become healthy..."
           for i in {1..30}; do
-            healthy_count=$(docker compose -f docker-compose-elk.yml ps | grep "(healthy-test)" | wc -l)
+            healthy_count=$(docker compose -f docker-compose-elk.yml ps | grep "(healthy)" | wc -l)
 
             expected_count=2
 

@@ -76,6 +76,6 @@ networks:
     name: elk
 
 volumes:
-  es-data:
+  es01-data:
   kb-data:
   kb-token:
