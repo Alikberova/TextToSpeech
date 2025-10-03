@@ -7,8 +7,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: docker/elk
     env:
-     remote-elk-path: ${{ vars.APP_DATA_PATH }}/elk
+      elk-remote-path: ${{ vars.APP_DATA_PATH }}/elk
 
     steps:
     - uses: actions/checkout@v5
@@ -30,9 +33,8 @@ jobs:
         host: ${{ vars.TTS_SERVER_HOST }}
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
-        source: docker/elk/docker-compose-elk.yml,.env
+        source: docker-compose-elk.yml,.env
         target: ${{ env.remote-elk-path }}
-        strip_components: 2 # drop the first two folders (docker/elk)
 
     - name: Build and deploy to Server
       uses: appleboy/ssh-action@master
