@@ -64,7 +64,7 @@ jobs:
             expected_count=2
 
             if [ "$healthy_count" -eq "$expected_count" ]; then
-              echo "All $expected_count containers are healthy"
+              echo "All containers are healthy"
               exit 0
             fi
 
