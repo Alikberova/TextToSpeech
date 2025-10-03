@@ -31,7 +31,7 @@ jobs:
         host: ${{ vars.TTS_SERVER_HOST }}
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
-        source: ${{ env.elk-source-path }}/docker-compose-elk.yml,${{ env.elk-source-path }}/.env
+        source: ${{ env.elk-source-path }}/
         target: ${{ env.elk-remote-path }}
         strip_components: 2 # drop the first two folders (docker/elk)
 
