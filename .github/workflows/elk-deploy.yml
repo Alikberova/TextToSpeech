@@ -26,7 +26,6 @@ jobs:
       run: |
         pwd
         ls -la
-        cat docker/elk/docker-compose-elk.yml
     
     - name: Copy files to server
       uses: appleboy/scp-action@master
@@ -36,6 +35,8 @@ jobs:
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         source: docker/elk/docker-compose-elk.yml,.env
         target: ${{ vars.APP_DATA_PATH }}
+        overwrite: true
+        debug: true
 
     - name: Build and deploy to Server
       uses: appleboy/ssh-action@master
