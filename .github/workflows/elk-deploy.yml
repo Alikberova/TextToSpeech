@@ -28,7 +28,7 @@ jobs:
         host: ${{ vars.TTS_SERVER_HOST }}
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
-        source: /docker/elk/docker-compose-elk.yml,.env
+        source: docker/elk/docker-compose-elk.yml,.env
         target: ${{ vars.APP_DATA_PATH }}
 
     - name: Build and deploy to Server
