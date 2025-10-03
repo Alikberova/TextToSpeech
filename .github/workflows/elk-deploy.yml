@@ -47,3 +47,30 @@ jobs:
           docker compose -f docker-compose-elk.yml build
           docker compose -f docker-compose-elk.yml down || true
           docker compose -f docker-compose-elk.yml up -d --force-recreate
+
+    - name: Verify ELK services are healthy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ vars.TTS_SERVER_HOST }}
+        username: ${{ vars.TTS_SERVER_USER }}
+        key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
+        script: |
+          cd ${{ env.elk-remote-path }}
+
+          echo "Waiting for containers to become healthy..."
+          for i in {1..30}; do
+            healthy_count=$(docker compose -f docker-compose-elk.yml ps | grep "(healthy-test)" | wc -l)
+
+            expected_count=2
+
+            if [ "$healthy_count" -eq "$expected_count" ]; then
+              exit 0
+            fi
+
+            echo "Waiting... ($i/30) — $healthy_count/$expected_count healthy"
+            sleep 3
+          done
+
+          echo "Some containers did not become healthy in time"
+          docker compose -f docker-compose-elk.yml ps -a
+          exit 1
