@@ -21,7 +21,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - es-data:/usr/share/elasticsearch/data
+      - es01-data:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl -s -u elastic:${ElasticsearchConfig__Password} http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' || exit 1"]
       interval: 10s
