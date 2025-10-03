@@ -7,11 +7,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    defaults:
-      run:
-        working-directory: docker/elk
     env:
-      elk-remote-path: ${{ vars.APP_DATA_PATH }}/elk
+     elk-remote-path: ${{ vars.APP_DATA_PATH }}/elk
+     elk-source-path: docker/elk
 
     steps:
     - uses: actions/checkout@v5
@@ -24,8 +22,8 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > .env
-        echo "STACK_VERSION=9.1.4" >> .env
+        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > ${{ env.elk-source-path }}/.env
+        echo "STACK_VERSION=9.1.4" >> ${{ env.elk-source-path }}/.env
     
     - name: Copy files to server
       uses: appleboy/scp-action@master
@@ -33,8 +31,9 @@ jobs:
         host: ${{ vars.TTS_SERVER_HOST }}
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
-        source: docker-compose-elk.yml,.env
-        target: ${{ env.remote-elk-path }}
+        source: ${{ env.elk-source-path }}/docker-compose-elk.yml,${{ env.elk-source-path }}/.env
+        target: ${{ env.elk-remote-path }}
+        strip_components: 2 # drop the first two folders (docker/elk)
 
     - name: Build and deploy to Server
       uses: appleboy/ssh-action@master
@@ -43,7 +42,7 @@ jobs:
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
-          cd ${{ env.remote-elk-path }}
+          cd ${{ env.elk-remote-path }}
           docker network inspect elk >/dev/null 2>&1 || docker network create elk
           docker compose -f docker-compose-elk.yml build
           docker compose -f docker-compose-elk.yml down || true
