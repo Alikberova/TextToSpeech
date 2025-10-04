@@ -36,31 +36,45 @@ jobs:
       - name: Create .env file for tests
         env:
           github_ref: ${{ github.head_ref || github.ref_name }}
-          POSTGRES_PASSWORD: devpassword
         run: |
+          cp .env.example .env
           normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
           IMAGE_TAG_VERSION="test-${normalized_ref}"
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
-
-          CERTS_PATH=/home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
-          echo "CERTS_PATH=$CERTS_PATH" >> .env
-
-          echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
-          echo "ConnectionStrings__DefaultConnection=User ID=postgres;Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=postgres;Pooling=true;Include Error Detail=true;" >> .env
-          echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
-          echo "JwtConfig__Issuer=https://localhost:7057" >> .env
-          echo "JwtConfig__Audience=https://localhost:7057" >> .env
-          echo "JwtConfig__ExpirationMinutes=5" >> .env
-          echo "JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890" >> .env
           echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
           echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
           echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
-          echo "OPENAI_API_KEY=test_api_key" >> .env
-          echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
-          echo "ANGULAR_PORT=4000" >> .env
-          echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
-          echo "NarakeetConfig__ApiKey=test_api_key" >> .env
           echo "IsTestMode=true" >> .env
+          echo "ANGULAR_PORT=4000" >> .env
+
+      # - name: Create .env file for tests
+      #   env:
+      #     github_ref: ${{ github.head_ref || github.ref_name }}
+      #     POSTGRES_PASSWORD: devpassword
+      #   run: |
+      #     normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
+      #     IMAGE_TAG_VERSION="test-${normalized_ref}"
+      #     echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
+
+      #     CERTS_PATH=/home/runner/work/TextToSpeech/TextToSpeech/TextToSpeech.Web/nginx/certs
+      #     echo "CERTS_PATH=$CERTS_PATH" >> .env
+
+      #     echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+      #     echo "ConnectionStrings__DefaultConnection=User ID=postgres;Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=postgres;Pooling=true;Include Error Detail=true;" >> .env
+      #     echo "ConnectionStrings__Redis=redis:6379,allowAdmin=true" >> .env
+      #     echo "JwtConfig__Issuer=https://localhost:7057" >> .env
+      #     echo "JwtConfig__Audience=https://localhost:7057" >> .env
+      #     echo "JwtConfig__ExpirationMinutes=5" >> .env
+      #     echo "JwtConfig__Symmetric__Key=this_is_a_test_key_1234567890" >> .env
+      #     echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
+      #     echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
+      #     echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
+      #     echo "OPENAI_API_KEY=test_api_key" >> .env
+      #     echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
+      #     echo "ANGULAR_PORT=4000" >> .env
+      #     echo "NarakeetConfig__ApiUrl=https://mock.api" >> .env
+      #     echo "NarakeetConfig__ApiKey=test_api_key" >> .env
+      #     echo "IsTestMode=true" >> .env
 
       - name: Export environment variables from an env file 
         uses: falti/dotenv-action@v1.1
@@ -111,28 +125,3 @@ jobs:
         run: |
           docker logs api || true
           docker logs web || true
-
-      # - name: Show inspect api (if Selenium tests failed)
-      #   if: matrix.test_type == 'Selenium' && failure()
-      #   run: |
-      #     docker inspect api || true     
-
-      # - name: Show logs web (if Selenium tests failed)
-      #   if: matrix.test_type == 'Selenium' && failure()
-      #   run: |
-      #     docker logs web || true
-
-      # - name: Show logs db (if Selenium tests failed)
-      #   if: matrix.test_type == 'Selenium' && failure()
-      #   run: |
-      #     docker logs db || true
-
-      # - name: Show docker inspect db (if Selenium tests failed)
-      #   if: matrix.test_type == 'Selenium' && failure()
-      #   run: |
-      #     docker inspect db
-
-      # - name: Show docker inspect elk (if Selenium tests failed)
-      #   if: matrix.test_type == 'Selenium' && failure()
-      #   run: |
-      #     docker network inspect elk 
