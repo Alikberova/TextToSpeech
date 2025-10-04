@@ -46,6 +46,7 @@ jobs:
           echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
           echo "IsTestMode=true" >> .env
           echo "ANGULAR_PORT=4000" >> .env
+          echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
 
       # - name: Create .env file for tests
       #   env:
@@ -123,5 +124,33 @@ jobs:
       - name: Show logs (if Selenium tests failed)
         if: matrix.test_type == 'Selenium' && failure()
         run: |
+          echo "Show inspect api"
           docker logs api || true
+          
+          echo "Show inspect web"
           docker logs web || true
+
+      # - name: Show inspect api (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker inspect api || true     
+
+      # - name: Show logs web (if Selenium tests failed)
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker logs web || true
+
+      - name: Show logs db (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker logs db || true
+
+      - name: Show docker inspect db (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker inspect db
+
+      - name: Show docker inspect elk (if Selenium tests failed)
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker network inspect elk 
