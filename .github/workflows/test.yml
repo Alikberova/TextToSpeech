@@ -47,7 +47,6 @@ jobs:
           echo "IsTestMode=true" >> .env
           echo "ANGULAR_PORT=4000" >> .env
           echo "ASPNETCORE_ENVIRONMENT=${{ env.environment }}" >> .env
-          echo "POSTGRES_USER=postgres" >> .env
 
       # - name: Create .env file for tests
       #   env:
