@@ -121,6 +121,11 @@ jobs:
       - name: Run Tests
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
+      - name: Show logs api
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          docker logs api || true
+
       - name: Show inspect api
         if: matrix.test_type == 'Selenium' && failure()
         run: |
