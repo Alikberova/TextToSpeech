@@ -86,6 +86,10 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Wait for 15 seconds
+        if: matrix.test_type == 'Selenium'
+        run: sleep 15
+
       - name: Run Tests
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
