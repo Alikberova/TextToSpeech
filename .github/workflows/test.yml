@@ -40,6 +40,7 @@ jobs:
           cp .env.example .env
           normalized_ref=$(echo "${github_ref}" | sed 's/\//-/g')
           IMAGE_TAG_VERSION="test-${normalized_ref}"
+          echo "" >> .env
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
           echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
           echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
