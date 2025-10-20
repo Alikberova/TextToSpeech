@@ -61,6 +61,9 @@ public class TestBase : IDisposable
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
 
         Directory.CreateDirectory(TestDirectory);
+
+        _output?.WriteLine("TestDirectory: " + TestDirectory);
+        _output?.WriteLine("Directory.Exists(TestDirectory): " + Directory.Exists(TestDirectory));
     }
 
     public void Dispose()
