@@ -37,14 +37,7 @@ public class TestBase : IDisposable
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        try
-        {
-            SeedRedisCache();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception("--------------- An error on seeding cache ---------------- ", ex);
-        }
+        SeedRedisCache();
 
         var options = new ChromeOptions();
 
@@ -130,6 +123,7 @@ public class TestBase : IDisposable
 
     private void SeedRedisCache()
     {
+        // todo should be localhost:6379; add RedisPort
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
 
         if (!redisCacheSeeder.IsRedisConnected())

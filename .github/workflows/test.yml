@@ -83,6 +83,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Override Redis for test runner
+        run: echo "ConnectionStrings__Redis=localhost:6379,allowAdmin=true" >> $GITHUB_ENV
+
       - name: Run Tests
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
