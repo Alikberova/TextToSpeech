@@ -31,7 +31,14 @@ public class TestBase : IDisposable
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        Task.Run(SeedRedisCache).GetAwaiter().GetResult();
+        try
+        {
+            Task.Run(SeedRedisCache).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("--------------- An error on seeding cache ---------------- ", ex);
+        }
 
         var options = new ChromeOptions();
 

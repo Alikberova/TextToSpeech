@@ -39,9 +39,6 @@ jobs:
           IMAGE_TAG_VERSION="test-${normalized_ref}"
           echo "" >> .env
           echo "IMAGE_TAG_VERSION=$IMAGE_TAG_VERSION" >> .env
-          echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
-          echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
-          echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
           echo "AppDataPath=$RUNNER_TEMP/tts-app" >> .env
           cat .env.test >> .env
 
@@ -85,10 +82,6 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-
-      - name: Wait for 15 seconds
-        if: matrix.test_type == 'Selenium'
-        run: sleep 15
 
       - name: Run Tests
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
