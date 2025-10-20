@@ -9,6 +9,7 @@ using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Services;
+using Xunit.Abstractions;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace TextToSpeech.SeleniumTests;
@@ -21,8 +22,11 @@ public class TestBase : IDisposable
     protected WebDriverWait Wait { get; private set; } = default!;
     protected IServiceProvider ServiceProvider { get; private set; } = default!;
 
-    public TestBase()
+    protected readonly ITestOutputHelper? _output;
+
+    public TestBase(ITestOutputHelper? output = null)
     {
+        _output = output;
         Setup();
     }
 
@@ -35,7 +39,7 @@ public class TestBase : IDisposable
 
         try
         {
-            Task.Run(SeedRedisCache).GetAwaiter().GetResult();
+            SeedRedisCache();
         }
         catch (Exception ex)
         {
@@ -88,7 +92,8 @@ public class TestBase : IDisposable
             }
         }
     }
-    private static void ConfigureServices(IServiceCollection services)
+
+    private void ConfigureServices(IServiceCollection services)
     {
         var configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
@@ -105,16 +110,27 @@ public class TestBase : IDisposable
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
         services.AddSingleton<RedisCacheSeeder>();
 
-        services.AddLogging(b =>
+        services.AddLogging(builder =>
         {
-            b.SetMinimumLevel(LogLevel.Information);
-            b.AddSimpleConsole();
+            builder.SetMinimumLevel(LogLevel.Information);
+            if (_output != null)
+            {
+                builder.AddXUnit(_output); // logs to test output
+            }
+            else
+            {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.TimestampFormat = "HH:mm:ss ";
+                    options.SingleLine = true;
+                });
+            }
         });
     }
 
-    private async Task SeedRedisCache()
+    private void SeedRedisCache()
     {
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-        await redisCacheSeeder.SeedNarakeetVoices();
+        redisCacheSeeder.SeedNarakeetVoices().GetAwaiter().GetResult();
     }
 }

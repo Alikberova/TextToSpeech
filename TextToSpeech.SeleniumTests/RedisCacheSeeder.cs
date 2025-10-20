@@ -18,11 +18,11 @@ public sealed class RedisCacheSeeder
 
     public async Task SeedNarakeetVoices()
     {
-        _logger.LogInformation(" --------------------- Seeding Narakeet voices into Redis cache...");
+        _logger.LogInformation("Seeding Narakeet voices into Redis cache...");
 
         if (await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet) is not null)
         {
-            _logger.LogInformation("========================= Narakeet voices already exist in Redis cache. Skipping seeding.");
+            _logger.LogInformation("Narakeet voices already exist in Redis cache. Skipping seeding.");
 
             return;
         }
@@ -57,6 +57,6 @@ public sealed class RedisCacheSeeder
 
         await _redisCacheProvider.SetCachedData(CacheKeys.VoicesNarakeet, voices, TimeSpan.FromDays(7));
 
-        _logger.LogInformation("---------------------------- Narakeet voices seeded into Redis cache successfully.");
+        _logger.LogInformation("Narakeet voices seeded into Redis cache successfully.");
     }
 }
