@@ -22,14 +22,14 @@ public sealed class TextToSpeechTests : TestBase
     public void TestFileExistInDb_ShouldDownloadSpeech()
     {
         testOutputHelper.WriteLine("_sourceFilePath: " + _sourceFilePath);
-        testOutputHelper.WriteLine("File.Exists(file): " + File.Exists(_sourceFilePath));
+        testOutputHelper.WriteLine("File.Exists(_sourceFilePath): " + File.Exists(_sourceFilePath));
 
         File.WriteAllText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting);
         testOutputHelper.WriteLine("File.Exists(file) after WriteAllText: " + File.Exists(_sourceFilePath));
 
         _page.ClickMenu();
         _page.SelectVoice();
-        _page.UploadFile();
+        _page.UploadFile(testOutputHelper);
         _page.Submit();
         _page.DownloadFile();
         _page.ChangeApiToNarakeet();
@@ -43,6 +43,14 @@ public sealed class TextToSpeechTests : TestBase
         Assert.True(File.Exists(file), $"File {file} does not exist");
         Assert.Contains(TextToSpeechFormConstants.English, defaultNarakeetLang);
     }
+
+    /*
+      TestDirectory: /home/runner/TtsTest
+     Directory.Exists(TestDirectory): True
+     _sourceFilePath: /home/runner/TtsTest/Sample.txt
+     File.Exists(file): False
+     File.Exists(file) after WriteAllText: True
+     */
 
     [Fact]
     public async Task TestFileDoesntExistInDb_ShouldStartProcessing()
