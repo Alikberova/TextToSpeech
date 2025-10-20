@@ -1,13 +1,15 @@
-﻿using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using Microsoft.Extensions.DependencyInjection;
-using TextToSpeech.Infra.Services;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using TextToSpeech.Core;
+using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Services;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace TextToSpeech.SeleniumTests;
 
@@ -102,6 +104,12 @@ public class TestBase : IDisposable
 
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
         services.AddSingleton<RedisCacheSeeder>();
+
+        services.AddLogging(b =>
+        {
+            b.SetMinimumLevel(LogLevel.Information);
+            b.AddSimpleConsole();
+        });
     }
 
     private async Task SeedRedisCache()
