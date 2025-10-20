@@ -42,6 +42,7 @@ jobs:
           echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
           echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
           echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
+          echo "AppDataPath=$RUNNER_TEMP/tts-app" >> .env
           cat .env.test >> .env
 
       - name: Export environment variables from an env file 

@@ -18,7 +18,10 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        //Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
+        }
 
         base.ConfigureWebHost(builder);
 

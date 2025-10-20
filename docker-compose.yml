@@ -14,6 +14,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
+      ASPNETCORE_URLS: "https://+"
     container_name: api
     ports:
       - "7057:443"
