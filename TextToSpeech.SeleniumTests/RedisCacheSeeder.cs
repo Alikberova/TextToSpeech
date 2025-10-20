@@ -1,28 +1,28 @@
-﻿using Microsoft.Extensions.Logging;
-using TextToSpeech.Core.Dto.Narakeet;
+﻿using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Constants;
+using Xunit.Abstractions;
 
 namespace TextToSpeech.SeleniumTests;
 
 public sealed class RedisCacheSeeder
 {
     private readonly IRedisCacheProvider _redisCacheProvider;
-    private readonly ILogger<RedisCacheSeeder> _logger;
+    private readonly ITestOutputHelper _output;
 
-    public RedisCacheSeeder(IRedisCacheProvider redisCacheProvider, ILogger<RedisCacheSeeder> logger)
+    public RedisCacheSeeder(IRedisCacheProvider redisCacheProvider, ITestOutputHelper output)
     {
         _redisCacheProvider = redisCacheProvider;
-        _logger = logger;
+        _output = output;
     }
 
     public async Task SeedNarakeetVoices()
     {
-        _logger.LogInformation(" --------------------- Seeding Narakeet voices into Redis cache...");
+        _output.WriteLine("Seeding Narakeet voices into Redis cache...");
 
         if (await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet) is not null)
         {
-            _logger.LogInformation("========================= Narakeet voices already exist in Redis cache. Skipping seeding.");
+            _output.WriteLine("Narakeet voices already exist in Redis cache. Skipping seeding.");
 
             return;
         }
@@ -57,6 +57,6 @@ public sealed class RedisCacheSeeder
 
         await _redisCacheProvider.SetCachedData(CacheKeys.VoicesNarakeet, voices, TimeSpan.FromDays(7));
 
-        _logger.LogInformation("---------------------------- Narakeet voices seeded into Redis cache successfully.");
+        _output.WriteLine("Narakeet voices seeded into Redis cache successfully.");
     }
 }
