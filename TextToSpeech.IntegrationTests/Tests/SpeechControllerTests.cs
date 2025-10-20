@@ -1,19 +1,19 @@
-﻿using TextToSpeech.Core.Config;
-using TextToSpeech.TestingInfra.DataGenerators;
-using TextToSpeech.TestingInfra.Mocks;
-using TextToSpeech.TestingInfra.Utils;
-using Microsoft.AspNetCore.Http.Connections;
+﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
-
-using static TextToSpeech.Core.Enums;
-using Moq;
-using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.TestingInfra.DataGenerators;
+using TextToSpeech.TestingInfra.Mocks;
+using TextToSpeech.TestingInfra.Utils;
+using Xunit.Abstractions;
+using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.IntegrationTests.Tests;
 
@@ -24,11 +24,13 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
 
     private readonly TestWebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
+    private readonly ITestOutputHelper _output;
 
-    public SpeechControllerTests()
+    public SpeechControllerTests(ITestOutputHelper output)
     {
         _factory = CreateFactory();
         _client = _factory.CreateClient();
+        _output = output;
     }
 
     [Theory]
@@ -79,7 +81,11 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
             }
         });
 
+        _output.WriteLine("Starting hub connection...");
+
         await hubConnection.StartAsync();
+
+        _output.WriteLine("Hub connection started");
 
         // Act
         var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
@@ -127,7 +133,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         return factory;
     }
 
-    private static HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory)
+    private HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory)
     {
         return new HubConnectionBuilder()
             .WithUrl($"{client.BaseAddress!.OriginalString}{SharedConstants.AudioHubEndpoint}", o =>
@@ -138,7 +144,25 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
                 o.WebSocketFactory = async (context, cancellationToken) =>
                 {
                     var wsClient = factory.Server.CreateWebSocketClient();
-                    var res = await wsClient.ConnectAsync(new Uri(context.Uri.ToString()), cancellationToken);
+
+                    // Log the original URI and the final ws/wss URI to help debug redirects
+                    _output.WriteLine($"Original context URI: {context.Uri}");
+
+                    // Ensure the scheme is ws/wss to avoid HTTP redirects (307).
+                    var uri = context.Uri;
+                    if (uri.Scheme == Uri.UriSchemeHttp)
+                    {
+                        uri = new UriBuilder(uri) { Scheme = "ws", Port = uri.Port }.Uri;
+                    }
+                    else if (uri.Scheme == Uri.UriSchemeHttps)
+                    {
+                        uri = new UriBuilder(uri) { Scheme = "wss", Port = uri.Port }.Uri;
+                    }
+
+                    _output.WriteLine($"Connecting websocket to: {uri}");
+
+                    var res = await wsClient.ConnectAsync(uri, cancellationToken);
+
                     return res;
                 };
             }).Build();
