@@ -86,7 +86,13 @@ public class TestBase : IDisposable
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build();
 
-        var conn = configuration.GetConnectionString("Redis")!.Replace("redis", "localhost");
+        var conn = configuration.GetConnectionString("Redis");
+
+        if (string.IsNullOrWhiteSpace(conn))
+        {
+            throw new InvalidOperationException("Redis connection string is not configured.");
+        }
+
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
         services.AddSingleton<RedisCacheSeeder>();
     }
