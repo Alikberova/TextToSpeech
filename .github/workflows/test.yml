@@ -94,6 +94,12 @@ jobs:
         run: |
           docker logs api || true
 
+      - name: Show Redis keys
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          echo "=== Redis keys ==="
+          docker exec redis redis-cli keys '*' || true
+          
       - name: Show inspect api
         if: matrix.test_type == 'Selenium' && failure()
         run: |
