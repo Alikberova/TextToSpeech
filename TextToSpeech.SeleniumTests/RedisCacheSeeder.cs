@@ -59,4 +59,9 @@ public sealed class RedisCacheSeeder
 
         _logger.LogInformation("Narakeet voices seeded into Redis cache successfully.");
     }
+
+    public bool IsRedisConnected()
+    {
+        return _redisCacheProvider.IsConnected();
+    }
 }

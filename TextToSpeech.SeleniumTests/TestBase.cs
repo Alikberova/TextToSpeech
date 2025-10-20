@@ -131,6 +131,12 @@ public class TestBase : IDisposable
     private void SeedRedisCache()
     {
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+
+        if (!redisCacheSeeder.IsRedisConnected())
+        {
+            throw new InvalidOperationException("Redis is not connected. Cannot seed cache.");
+        }
+
         redisCacheSeeder.SeedNarakeetVoices().GetAwaiter().GetResult();
     }
 }
