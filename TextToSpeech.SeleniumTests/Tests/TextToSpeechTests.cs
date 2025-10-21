@@ -10,7 +10,7 @@ public sealed class TextToSpeechTests : TestBase
     private const string FileName = "Sample";
     private readonly string _sourceFilePath = Path.Combine(TestDirectory, $"{FileName}.txt");
     private readonly TextToSpeechPage _page;
-    ITestOutputHelper testOutputHelper;
+    private readonly ITestOutputHelper testOutputHelper;
 
     public TextToSpeechTests(ITestOutputHelper output) : base(output)
     {
@@ -45,17 +45,18 @@ public sealed class TextToSpeechTests : TestBase
     }
 
     /*
-      TestDirectory: /home/runner/TtsTest
-     Directory.Exists(TestDirectory): True
-     _sourceFilePath: /home/runner/TtsTest/Sample.txt
-     File.Exists(file): False
-     File.Exists(file) after WriteAllText: True
+         TestDirectory: /home/runner/TtsTest
+         Directory.Exists(TestDirectory): True
+         _sourceFilePath: /home/runner/TtsTest/Sample.txt
+         File.Exists(_sourceFilePath): False
+         File.Exists(_sourceFilePath) after WriteAllText: True
+         [UPLOAD] sending to <input type=file>: /home/runner/TtsTest/Sample.txt
      */
 
     [Fact]
     public async Task TestFileDoesntExistInDb_ShouldStartProcessing()
     {
-        await WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000);
+        WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000).GetAwaiter().GetResult();
 
         _page.ClickMenu();
         _page.SelectVoice();
