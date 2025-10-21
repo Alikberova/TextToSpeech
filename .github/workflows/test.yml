@@ -84,6 +84,7 @@ jobs:
         run: dotnet restore
 
       - name: Override Redis for test runner
+        if: matrix.test_type == 'Selenium'
         run: echo "ConnectionStrings__Redis=localhost:6379,allowAdmin=true" >> $GITHUB_ENV
 
       - name: Run Tests
