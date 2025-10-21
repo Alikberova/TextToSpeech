@@ -1,0 +1,81 @@
+name: elk
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    container_name: es01
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ElasticsearchConfig__Password}
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms1g -Xmx1g}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"
+    volumes:
+      - es01-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:${ElasticsearchConfig__Password} http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks: [proxy_elk]
+
+  setup:
+    image: curlimages/curl:8.16.0
+    container_name: setup
+    user: "0:0" # run as root
+    volumes:
+      - ./setup-entrypoint.sh:/entrypoint.sh:ro
+      - kb-token:/token/
+    entrypoint: ["sh", "/entrypoint.sh"]
+    environment:
+      - ELASTIC_PASSWORD=${ElasticsearchConfig__Password}
+    networks: [proxy_elk]
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    container_name: kibana
+    restart: unless-stopped
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://elasticsearch:9200"]
+      - xpack.fleet.enabled=false
+    ports:
+      - "5601:5601"
+    volumes:
+      - kb-data:/usr/share/kibana/data
+      - kb-token:/token/:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q '\"overall\":{\"level\":\"available\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    command: >
+      sh -c "export ELASTICSEARCH_SERVICEACCOUNTTOKEN=$(cat /token/kibana_token) && exec /usr/local/bin/kibana-docker"
+    networks: [proxy_elk]
+
+networks:
+  proxy_elk:
+    external: true
+    name: elk
+
+volumes:
+  es01-data:
+  kb-data:
+  kb-token:

@@ -1,13 +1,16 @@
-﻿using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using Microsoft.Extensions.DependencyInjection;
-using TextToSpeech.Infra.Services;
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using TextToSpeech.Core;
+using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Services;
+using Xunit.Abstractions;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace TextToSpeech.SeleniumTests;
 
@@ -19,19 +22,29 @@ public class TestBase : IDisposable
     protected WebDriverWait Wait { get; private set; } = default!;
     protected IServiceProvider ServiceProvider { get; private set; } = default!;
 
-    public TestBase()
+    protected readonly ITestOutputHelper? _output;
+
+    public TestBase(ITestOutputHelper? output = null)
     {
+        _output = output;
         Setup();
     }
 
     private void Setup()
     {
+        if (Directory.Exists(TestDirectory))
+        {
+            Directory.Delete(TestDirectory, true);
+        }
+
+        Directory.CreateDirectory(TestDirectory);
+
         // Configure services
         var serviceCollection = new ServiceCollection();
         ConfigureServices(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
 
-        Task.Run(SeedRedisCache).GetAwaiter().GetResult();
+        SeedRedisCache();
 
         var options = new ChromeOptions();
 
@@ -53,8 +66,6 @@ public class TestBase : IDisposable
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
-
-        Directory.CreateDirectory(TestDirectory);
     }
 
     public void Dispose()
@@ -72,28 +83,53 @@ public class TestBase : IDisposable
                 Driver.Quit();
                 Driver.Dispose();
             }
-
-            if (Directory.Exists(TestDirectory))
-            {
-                Directory.Delete(TestDirectory, true);
-            }
         }
     }
-    private static void ConfigureServices(IServiceCollection services)
+
+    private void ConfigureServices(IServiceCollection services)
     {
         var configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build();
 
-        var conn = configuration.GetConnectionString("Redis")!.Replace("redis", "localhost");
+        var conn = configuration.GetConnectionString("Redis");
+
+        if (string.IsNullOrWhiteSpace(conn))
+        {
+            throw new InvalidOperationException("Redis connection string is not configured.");
+        }
+
         services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
         services.AddSingleton<RedisCacheSeeder>();
+
+        services.AddLogging(builder =>
+        {
+            builder.SetMinimumLevel(LogLevel.Information);
+            if (_output != null)
+            {
+                builder.AddXUnit(_output); // logs to test output
+            }
+            else
+            {
+                builder.AddSimpleConsole(options =>
+                {
+                    options.TimestampFormat = "HH:mm:ss ";
+                    options.SingleLine = true;
+                });
+            }
+        });
     }
 
-    private async Task SeedRedisCache()
+    private void SeedRedisCache()
     {
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
-        await redisCacheSeeder.SeedNarakeetVoices();
+
+        if (!redisCacheSeeder.IsRedisConnected())
+        {
+            throw new InvalidOperationException("Redis is not connected. Cannot seed cache.");
+        }
+
+        redisCacheSeeder.SeedNarakeetVoices().GetAwaiter().GetResult();
     }
 }

@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { importProvidersFrom, APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { importProvidersFrom, ApplicationConfig, provideAppInitializer, inject } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InMemoryScrollingOptions, provideRouter, withInMemoryScrolling } from '@angular/router';
 import { INGXLoggerConfig, LoggerModule, NGXLogger, NgxLoggerLevel } from 'ngx-logger';
@@ -16,20 +16,18 @@ const scrollConfig: InMemoryScrollingOptions = {
 };
 
 const appConfig: ApplicationConfig = {
-  providers: [ 
-    importProvidersFrom(BrowserAnimationsModule,
-      LoggerModule.forRoot(
-        getLoggerConfig('')
-      )
+  providers: [
+    importProvidersFrom(
+      BrowserAnimationsModule,
+      LoggerModule.forRoot(getLoggerConfig(''))
     ),
     provideRouter(routes, withInMemoryScrolling(scrollConfig)),
-    provideHttpClient(withInterceptors([ authInterceptor, errorInterceptor ])),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initConfig,
-      multi: true,
-      deps: [ConfigService, NGXLogger],
-    },
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideAppInitializer(() => {
+      const configService = inject(ConfigService);
+      const logger = inject(NGXLogger);
+      return initConfig(configService, logger)(); //immediate invocation
+    }),
   ],
 };
 

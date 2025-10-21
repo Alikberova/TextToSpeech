@@ -1,3 +1,5 @@
+name: tts
+
 services:
   api:
     build:
@@ -10,6 +12,8 @@ services:
     image: alikberova/texttospeech.api:${IMAGE_TAG_VERSION}
     env_file: .env
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      IsTestMode: ${IsTestMode}
       ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
       ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
       ASPNETCORE_URLS: "https://+"
@@ -54,7 +58,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - redis-data:/data
     networks:
       - proxy_elk
     restart: always
@@ -62,17 +66,18 @@ services:
   db:
     image: postgres:17-alpine
     container_name: db
-    environment:
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
-    volumes: 
-      - db:/var/lib/postgresql/data
+      - "${POSTGRES_EXPOSED_PORT}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     networks:
       - proxy_elk
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -83,5 +88,5 @@ networks:
     name: elk
 
 volumes:
-  redis_data:
-  db:
+  redis-data:
+  db-data:

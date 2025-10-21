@@ -1,17 +1,19 @@
-﻿using TextToSpeech.Core.Services;
-using TextToSpeech.Infra.Services;
-using TextToSpeech.Infra.Repositories;
-using TextToSpeech.Infra.Services.FileProcessing;
-using TextToSpeech.Infra.Services.Common;
-using TextToSpeech.Api.Services;
-using TextToSpeech.Infra.Services.Ai;
-using TextToSpeech.Infra;
+﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using TextToSpeech.Api.Services;
+using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Interfaces;
-using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Services;
+using TextToSpeech.Infra;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Repositories;
+using TextToSpeech.Infra.Services;
+using TextToSpeech.Infra.Services.Ai;
+using TextToSpeech.Infra.Services.Common;
+using TextToSpeech.Infra.Services.FileProcessing;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -26,13 +28,22 @@ internal static class ServicesDiExtension
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITtsService, OpenAiService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
-        services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ITranslationService, TranslationService>();
         services.AddScoped<ITranslationRepository, TranslationRepository>();
         services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
+        services.AddScoped<ISmtpClient, SmtpClient>();
+
+        if (HostingEnvironment.IsTestMode())
+        {
+            services.AddScoped<IEmailService, EmailServiceStub>();
+        }
+        else
+        {
+            services.AddScoped<IEmailService, EmailService>();
+        }
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IPathService, PathService>();
@@ -40,7 +51,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")!));
+        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")));
         services.AddSingleton<ITaskManager, TaskManager>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

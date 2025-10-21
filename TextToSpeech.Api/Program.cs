@@ -1,8 +1,4 @@
-using TextToSpeech.Api.Extensions;
-using TextToSpeech.Api.Middleware;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Infra;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
-using TextToSpeech.Core.Interfaces;
-using TextToSpeech.Infra.SignalR;
+using TextToSpeech.Api.Extensions;
+using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core;
+using TextToSpeech.Core.Config;
+using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra;
+using TextToSpeech.Infra.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,10 +127,11 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!;
-        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{environment?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}";
+        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
+            $"-{DateTime.UtcNow:yyyy-MM}";
 
-        var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig)).Get<ElasticsearchConfig>()!;
+        var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))
+            .Get<ElasticsearchConfig>()!;
 
         var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
         {
@@ -142,7 +144,7 @@ static void ConfigureLogging(WebApplicationBuilder builder)
         };
 
         loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
-            .Enrich.WithProperty("Environment", environment)
+            .Enrich.WithProperty("Environment", HostingEnvironment.Current)
             .ReadFrom.Configuration(builder.Configuration);
     });
 }

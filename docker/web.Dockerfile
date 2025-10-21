@@ -1,4 +1,4 @@
-FROM node:22.15.0-alpine as build
+FROM node:24.5.0-alpine AS build
 
 WORKDIR /src
 COPY package*.json /src/
@@ -16,8 +16,8 @@ FROM nginx:stable-alpine
 COPY --from=build /src/dist/text-to-speech.web/browser /usr/share/nginx/html
 
 # # Fix and copy the entrypoint script
-# COPY entrypoint.sh /entrypoint.sh
-# RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Copy the Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
@@ -25,4 +25,4 @@ COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 # Install Nano
 RUN apk update && apk add nano
 
-# ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

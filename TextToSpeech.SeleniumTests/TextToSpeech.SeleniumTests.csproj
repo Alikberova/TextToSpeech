@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,16 +7,17 @@
 	<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <UserSecretsId>6b23d93d-53e9-4c8a-8e4c-39024cbe46d2</UserSecretsId>
+    <UserSecretsId>0489380f-7fed-43e7-b774-a8589d824f1c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
+    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Selenium.Support" Version="4.21.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.21.0" />
-    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="135.0.7049.11400" />
+    <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="141.0.7390.7800" />
 	<PackageReference Include="xunit" Version="2.8.1" />
 	<PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
 		<PrivateAssets>all</PrivateAssets>
