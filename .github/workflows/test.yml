@@ -89,6 +89,13 @@ jobs:
       - name: Run Tests
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
+      - name: Show ChromeDriver logs
+        if: matrix.test_type == 'Selenium' && failure()
+        run: |
+          echo "=== ChromeDriver logs ==="
+          find /home/runner -type f -name chromedriver.log 2>/dev/null || true
+          cat $(find /home/runner -type f -name chromedriver.log 2>/dev/null | head -n 1) || true
+
       - name: Show logs api
         if: matrix.test_type == 'Selenium' && failure()
         run: |
@@ -114,13 +121,3 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs db || true
-
-      - name: Show docker inspect db
-        if: matrix.test_type == 'Selenium' && failure()
-        run: |
-          docker inspect db
-
-      - name: Show docker inspect elk
-        if: matrix.test_type == 'Selenium' && failure()
-        run: |
-          docker network inspect elk 
