@@ -7,6 +7,7 @@ namespace TextToSpeech.Infra.Services;
 public sealed class RedisCacheProvider : IRedisCacheProvider
 {
     private readonly ConnectionMultiplexer? _redisConnection;
+    //private readonly ILogger<RedisCacheProvider> _logger; // todo add RedisConnectionException logging
 
     public RedisCacheProvider(string? connectionString)
     {
