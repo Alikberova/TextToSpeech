@@ -79,10 +79,10 @@ public class TestBase : IDisposable
                 Driver.Dispose();
             }
 
-            //if (Directory.Exists(TestDirectory))
-            //{
-            //    Directory.Delete(TestDirectory, true);
-            //}
+            if (Directory.Exists(TestDirectory))
+            {
+                Directory.Delete(TestDirectory, true);
+            }
         }
     }
 
