@@ -29,7 +29,7 @@ public sealed class TextToSpeechTests : TestBase
 
         _page.ClickMenu();
         _page.SelectVoice();
-        _page.UploadFile(testOutputHelper);
+        _page.UploadFile();
         _page.Submit();
         _page.DownloadFile();
         _page.ChangeApiToNarakeet();
