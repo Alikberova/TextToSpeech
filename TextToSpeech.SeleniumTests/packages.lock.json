@@ -11,6 +11,17 @@
           "Selenium.WebDriver": "3.10.0"
         }
       },
+      "MartinCostello.Logging.XUnit": {
+        "type": "Direct",
+        "requested": "[0.6.0, )",
+        "resolved": "0.6.0",
+        "contentHash": "0E2k25V6+jt6zIUZjMVXMhOAQuCv0eqzC30FM44r1MJkI48F1Jz1p9u/cfiC5U3/LlTJn17g7T3K8VkV+cGTkQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "8.0.1",
+          "xunit.abstractions": "2.0.3",
+          "xunit.extensibility.execution": "2.4.1"
+        }
+      },
       "Microsoft.Extensions.Configuration.UserSecrets": {
         "type": "Direct",
         "requested": "[8.0.0, )",
@@ -53,9 +64,9 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Direct",
-        "requested": "[135.0.7049.11400, )",
-        "resolved": "135.0.7049.11400",
-        "contentHash": "T1CR88WpX8ZuHeD67kINWeca8WmqXPNnnVnS3kxy8557Yi7mXD/RpIKq0wNnHuqAFTVVtdGBFwsX1pj/NRDFEw=="
+        "requested": "[141.0.7390.7800, )",
+        "resolved": "141.0.7390.7800",
+        "contentHash": "dXt+q88WQijxXzig8DFjUE8nmtEIJnvgUK7hd9oHtUQdlvSc84BZ2IOTvd3ashMoY6lK9dEna/GifrUvMI+/0Q=="
       },
       "xunit": {
         "type": "Direct",
