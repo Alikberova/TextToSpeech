@@ -41,10 +41,6 @@ public class TestBase : IDisposable
 
         SeedRedisCache();
 
-        var service = ChromeDriverService.CreateDefaultService();
-        service.LogPath = Path.Combine(TestDirectory, "chromedriver.log");
-        service.EnableVerboseLogging = true;
-
         var options = new ChromeOptions();
 
         if (!HostingEnvironment.IsWindows())
@@ -58,7 +54,7 @@ public class TestBase : IDisposable
         options.AddArgument("--disable-dev-shm-usage");
         options.AddUserProfilePreference("download.default_directory", TestDirectory);
 
-        Driver = new ChromeDriver(service, options);
+        Driver = new ChromeDriver(options);
         Driver.Manage().Window.Maximize();
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
 
@@ -127,7 +123,6 @@ public class TestBase : IDisposable
 
     private void SeedRedisCache()
     {
-        // todo should be localhost:6379; add RedisPort
         var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
 
         if (!redisCacheSeeder.IsRedisConnected())
