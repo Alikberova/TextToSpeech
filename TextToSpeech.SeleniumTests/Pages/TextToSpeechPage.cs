@@ -42,10 +42,8 @@ internal sealed class TextToSpeechPage(IWebDriver driver,
         ClickSpanByText("Generate Speech");
     }
 
-    public void UploadFile(ITestOutputHelper? testOutputHelper = null)
+    public void UploadFile()
     {
-        testOutputHelper?.WriteLine($"[UPLOAD] sending to <input type=file>: {_filePathToProcessToAudio}");
-        Assert.True(File.Exists(_filePathToProcessToAudio), $"Missing before upload: {_filePathToProcessToAudio}");
         FileInput.SendKeys(_filePathToProcessToAudio);
     }
 

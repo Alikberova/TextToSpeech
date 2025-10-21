@@ -145,19 +145,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
                 {
                     var wsClient = factory.Server.CreateWebSocketClient();
 
-                    // Log the original URI and the final ws/wss URI to help debug redirects
-                    _output.WriteLine($"Original context URI: {context.Uri}");
-
-                    // Ensure the scheme is ws/wss to avoid HTTP redirects (307).
                     var uri = context.Uri;
-                    if (uri.Scheme == Uri.UriSchemeHttp)
-                    {
-                        uri = new UriBuilder(uri) { Scheme = "ws", Port = uri.Port }.Uri;
-                    }
-                    else if (uri.Scheme == Uri.UriSchemeHttps)
-                    {
-                        uri = new UriBuilder(uri) { Scheme = "wss", Port = uri.Port }.Uri;
-                    }
 
                     _output.WriteLine($"Connecting websocket to: {uri}");
 
