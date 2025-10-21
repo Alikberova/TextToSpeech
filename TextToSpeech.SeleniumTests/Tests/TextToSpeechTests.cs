@@ -25,7 +25,7 @@ public sealed class TextToSpeechTests : TestBase
         testOutputHelper.WriteLine("File.Exists(_sourceFilePath): " + File.Exists(_sourceFilePath));
 
         File.WriteAllText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting);
-        testOutputHelper.WriteLine("File.Exists(file) after WriteAllText: " + File.Exists(_sourceFilePath));
+        testOutputHelper.WriteLine("File.Exists(_sourceFilePath) after WriteAllText: " + File.Exists(_sourceFilePath));
 
         _page.ClickMenu();
         _page.SelectVoice();
