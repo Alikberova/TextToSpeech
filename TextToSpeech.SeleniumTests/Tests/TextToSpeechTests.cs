@@ -37,7 +37,7 @@ public sealed class TextToSpeechTests : TestBase
     }
 
     [Fact]
-    public async Task TestFileDoesntExistInDb_ShouldStartProcessingAsync()
+    public async Task TestFileDoesntExistInDb_ShouldStartProcessing()
     {
         await WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000);
 

@@ -1,9 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using System.IO;
 using TextToSpeech.Core.Config;
-using Xunit.Abstractions;
 
 namespace TextToSpeech.SeleniumTests.Pages;
 

@@ -32,6 +32,11 @@ public class TestBase : IDisposable
 
     private void Setup()
     {
+        if (Directory.Exists(TestDirectory))
+        {
+            Directory.Delete(TestDirectory, true);
+        }
+
         Directory.CreateDirectory(TestDirectory);
 
         // Configure services
