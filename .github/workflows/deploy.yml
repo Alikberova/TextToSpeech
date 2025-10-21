@@ -5,9 +5,6 @@ permissions:
   contents: read
 
 on:
-  push:
-    branches: master
-
   workflow_dispatch:
     inputs:
       environment:
@@ -17,14 +14,11 @@ on:
           - staging
           - prod
         default: staging
-
-env:
-  ENVIRONMENT: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'staging' }}
-
+        
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'staging' }}
+    environment: ${{ inputs.environment }}
     timeout-minutes: 5
 
     steps:
@@ -38,8 +32,8 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "IMAGE_TAG_VERSION=${{ env.ENVIRONMENT }}" > .env
-        echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ env.ENVIRONMENT }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env # capitalize 1st letter
+        echo "IMAGE_TAG_VERSION=${{ inputs.environment }}" > .env
+        echo "ASPNETCORE_ENVIRONMENT=$(echo "${{ inputs.environment }}" | sed -E 's/^([a-zA-Z])/\U\1/')" >> .env # capitalize 1st letter
 
         # Non-secret variables
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
