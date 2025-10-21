@@ -54,9 +54,9 @@ public sealed class TextToSpeechTests : TestBase
      */
 
     [Fact]
-    public void TestFileDoesntExistInDb_ShouldStartProcessing()
+    public async Task TestFileDoesntExistInDb_ShouldStartProcessingAsync()
     {
-        WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000).GetAwaiter().GetResult();
+        await WriteBigFileText(_sourceFilePath, SharedConstants.FullAudioFileContentForTesting, 20000);
 
         _page.ClickMenu();
         _page.SelectVoice();

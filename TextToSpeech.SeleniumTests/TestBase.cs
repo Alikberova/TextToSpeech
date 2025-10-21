@@ -65,9 +65,6 @@ public class TestBase : IDisposable
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
-
-        _output?.WriteLine("TestDirectory: " + TestDirectory);
-        _output?.WriteLine("Directory.Exists(TestDirectory): " + Directory.Exists(TestDirectory));
     }
 
     public void Dispose()
