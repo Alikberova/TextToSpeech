@@ -93,8 +93,8 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           echo "=== ChromeDriver logs ==="
-          find /home/runner -type f -name chromedriver.log 2>/dev/null || true
-          cat $(find /home/runner -type f -name chromedriver.log 2>/dev/null | head -n 1) || true
+          ls /home/runner/TtsTest || true
+          cat /home/runner/TtsTest/chromedriver.log || true
 
       - name: Show logs api
         if: matrix.test_type == 'Selenium' && failure()
@@ -107,17 +107,17 @@ jobs:
           echo "=== Redis keys ==="
           docker exec redis redis-cli keys '*' || true
           
-      - name: Show inspect api
-        if: matrix.test_type == 'Selenium' && failure()
-        run: |
-          docker inspect api || true     
+      # - name: Show inspect api
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker inspect api || true     
 
-      - name: Show logs web
-        if: matrix.test_type == 'Selenium' && failure()
-        run: |
-          docker logs web || true
+      # - name: Show logs web
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker logs web || true
 
-      - name: Show logs db
-        if: matrix.test_type == 'Selenium' && failure()
-        run: |
-          docker logs db || true
+      # - name: Show logs db
+      #   if: matrix.test_type == 'Selenium' && failure()
+      #   run: |
+      #     docker logs db || true
