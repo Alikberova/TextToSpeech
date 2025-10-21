@@ -1,8 +1,4 @@
-using TextToSpeech.Api.Extensions;
-using TextToSpeech.Api.Middleware;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Infra;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using System.Text;
-using TextToSpeech.Core.Interfaces;
-using TextToSpeech.Infra.SignalR;
+using TextToSpeech.Api.Extensions;
+using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core;
+using TextToSpeech.Core.Config;
+using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra;
+using TextToSpeech.Infra.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 

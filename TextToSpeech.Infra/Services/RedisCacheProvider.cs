@@ -7,6 +7,7 @@ namespace TextToSpeech.Infra.Services;
 public sealed class RedisCacheProvider : IRedisCacheProvider
 {
     private readonly ConnectionMultiplexer? _redisConnection;
+    //private readonly ILogger<RedisCacheProvider> _logger; // todo add RedisConnectionException logging
 
     public RedisCacheProvider(string? connectionString)
     {
@@ -52,5 +53,10 @@ public sealed class RedisCacheProvider : IRedisCacheProvider
         var db = _redisConnection.GetDatabase();
         var serializedData = JsonSerializer.Serialize(data);
         await db.StringSetAsync(key, serializedData, expiry);
+    }
+
+    public bool IsConnected()
+    {
+        return _redisConnection is not null && _redisConnection.IsConnected;
     }
 }

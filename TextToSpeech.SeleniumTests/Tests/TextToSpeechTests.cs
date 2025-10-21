@@ -1,6 +1,7 @@
 using System.Text;
 using TextToSpeech.Core.Config;
 using TextToSpeech.SeleniumTests.Pages;
+using Xunit.Abstractions;
 
 namespace TextToSpeech.SeleniumTests.Tests;
 
@@ -10,7 +11,7 @@ public sealed class TextToSpeechTests : TestBase
     private readonly string _sourceFilePath = Path.Combine(TestDirectory, $"{FileName}.txt");
     private readonly TextToSpeechPage _page;
 
-    public TextToSpeechTests()
+    public TextToSpeechTests(ITestOutputHelper output) : base(output)
     {
         _page = new TextToSpeechPage(Driver, Wait, _sourceFilePath);
     }

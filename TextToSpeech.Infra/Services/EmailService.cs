@@ -9,10 +9,12 @@ namespace TextToSpeech.Infra.Services;
 public sealed class EmailService : IEmailService
 {
     private readonly EmailConfig _emailConfig;
+    private readonly ISmtpClient _smtpClient;
 
-    public EmailService(IOptions<EmailConfig> emailConfig)
+    public EmailService(IOptions<EmailConfig> emailConfig, ISmtpClient smtpClient)
     {
         _emailConfig = emailConfig.Value;
+        _smtpClient = smtpClient;
     }
 
     public void SendEmail(Core.Dto.EmailRequest request)
@@ -27,11 +29,9 @@ public sealed class EmailService : IEmailService
             Text = $"Message from {request.UserEmail}:\n{request.Message}"
         };
 
-        using var smtp = new SmtpClient();
-        
-        smtp.Connect("smtp.gmail.com", 587, false);
-        smtp.Authenticate(_emailConfig.EmailFrom, _emailConfig.EmailFromPassword);
-        smtp.Send(email);
-        smtp.Disconnect(true);
+        _smtpClient.Connect("smtp.gmail.com", 587, false);
+        _smtpClient.Authenticate(_emailConfig.EmailFrom, _emailConfig.EmailFromPassword);
+        _smtpClient.Send(email);
+        _smtpClient.Disconnect(true);
     }
 }

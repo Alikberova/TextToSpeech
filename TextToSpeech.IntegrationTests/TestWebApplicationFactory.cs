@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace TextToSpeech.IntegrationTests;
 
@@ -17,6 +18,11 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
+        }
+
         base.ConfigureWebHost(builder);
 
         builder.ConfigureTestServices(services =>
