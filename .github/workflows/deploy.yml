@@ -1,5 +1,5 @@
 name: Deployment
-run-name: "Deploy to ${{ inputs.environment }} from ${{ github.head_ref || github.ref_name }} by @${{ github.actor }}"
+run-name: "Deploy to ${{ inputs.environment }}"
 
 permissions:
   contents: read
