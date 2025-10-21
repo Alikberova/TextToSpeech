@@ -32,6 +32,8 @@ public class TestBase : IDisposable
 
     private void Setup()
     {
+        Directory.CreateDirectory(TestDirectory);
+
         // Configure services
         var serviceCollection = new ServiceCollection();
         ConfigureServices(serviceCollection);
@@ -63,8 +65,6 @@ public class TestBase : IDisposable
         Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
 
         Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
-
-        Directory.CreateDirectory(TestDirectory);
 
         _output?.WriteLine("TestDirectory: " + TestDirectory);
         _output?.WriteLine("Directory.Exists(TestDirectory): " + Directory.Exists(TestDirectory));
