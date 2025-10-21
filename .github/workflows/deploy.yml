@@ -24,7 +24,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ env.ENVIRONMENT }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'staging' }}
     timeout-minutes: 5
 
     steps:
