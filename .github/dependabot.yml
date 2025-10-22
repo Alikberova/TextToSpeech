@@ -10,11 +10,11 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    versioning-strategy: increase
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
     groups:
-    # Specify a name for the group, which will be used in pull request titles and branch names
       angular:
         applies-to: version-updates
         patterns:
@@ -42,15 +42,24 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   - package-ecosystem: "docker"
     directory: "/docker"
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
 
   - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "weekly"
     target-branch: "dev"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
