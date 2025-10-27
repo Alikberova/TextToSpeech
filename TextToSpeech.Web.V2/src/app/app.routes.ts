@@ -1,0 +1,25 @@
+import { Routes } from '@angular/router';
+
+// Application routes are lazy by default. For now we only have Home.
+export const routes: Routes = [
+  {
+    path: '',
+    title: 'Home | TTS Web',
+    loadComponent: () =>
+      import('./pages/home/home.page').then((m) => m.HomePage),
+  },
+  // Future routes; keep these lazy placeholders for nav consistency.
+  {
+    path: 'feedback',
+    title: 'Feedback | TTS Web',
+    loadComponent: () =>
+      import('./pages/placeholder/feedback.page').then((m) => m.FeedbackPage),
+  },
+  {
+    path: 'about',
+    title: 'About | TTS Web',
+    loadComponent: () =>
+      import('./pages/placeholder/about.page').then((m) => m.AboutPage),
+  },
+  { path: '**', redirectTo: '' },
+];

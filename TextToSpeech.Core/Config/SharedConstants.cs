@@ -7,8 +7,11 @@ public static class SharedConstants
     public const string Domain = "https://texttospeech.duckdns.org";
 
     // APIs
-    public const string OpenAI = "OpenAI";
+    public const string OpenAI = "OpenAI"; // todo rename to OpenAiDisplayName 
     public const string Narakeet = "Narakeet";
+
+    public const string OpenAiKey = "openai";
+    public const string NarakeetKey = "narakeet";
 
     public static readonly Dictionary<string, Guid> TtsApis = new()
     {

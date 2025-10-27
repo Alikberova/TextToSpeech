@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        test_type: [ Selenium, Unit, Integration ]
+        test_type: [ Selenium, Unit, Integration, Unit-Web ]
 
     steps:
       - uses: actions/checkout@v5
@@ -75,12 +75,14 @@ jobs:
           docker compose up -d
 
       - name: Cache NuGet Packages
+        if: matrix.test_type != 'Unit-Web'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
 
       - name: Restore dependencies
+        if: matrix.test_type != 'Unit-Web'
         run: dotnet restore
 
       - name: Override Redis for test runner
@@ -88,9 +90,29 @@ jobs:
         run: echo "ConnectionStrings__Redis=localhost:6379,allowAdmin=true" >> $GITHUB_ENV
 
       - name: Run Tests
+        if: matrix.test_type != 'Unit-Web'
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
       - name: Show backend logs
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs api || true
+
+      # todo check if really needed
+      - name: Setup Node
+        if: matrix.test_type == 'Unit-Web'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps (Angular)
+        if: matrix.test_type == 'Unit-Web'
+        working-directory: TextToSpeech.Web.V2
+        run: npm ci
+
+      - name: Run Angular tests
+        if: matrix.test_type == 'Unit-Web'
+        working-directory: TextToSpeech.Web.V2
+        run: |
+          npx ng lint
+          npx ng test --watch=false --browsers=ChromeHeadless --code-coverage

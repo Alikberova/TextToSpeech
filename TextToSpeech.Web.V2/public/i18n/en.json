@@ -1,0 +1,145 @@
+{
+  "app": {
+    "skipToContent": "Skip to content",
+    "footer": { "copyright": "TTS Web" }
+  },
+  "nav": {
+    "generate": "Generate",
+    "feedback": "Feedback",
+    "about": "About"
+  },
+  "home": {
+    "title": "Turn text files into audio",
+    "subtitle": "Choose a provider, voice, and parameters to generate audio.",
+    "form": { "title": "Text-to-Speech form", "fixErrors": "Please fix the errors below." },
+    "provider": {
+      "label": "AI Provider",
+      "placeholder": "Select a provider",
+      "help": "Select the TTS provider."
+    },
+    "model": {
+      "label": "Model",
+      "placeholder": "Select a model",
+      "help": "Choose the provider's speech model."
+    },
+    "language": { "label": "Language", "placeholder": "Select a language" },
+    "voice": { "label": "Voice", "placeholder": "Select a voice", "sampleError": "Sample playback error." },
+    "sample": {
+      "label": "Sample text",
+      "placeholder": "Type something to preview…",
+      "play": "Play sample",
+      "help": "Preview how this voice will sound for your text."
+    },
+    "file": {
+      "label": "Source Text",
+      "drop": "Drag and drop a file",
+      "or": "or",
+      "browse": "browse",
+      "help": "Accepted: .txt, .pdf, .epub",
+      "remove": "Remove"
+    },
+    "speed": {
+      "label": "Speed",
+      "help": "Current: {{value}}× (min {{min}}, max {{max}}, step {{step}})"
+    },
+    "actions": {
+      "submit": "Generate",
+      "download": "Download",
+      "clear": "Clear",
+      "cancel": "Cancel"
+    },
+    "progress": {
+      "idle": "",
+      "created": "Starting…",
+      "processing": "Processing…",
+      "completed": "Ready",
+      "failed": "Failed",
+      "canceled": "Canceled"
+    },
+    "errors": { "required": "This field is required.", "failed": "Failed to start speech generation" }
+  },
+  "languages": {
+    "af": "Afrikaans",
+    "sq": "Albanian",
+    "am": "Amharic",
+    "ar": "Arabic",
+    "hy": "Armenian",
+    "az": "Azerbaijani",
+    "bn": "Bangla",
+    "eu": "Basque",
+    "bs": "Bosnian",
+    "bg": "Bulgarian",
+    "my": "Burmese",
+    "ca": "Catalan",
+    "cmn": "Chinese",
+    "hr": "Croatian",
+    "cs": "Czech",
+    "da": "Danish",
+    "nl": "Dutch",
+    "en": "English",
+    "et": "Estonian",
+    "fil": "Filipino",
+    "fi": "Finnish",
+    "fr": "French",
+    "gl": "Galician",
+    "ka": "Georgian",
+    "de": "German",
+    "el": "Greek",
+    "gu": "Gujarati",
+    "he": "Hebrew",
+    "hi": "Hindi",
+    "hu": "Hungarian",
+    "is": "Icelandic",
+    "id": "Indonesian",
+    "ga": "Irish",
+    "it": "Italian",
+    "ja": "Japanese",
+    "jv": "Javanese",
+    "kn": "Kannada",
+    "kk": "Kazakh",
+    "km": "Khmer",
+    "ko": "Korean",
+    "lo": "Lao",
+    "lv": "Latvian",
+    "lt": "Lithuanian",
+    "ml": "Malayalam",
+    "ms": "Malaysian",
+    "mt": "Maltese",
+    "mr": "Marathi",
+    "mk": "Macedonian",
+    "mn": "Mongolian",
+    "nb": "Norwegian",
+    "ne": "Nepali",
+    "ps": "Pashto",
+    "fa": "Persian",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "pa": "Punjabi",
+    "ro": "Romanian",
+    "ru": "Russian",
+    "sr": "Serbian",
+    "sk": "Slovak",
+    "sl": "Slovene",
+    "so": "Somali",
+    "es": "Spanish",
+    "sw": "Swahili",
+    "sv": "Swedish",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "th": "Thai",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "ur": "Urdu",
+    "uz": "Uzbek",
+    "vi": "Vietnamese",
+    "cy": "Welsh"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "body": "Let us know what you think. (This page is a placeholder.)"
+  },
+  "about": {
+    "title": "About",
+    "body": "Information about this app. (This page is a placeholder.)"
+  }
+}

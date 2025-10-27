@@ -1,0 +1,53 @@
+<!-- Accessibility: skip link to jump to main -->
+<a class="skip-link" href="#main">{{ 'app.skipToContent' | translate }}</a>
+
+<!-- Header: sticky dense top app bar with product name and actions -->
+<header role="banner">
+  <mat-toolbar color="primary" class="app-toolbar" [class.sticky]="true">
+    <div class="toolbar-content">
+      <div class="brand" role="heading" aria-level="1">
+        <a routerLink="/" routerLinkActive="active" aria-label="Home">
+          <span class="product">{{ title() }}</span>
+        </a>
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="Primary">
+        <a mat-button routerLink="/" routerLinkActive="active">{{ 'nav.generate' | translate }}</a>
+        <a mat-button routerLink="/feedback" routerLinkActive="active">{{ 'nav.feedback' | translate }}</a>
+        <a mat-button routerLink="/about" routerLinkActive="active">{{ 'nav.about' | translate }}</a>
+      </nav>
+
+      <div class="actions">
+        <button
+          mat-stroked-button
+          type="button"
+          class="lang-toggle"
+          (click)="i18n.toggle()"
+          [attr.aria-pressed]="false"
+          aria-label="Toggle language"
+        >
+          <mat-icon aria-hidden="true">translate</mat-icon>
+          <span class="label">{{ i18n.current() | uppercase }}</span>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+</header>
+
+<main id="main" role="main" class="app-main">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer role="contentinfo" class="app-footer">
+  <div class="container footer-content">
+    <div class="copy">© {{ 'app.footer.copyright' | translate }}</div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a routerLink="/" routerLinkActive="active">{{ 'nav.generate' | translate }}</a>
+      <a routerLink="/feedback" routerLinkActive="active">{{ 'nav.feedback' | translate }}</a>
+      <a routerLink="/about" routerLinkActive="active">{{ 'nav.about' | translate }}</a>
+    </nav>
+  </div>
+</footer>
+
