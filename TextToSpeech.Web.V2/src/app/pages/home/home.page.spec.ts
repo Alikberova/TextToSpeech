@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection, type Signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { HomePage } from './home.page';
-import { TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
+import { TranslateModule, TranslateLoader, TranslateFakeLoader, TranslateService } from '@ngx-translate/core';
 import { NgModel } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -274,6 +274,29 @@ describe('HomePage validation UX', () => {
     interface HomePageAccess { fileTouched: Signal<boolean> }
     const access = component as unknown as HomePage & HomePageAccess;
     expect(access.fileTouched()).toBeTrue();
+  });
+
+  it('initializes sampleText from i18n key with FakeLoader', async () => {
+    // With TranslateFakeLoader, translations are not provided and instant returns the key string
+    expect(component.sampleText()).toBe('home.sample.defaultText');
+  });
+
+  it('does not auto-translate sample when user edits; updates when not edited', async () => {
+    // User edits sample text -> should not be overwritten on language change
+    const userText = 'My personal sample input';
+    component.onSampleTextInput(userText);
+    fixture.detectChanges();
+    const translate = TestBed.inject(TranslateService);
+    translate.use('uk');
+    fixture.detectChanges();
+    expect(component.sampleText()).toBe(userText);
+
+    // If user clears back to empty (treated as not edited), next language change applies default again
+    component.onSampleTextInput('');
+    fixture.detectChanges();
+    translate.use('en');
+    fixture.detectChanges();
+    expect(component.sampleText()).toBe('home.sample.defaultText');
   });
 
   it('clear() resets fields and flags and calls form.reset()', async () => {

@@ -108,7 +108,7 @@
     }
   </mat-form-field>
 
-  <!-- File upload with accessible DnD area -->
+  <!-- File upload area -->
   <div class="upload">
     <label class="upload-label" [attr.for]="fileInputId">{{ 'home.file.label' | translate }}</label>
 
@@ -129,7 +129,7 @@
         <strong>{{ 'home.file.drop' | translate }}</strong>
         <span>{{ 'home.file.or' | translate }}</span>
         <span class="link">{{ 'home.file.browse' | translate }}</span>
-        <small id="fileHelp">{{ 'home.file.help' | translate }}</small>
+        <small id="fileHelp">{{ 'home.file.help' | translate:{ types: acceptableTypesText() } }}</small>
       </div>
     </div>
 
@@ -139,7 +139,7 @@
       class="sr-only"
       type="file"
       (change)="onFileSelected(fileInput)"
-      accept=".txt,.pdf,.epub"
+      [attr.accept]="acceptAttr"
       aria-hidden="true"
     />
 
@@ -174,7 +174,7 @@
       matInput
       rows="3"
       [ngModel]="sampleText()"
-      (ngModelChange)="sampleText.set($event)"
+      (ngModelChange)="onSampleTextInput($event)"
       [ngModelOptions]="{ standalone: true }"
       placeholder="{{ 'home.sample.placeholder' | translate }}"
     ></textarea>

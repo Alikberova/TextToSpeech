@@ -28,14 +28,15 @@
       "label": "Sample text",
       "placeholder": "Type something to preview…",
       "play": "Play sample",
-      "help": "Preview how this voice will sound for your text."
+      "help": "Preview how this voice will sound for your text.",
+      "defaultText": "This is a sample for voice preview.\nYou can edit it to test how your text will sound"
     },
     "file": {
       "label": "Source Text",
       "drop": "Drag and drop a file",
       "or": "or",
       "browse": "browse",
-      "help": "Accepted: .txt, .pdf, .epub",
+      "help": "Accepted: {{types}}",
       "remove": "Remove"
     },
     "speed": {

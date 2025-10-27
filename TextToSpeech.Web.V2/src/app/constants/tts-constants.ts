@@ -28,6 +28,5 @@ export const OPEN_AI_VOICES = [
     { key: 'verse', label: 'Verse' },
 ] as const;
 
-export const DEMO_TEXT = 'Welcome to our voice showcase! Listen as we bring words to life, demonstrating a range of unique and dynamic vocal styles!';
 export const ACCEPTABLE_FILE_TYPES = ['.txt', '.pdf', '.epub'];
 export const MAX_INPUT_LENGTH = 10000000; //todo MaxSize dictionary for every type?; todo length check on backend
