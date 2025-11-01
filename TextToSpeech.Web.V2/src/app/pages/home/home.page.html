@@ -14,7 +14,7 @@
   <h3 id="formTitle" class="sr-only">{{ 'home.form.title' | translate }}</h3>
 
   <!-- Provider -->
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(providerCtrl.touched || submitAttempt()) && !provider() && 'true'">
+  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(providerCtrl.touched || submitAttempt() || sampleAttempt()) && !provider() && 'true'">
     <mat-label>{{ 'home.provider.label' | translate }}</mat-label>
     <mat-select
       #providerCtrl="ngModel"
@@ -32,7 +32,7 @@
       }
     </mat-select>
     <mat-hint id="providerHelp">{{ 'home.provider.help' | translate }}</mat-hint>
-    @if ((providerCtrl.touched || submitAttempt()) && !provider()) {
+    @if ((providerCtrl.touched || submitAttempt() || sampleAttempt()) && !provider()) {
       <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
     }
   </mat-form-field>
@@ -61,9 +61,32 @@
     }
   </mat-form-field>
   }
-
+  
+  <!-- Language (Narakeet only) -->
+  @if (provider() === 'narakeet') {
+    <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language() && 'true'">
+      <mat-label>{{ 'home.language.label' | translate }}</mat-label>
+      <mat-select
+        #languageCtrl="ngModel"
+        #languageEl
+        [ngModel]="language()"
+        (ngModelChange)="onLanguageChange($event)"
+        name="language"
+        required
+      >
+        <mat-option [value]="''" disabled>{{ 'home.language.placeholder' | translate }}</mat-option>
+        @for (lang of languages(); track lang.key) {
+          <mat-option [value]="lang.key">{{ lang.label }}</mat-option>
+        }
+      </mat-select>
+      @if ((languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language()) {
+        <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
+      }
+    </mat-form-field>
+  }
+  
   <!-- Voice -->
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(voiceCtrl.touched || submitAttempt()) && !voice() && 'true'">
+  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(voiceCtrl.touched || submitAttempt() || sampleAttempt()) && !voice() && 'true'">
     <mat-label>{{ 'home.voice.label' | translate }}</mat-label>
     <mat-select
       #voiceCtrl="ngModel"
@@ -72,7 +95,7 @@
       (ngModelChange)="voice.set($event)"
       name="voice"
       required
-      [disabled]="!provider()"
+      [disabled]="!provider() || (provider() === 'narakeet' && !language())"
     >
       <mat-option [value]="''" disabled>{{ 'home.voice.placeholder' | translate }}</mat-option>
       @for (v of voicesForProvider(); track v.key) {
@@ -82,31 +105,27 @@
         {{ selectedVoiceLabel() || ('home.voice.placeholder' | translate) }}
       </mat-select-trigger>
     </mat-select>
-    @if ((voiceCtrl.touched || submitAttempt()) && !voice()) {
+    @if ((voiceCtrl.touched || submitAttempt() || sampleAttempt()) && !voice()) {
       <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
     }
   </mat-form-field>
-  
-  <!-- Language -->
-  <mat-form-field appearance="outline" class="field" [attr.aria-invalid]="(languageCtrl.touched || submitAttempt()) && !language() && 'true'">
-    <mat-label>{{ 'home.language.label' | translate }}</mat-label>
-    <mat-select
-      #languageCtrl="ngModel"
-      #languageEl
-      [ngModel]="language()"
-      (ngModelChange)="language.set($event)"
-      name="language"
-      required
-    >
-      <mat-option [value]="''" disabled>{{ 'home.language.placeholder' | translate }}</mat-option>
-    @for (lang of languages(); track lang.key) {
-      <mat-option [value]="lang.key">{{ lang.label | translate }}</mat-option>
-    }
-    </mat-select>
-    @if ((languageCtrl.touched || submitAttempt()) && !language()) {
-      <mat-error>{{ 'home.errors.required' | translate }}</mat-error>
-    }
-  </mat-form-field>
+
+  <!-- Response format -->
+  <section class="field format-field" aria-labelledby="formatLabel">
+    <mat-chip-listbox
+      class="format-chips"
+      [ngModel]="responseFormat()"
+      (ngModelChange)="responseFormat.set($event)"
+      name="responseFormat"
+      aria-describedby="formatHelp">
+      @for (fmt of responseFormats; track fmt.key) {
+        <mat-chip-option [value]="fmt.key" [selected]="responseFormat() === fmt.key">
+          {{ fmt.label }}
+        </mat-chip-option>
+      }
+    </mat-chip-listbox>
+    <mat-hint id="formatHelp">{{ 'home.format.help' | translate }}</mat-hint>
+  </section>
 
   <!-- File upload area -->
   <div class="upload">
@@ -164,22 +183,30 @@
     <mat-slider min="0.5" max="2.0" step="0.1" [displayWith]="formatSpeed">
       <input matSliderThumb [id]="speedInputId" [value]="speed()" (valueChange)="speed.set($event)" />
     </mat-slider>
-    <div class="hint">{{ 'home.speed.help' | translate:{ min: '0.5', max: '2.0', step: '0.1', value: speed().toFixed(1) } }}</div>
+    <div class="hint">{{ 'home.speed.help' | translate:{ min: '0.5', max: '2.0', value: speed().toFixed(1) } }}</div>
   </div>
 
   <!-- Sample text and play -->
-  <mat-form-field appearance="outline" class="field text-field">
+  <mat-form-field appearance="outline" class="field text-field has-overlay-play">
     <mat-label>{{ 'home.sample.label' | translate }}</mat-label>
     <textarea
       matInput
       rows="3"
+      maxlength="250"
       [ngModel]="sampleText()"
       (ngModelChange)="onSampleTextInput($event)"
       [ngModelOptions]="{ standalone: true }"
-      placeholder="{{ 'home.sample.placeholder' | translate }}"
-    ></textarea>
-    <button mat-icon-button matSuffix type="button" [attr.aria-label]="'home.sample.play' | translate" (click)="playOrToggleSample()">
-      <mat-icon>{{ samplePlaying() ? 'pause' : 'play_arrow' }}</mat-icon>
+      placeholder="{{ 'home.sample.placeholder' | translate }}">
+    </textarea>
+    <button
+      mat-icon-button
+      type="button"
+      class="sample-play-overlay"
+      [attr.aria-label]="sampleStatus() === 'playing' ? ('home.sample.pause' | translate) : ('home.sample.play' | translate)"
+      (click)="playOrToggleSample()">
+      <mat-icon>
+        {{ sampleStatus() === 'playing' ? 'pause_circle' : 'play_circle' }}
+      </mat-icon>
     </button>
     <mat-hint>{{ 'home.sample.help' | translate }}</mat-hint>
   </mat-form-field>
@@ -193,26 +220,31 @@
 
   <!-- Progress -->
   @if (status() !== 'Idle') {
-    <div class="progress">
-      <mat-progress-bar [mode]="status() === 'Processing' || status() === 'Created' ? 'determinate' : 'determinate'" [value]="progress()"></mat-progress-bar>
-      <div class="progress-text">
-        <span>
-          {{
-            status() === 'Created' ? ('home.progress.created' | translate) :
-            status() === 'Processing' ? ('home.progress.processing' | translate) :
-            status() === 'Completed' ? ('home.progress.completed' | translate) :
-            status() === 'Failed' ? ('home.progress.failed' | translate) :
-            ('home.progress.canceled' | translate)
-          }}
-        </span>
+    <section class="progress-panel" role="status" aria-live="polite">
+      <div class="progress-header">
+        <mat-icon class="status-icon">{{ progressIcon() }}</mat-icon>
+        <div class="status-copy">
+          <div class="primary">
+            {{
+              status() === 'Created' ? ('home.progress.created' | translate) :
+              status() === 'Processing' ? ('home.progress.processing' | translate) :
+              status() === 'Completed' ? ('home.progress.completed' | translate) :
+              status() === 'Failed' ? ('home.progress.failed' | translate) :
+              ('home.progress.canceled' | translate)
+            }}
+          </div>
+          @if (status() === 'Processing') {
+            <div class="secondary">{{ progress() }}%</div>
+          }
+        </div>
         @if (status() === 'Processing') {
-          <span>{{ progress() }}%</span>
-        }
-        @if (status() === 'Processing') {
-          <button type="button" mat-button (click)="cancel()">{{ 'home.actions.cancel' | translate }}</button>
+          <button type="button" mat-stroked-button color="primary" class="cancel-btn" (click)="cancel()">
+            {{ 'home.actions.cancel' | translate }}
+          </button>
         }
       </div>
-    </div>
+      <mat-progress-bar class="pretty-bar" mode="determinate" [value]="progress()"></mat-progress-bar>
+    </section>
   }
 
 </form>

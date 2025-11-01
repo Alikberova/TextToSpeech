@@ -47,14 +47,8 @@ public sealed class EpubProcessorTests
         const string content = "Sample EPUB content";
         using var epubStream = CreateSimpleEpub(content);
 
-        var file = new FormFile(epubStream, 0, epubStream.Length, "dummy", "test.epub")
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = "application/epub+zip"
-        };
-
         // Act
-        var result = await _epubProcessor.ExtractTextAsync(file);
+        var result = await _epubProcessor.ExtractTextAsync(epubStream.ToArray());
 
         // Assert
         Assert.Equal("Sample EPUB content", result); // Ensure the extracted content matches

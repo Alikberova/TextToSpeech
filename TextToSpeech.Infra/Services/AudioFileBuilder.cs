@@ -3,19 +3,21 @@ using TextToSpeech.Core.Entities;
 using System.Text;
 using System.Security.Cryptography;
 using TextToSpeech.Core.Config;
+using TextToSpeech.Core.Dto;
 
 namespace TextToSpeech.Infra.Services;
 
 public static class AudioFileBuilder
 {
     public static AudioFile Create(byte[] bytes,
-        string voice,
         string langCode,
-        double speed,
         AudioType type,
+        string input,
+        TtsRequestOptions options,
         Guid? ttsApiId = null,
         string? fileName = null,
-        Guid? id = null)
+        Guid? id = null,
+        string? hash = null)
     {
         var audio = new AudioFile
         {
@@ -24,29 +26,32 @@ public static class AudioFileBuilder
             Data = bytes,
             CreatedAt = DateTime.UtcNow,
             Description = $"{type}_" +
-                $"{voice}_" +
+                $"{options.Voice}_" +
                 $"{langCode}_" +
                 $"{SharedConstants.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId ).Key}_" +
-                $"{speed}",
-            Hash = GenerateAudioFileHash(bytes, voice, langCode, speed),
-            Voice = voice,
+                $"{options.Speed}_" +
+                $"{options.Model}",
+            Hash = hash ?? GenerateHash(input, langCode, options),
+            Voice = options.Voice,
             LanguageCode = langCode,
-            Speed = speed,
+            Speed = options.Speed,
             Type = type,
             TtsApiId = ttsApiId
         };
         return audio;
     }
 
-    public static string GenerateAudioFileHash(byte[] bytes, string voice, string languageCode, double speed)
+    public static string GenerateHash(string input, string languageCode, TtsRequestOptions options)
     {
-        if (bytes.Length == 0)
+        if (string.IsNullOrWhiteSpace(input))
         {
             return string.Empty;
         }
 
+        var bytes = Encoding.UTF8.GetBytes(input);
         var dataHash = Convert.ToBase64String(SHA256.HashData(bytes));
-        var details = $"{dataHash}:{voice}:{languageCode}:{speed}";
+        var details = $"{dataHash}:{options.Voice}:{languageCode}:{options.Speed}:{options.Model}:" +
+            $"{options.ResponseFormat}";
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(details));
 
         return Convert.ToBase64String(hashBytes);

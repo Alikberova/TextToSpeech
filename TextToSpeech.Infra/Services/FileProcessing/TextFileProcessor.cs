@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using TextToSpeech.Core.Interfaces;
+﻿using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.FileProcessing;
 
@@ -7,14 +6,10 @@ public sealed class TextFileProcessor : IFileProcessor
 {
     public bool CanProcess(string fileType) => fileType.Equals(".txt", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractTextAsync(IFormFile file)
+    public Task<string> ExtractTextAsync(byte[] fileBytes)
     {
-        if (file == null || file.Length == 0)
-        {
-            return await Task.FromResult(string.Empty);
-        }
+        var text = System.Text.Encoding.UTF8.GetString(fileBytes);
 
-        using var reader = new StreamReader(file.OpenReadStream());
-        return await reader.ReadToEndAsync();
+        return Task.FromResult(text);
     }
 }

@@ -23,9 +23,9 @@ export class SignalRService {
     }
   }
 
-  addAudioStatusListener(cb: (fileId: string, status: string, progress: number | null, errorMessage?: string) => void) {
+  addAudioStatusListener(callback: (fileId: string, status: string, progress: number | null, errorMessage?: string) => void) {
     this.hub?.on('AudioStatusUpdated', (fileId: string, status: string, progress?: number | null, errorMessage?: string) => {
-      cb(fileId, status, progress ?? null, errorMessage);
+      callback(fileId, status, progress ?? null, errorMessage);
     });
   }
 

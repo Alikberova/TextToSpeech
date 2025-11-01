@@ -7,9 +7,10 @@ import { NgModel } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { OPEN_AI_VOICES, PROVIDER_MODELS, PROVIDERS, type ProviderKey } from '../../constants/tts-constants';
-import { LANGUAGES } from '../../constants/language';
 import { SignalRService } from '../../core/realtime/signalr.service';
+import { SpeechResponseFormat } from '../../dto/tts-request';
 import { API_BASE_URL } from '../../constants/tokens';
+import { SPEECH_BASE, SPEECH_SAMPLE } from '../../core/http/endpoints';
 
 describe('HomePage validation UX', () => {
   let fixture: ComponentFixture<HomePage>;
@@ -65,8 +66,8 @@ describe('HomePage validation UX', () => {
     submitBtn.nativeElement.click();
     fixture.detectChanges();
 
-    // With voice select disabled until provider selection, at least provider, language, and file should showerror
-    expect(getErrors(fixture).length).toBeGreaterThanOrEqual(3);
+    // With voice select disabled until provider selection, at least provider and file should show error
+    expect(getErrors(fixture).length).toBeGreaterThanOrEqual(2);
 
     const banner = fixture.debugElement.query(By.css('.form-error'));
     expect(banner).not.toBeNull();
@@ -100,7 +101,7 @@ describe('HomePage validation UX', () => {
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     const firstVoiceKey = OPEN_AI_VOICES[0].key;
     component.onProviderChange(providerWithModel);
-    component.language.set('en-US');
+    // OpenAI does not require language
     component.voice.set(firstVoiceKey);
     component.file.set(new File(['a'], 'a.txt'));
     fixture.detectChanges();
@@ -114,7 +115,7 @@ describe('HomePage validation UX', () => {
     // Provider that requires model -> model auto-selected; no model error after submit
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     component.onProviderChange(providerWithModel);
-    component.language.set('en-US');
+    // language not required for OpenAI
     const firstVoiceKey = OPEN_AI_VOICES[0].key;
     component.voice.set(firstVoiceKey);
     fixture.detectChanges();
@@ -163,13 +164,13 @@ describe('HomePage validation UX', () => {
   it('sample play posts to /speech/sample', async () => {
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     component.onProviderChange(providerWithModel);
-    component.language.set('en');
+    // No language for OpenAI
     component.voice.set(OPEN_AI_VOICES[0].key);
     fixture.detectChanges();
     const playBtn = fixture.debugElement.query(By.css('button[mat-icon-button]'));
     playBtn.nativeElement.click();
     fixture.detectChanges();
-    const req = httpController.expectOne('/speech/sample');
+    const req = httpController.expectOne(SPEECH_SAMPLE);
     expect(req.request.method).toBe('POST');
     req.flush(new Blob([new Uint8Array([1])], { type: 'audio/mpeg' }));
   });
@@ -179,7 +180,7 @@ describe('HomePage validation UX', () => {
     // Form-field labels
     const labels = Array.from(el.querySelectorAll('mat-form-field mat-label')).map(n => n.textContent?.trim() ?? '');
     expect(labels.join(' ')).toContain('home.provider.label');
-    expect(labels.join(' ')).toContain('home.language.label');
+    // Language label is conditional (Narakeet only); not asserting here
     expect(labels.join(' ')).toContain('home.voice.label');
     // Upload label associated via for attribute
     const uploadLabel = el.querySelector('label.upload-label') as HTMLLabelElement;
@@ -192,13 +193,13 @@ describe('HomePage validation UX', () => {
     expect(voiceSelect?.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('voice dropdown disabled until provider selected and options depend on provider', async () => {
+  it('voice dropdown disabled until provider selected and enables after provider/language as needed', async () => {
     const select = fixture.nativeElement.querySelector('mat-select[name="voice"]');
     expect(select.getAttribute('aria-disabled')).toBe('true');
     // No provider -> voicesForProvider empty
     expect(component.voicesForProvider().length).toBe(0);
 
-    // Select provider -> enabled and options available
+    // Select provider OpenAI -> enabled and options available
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     component.onProviderChange(providerWithModel);
     fixture.detectChanges();
@@ -207,11 +208,18 @@ describe('HomePage validation UX', () => {
     expect(component.voicesForProvider().length).toBeGreaterThan(0);
   });
 
-  it('languages are sourced from LANGUAGES and use i18n keys', async () => {
-    // Component exposes languages list from constants
-    expect(fixture.componentInstance.languages().length).toBe(LANGUAGES.length);
-    // Labels are translation keys (FakeLoader would render keys as-is)
-    expect(LANGUAGES[0].label.startsWith('languages.')).toBeTrue();
+  it('narakeet language list derives from voices (unique by languageCode)', async () => {
+    const narakeetKey = (PROVIDERS.find(p => p.key === 'narakeet') || PROVIDERS[0]).key as ProviderKey;
+    component.onProviderChange(narakeetKey);
+    const reqs = httpController.match(r => r.url.endsWith('/voices/narakeet'));
+    const data = [
+      { name: 'a', language: 'English', languageCode: 'en-US', styles: [] },
+      { name: 'b', language: 'Ukrainian', languageCode: 'uk-UA', styles: [] },
+      { name: 'c', language: 'English', languageCode: 'en-US', styles: [] },
+    ];
+    reqs.forEach(r => r.flush(data));
+    fixture.detectChanges();
+    expect(component.languages().length).toBe(2);
   });
 
   it('submit enables download when SignalR reports Completed', async () => {
@@ -240,14 +248,18 @@ describe('HomePage validation UX', () => {
 
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     component2.onProviderChange(providerWithModel);
-    component2.language.set('en');
+    // No language for OpenAI
     component2.voice.set(OPEN_AI_VOICES[0].key);
     component2.file.set(new File(['a'], 'a.txt'));
     fixture2.detectChanges();
 
     fixture2.debugElement.query(By.css('button[type="submit"]')).nativeElement.click();
     fixture2.detectChanges();
-    const req = http2.expectOne('/speech');
+    const req = http2.expectOne(SPEECH_BASE);
+    // Expect selected response format present in multipart
+    const fd = req.request.body as FormData;
+    // Default is mp3
+    expect(fd.get('TtsRequestOptions.ResponseFormat')).toBe('mp3');
     req.flush('id-1');
 
     rStub.trigger('id-1', 'Processing', 40);
@@ -258,6 +270,38 @@ describe('HomePage validation UX', () => {
     expect(component2.hasResult()).toBeTrue();
     const downloadBtn = fixture2.debugElement.query(By.css('button[mat-stroked-button]'));
     expect(downloadBtn.properties['disabled']).toBeFalse();
+  });
+
+  it('includes selected response format in full speech request', async () => {
+    await TestBed.resetTestingModule().configureTestingModule({
+      imports: [
+        HomePage,
+        TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: TranslateFakeLoader }, useDefaultLang: true }),
+      ],
+      providers: BASE_PROVIDERS,
+    }).compileComponents();
+
+    const fixture3 = TestBed.createComponent(HomePage);
+    const component3 = fixture3.componentInstance;
+    const http3 = TestBed.inject(HttpTestingController);
+    fixture3.detectChanges();
+
+    const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
+    component3.onProviderChange(providerWithModel);
+    // No language for OpenAI
+    component3.voice.set(OPEN_AI_VOICES[0].key);
+    component3.file.set(new File(['a'], 'a.txt'));
+    // Choose a different format
+    component3.responseFormat.set(SpeechResponseFormat.WAV);
+    fixture3.detectChanges();
+
+    fixture3.debugElement.query(By.css('button[type="submit"]')).nativeElement.click();
+    fixture3.detectChanges();
+
+    const req3 = http3.expectOne(SPEECH_BASE);
+    const fd3 = req3.request.body as FormData;
+    expect(fd3.get('TtsRequestOptions.ResponseFormat')).toBe('wav');
+    req3.flush('id-2');
   });
 
   it('onFileSelected stores single file and marks touched', async () => {
@@ -299,7 +343,7 @@ describe('HomePage validation UX', () => {
     expect(component.sampleText()).toBe('home.sample.defaultText');
   });
 
-  it('clear() resets fields and flags and calls form.reset()', async () => {
+  it('clear() resets fields, sample text, flags, and calls form.reset()', async () => {
     // Set non-defaults
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     const firstVoiceKey = OPEN_AI_VOICES[0].key;
@@ -307,6 +351,8 @@ describe('HomePage validation UX', () => {
     component.language.set('en-US');
     component.voice.set(firstVoiceKey);
     component.file.set(new File(['a'], 'a.txt'));
+    // Simulate user editing the sample text so we can verify it resets
+    component.onSampleTextInput('User edited sample');
     interface HomePageAccess2 { submitAttempt: Signal<boolean>; fileTouched: Signal<boolean> }
     const access2 = component as unknown as HomePage & HomePageAccess2;
     access2.submitAttempt.set(true);
@@ -320,6 +366,8 @@ describe('HomePage validation UX', () => {
     expect(component.language()).toBe('');
     expect(component.voice()).toBe('');
     expect(component.file()).toBeNull();
+    // Textarea resets back to default i18n key (FakeLoader returns the key)
+    expect(component.sampleText()).toBe('home.sample.defaultText');
     expect(access2.submitAttempt()).toBeFalse();
     expect(access2.fileTouched()).toBeFalse();
     expect(formStub.reset).toHaveBeenCalled();
@@ -329,7 +377,7 @@ describe('HomePage validation UX', () => {
     // Set state: provider needs model, other fields valid; model should auto-select
     const providerWithModel = (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
     component.onProviderChange(providerWithModel);
-    component.language.set('en-US');
+    // language not required for OpenAI
     component.voice.set('');
     component.file.set(new File(['a'], 'a.txt'));
     fixture.detectChanges();
@@ -352,12 +400,12 @@ describe('HomePage validation UX', () => {
   });
 
   it('focusFirstInvalid focuses Voice when missing', async () => {
-    // Provider that does not require model, valid language, missing voice, valid file
-    const providerWithoutModel = (PROVIDERS.find(p => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key as ProviderKey;
+    // Provider that does not require model (Narakeet), valid language, missing voice, valid file
+    const providerWithoutModel = 'narakeet' as ProviderKey;
     component.onProviderChange(providerWithoutModel);
     const pendingVoicesRequests = httpController.match(r => r.url.endsWith('/voices/narakeet'));
-    pendingVoicesRequests.forEach(req => req.flush([]));
-    component.language.set('en-US');
+    pendingVoicesRequests.forEach(req => req.flush([{ name: 'v1', language: 'English', languageCode: 'en-US', styles: [] }]));
+    component.onLanguageChange('en-US');
     component.voice.set('');
     component.file.set(new File(['a'], 'a.txt'));
     fixture.detectChanges();

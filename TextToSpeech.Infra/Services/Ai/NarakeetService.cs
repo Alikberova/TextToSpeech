@@ -1,22 +1,26 @@
-﻿using TextToSpeech.Core.Dto.Narakeet;
+﻿using System.Net;
 using System.Net.Http.Json;
-using TextToSpeech.Infra.Constants;
-using System.Text.Json;
-using System.Net;
 using System.Text;
+using System.Text.Json;
+using TextToSpeech.Core;
+using TextToSpeech.Core.Dto;
+using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
-using TextToSpeech.Core;
+using TextToSpeech.Infra.Constants;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
+/// <summary>
+/// <br/> The Narakeet API allows processing documents up to 100 KB for the long content (polling) API, and 1 KB for the streaming API.
+/// <br/> By default, the API allows to make 86,400 requests per day (1 per second)
+/// </summary>
 public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
     HttpClient _httpClient) : INarakeetService
 {
     public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
     private const int MaxLengthForShortContent = 565;
-    private const string Mp3 = "mp3";
-    
+
     /// <summary>
     /// Requests speech with Narakeet API
     /// </summary>
@@ -24,24 +28,23 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
     /// <param name="speed">value between 0.3 and 2 or fast, normal, slow</param>
     /// <returns></returns>
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
-        string voice,
         Guid fileId,
-        double speed,
+        TtsRequestOptions ttsRequest,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
         var tasks = textChunks
-            .Select(chunk => RequestLongContent(chunk, voice, speed, fileId, progress,cancellationToken))
+            .Select(chunk => RequestLongContent(chunk, fileId, ttsRequest, progress,cancellationToken))
             .ToList();
 
         return await Task.WhenAll(tasks);
     }
 
     public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
-        string voice,
-        double speed)
+        TtsRequestOptions ttsRequest,
+        CancellationToken cancellationToken = default)
     {
-        return await RequestShortContent(text, voice, speed);
+        return await RequestShortContent(text, ttsRequest);
     }
 
     public async Task<List<VoiceResponse>?> GetAvailableVoices() //todo move redis from here
@@ -60,21 +63,14 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
         return voices;
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, string voice, double speed, Guid fileId,
+    private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, Guid fileId,
+        TtsRequestOptions ttsRequest,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        AudioTaskRequest request = new()
-        {
-            Format = Mp3,
-            Voice = voice,
-            Speed = speed,
-            Text = text
-        };
-
-        var buildTask = await RequestAudioTaskAsync(request, cancellationToken);
+        var buildTask = await RequestAudioTaskAsync(text, ttsRequest, cancellationToken);
 
         var taskResult = await PollUntilFinishedAsync(buildTask, fileId, progress, cancellationToken);
 
@@ -87,14 +83,15 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
 
         response.EnsureSuccessStatusCode();
 
-        return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
+        return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync(cancellationToken));
     }
 
-    private async Task<BuildTask> RequestAudioTaskAsync(AudioTaskRequest audioTaskRequest, CancellationToken cancellationToken)
+    private async Task<BuildTask> RequestAudioTaskAsync(string text, TtsRequestOptions ttsRequest, CancellationToken cancellationToken)
     {
-        StringContent requestBody = new(audioTaskRequest.Text, Encoding.UTF8, "text/plain");
+        StringContent requestBody = new(text, Encoding.UTF8, "text/plain");
 
-        using HttpResponseMessage response = await _httpClient.PostAsync(GetEndpoint(Mp3, audioTaskRequest.Voice, audioTaskRequest.Speed),
+        using HttpResponseMessage response = await _httpClient.PostAsync(
+            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice, ttsRequest.Speed),
             requestBody, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -122,7 +119,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
 
             var response = await _httpClient.GetAsync(buildTask.StatusUrl, cancellationToken);
             response.EnsureSuccessStatusCode();
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
             
             if (buildTaskStatus is null ||
@@ -141,14 +138,15 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
         }
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestShortContent(string text, string voice, double speed)
+    private async Task<ReadOnlyMemory<byte>> RequestShortContent(string text, TtsRequestOptions ttsRequest)
     {
-        string sanitizedText = System.Net.WebUtility.HtmlEncode(text);
+        string sanitizedText = WebUtility.HtmlEncode(text);
         StringContent requestBody = new(sanitizedText, Encoding.UTF8, "text/plain");
 
         _httpClient.DefaultRequestHeaders.Add("accept", "application/octet-stream");
 
-        using HttpResponseMessage response = await _httpClient.PostAsync(GetEndpoint(Mp3, voice, speed), requestBody);
+        using HttpResponseMessage response = await _httpClient.PostAsync(
+            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice, ttsRequest.Speed), requestBody);
 
         response.EnsureSuccessStatusCode();
 

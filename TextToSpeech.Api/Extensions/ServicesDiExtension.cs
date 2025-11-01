@@ -1,5 +1,7 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using OpenAI;
+using OpenAI.Chat;
 using TextToSpeech.Api.Services;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
@@ -55,6 +57,11 @@ internal static class ServicesDiExtension
         services.AddSingleton<ITaskManager, TaskManager>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+        services.AddSingleton(serviceProvider =>
+        {
+            var apiKey = Environment.GetEnvironmentVariable(ConfigConstants.OpenAiApiKey);
+            return new OpenAIClient(apiKey);
+        });
 
         AddServicesWithHttpClient(services);
 

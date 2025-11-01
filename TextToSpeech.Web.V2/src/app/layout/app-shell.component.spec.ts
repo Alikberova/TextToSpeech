@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { AppShellComponent } from './app-shell.component';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 
 describe('AppShellComponent layout', () => {
   it('centers the footer container', async () => {
@@ -32,5 +32,57 @@ describe('AppShellComponent layout', () => {
     const right = hostRect.right - rect.right;
     // Centered if left and right are approximately equal
     expect(Math.abs(left - right)).toBeLessThan(2);
+  });
+
+  it('only underlines the active nav link', async () => {
+    @Component({ standalone: true, template: '' })
+    class DummyComponent {}
+
+    await TestBed.configureTestingModule({
+      imports: [
+        AppShellComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
+          useDefaultLang: true,
+        }),
+      ],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter([
+          { path: '', component: DummyComponent },
+          { path: 'feedback', component: DummyComponent },
+          { path: 'about', component: DummyComponent },
+        ]),
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(AppShellComponent);
+    const router = TestBed.inject(Router);
+
+    // Initial render so router directives are instantiated
+    fixture.detectChanges();
+
+    // Navigate to a non-root route
+    await router.navigateByUrl('/feedback');
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const links = Array.from(host.querySelectorAll('nav.nav a')) as HTMLAnchorElement[];
+
+    // Compute which links are marked active
+    const activeLinks = links.filter((a) => a.classList.contains('active'));
+
+    // Expect exactly one active link and it should be the Feedback item
+    expect(activeLinks.length).toBe(1);
+    expect(activeLinks[0].textContent?.toLowerCase()).toContain('feedback');
+
+    // Navigate to root and assert only Generate is active
+    await router.navigateByUrl('/');
+    fixture.detectChanges();
+
+    const linksAfterRoot = Array.from(host.querySelectorAll('nav.nav a')) as HTMLAnchorElement[];
+    const activeAfterRoot = linksAfterRoot.filter((a) => a.classList.contains('active'));
+    expect(activeAfterRoot.length).toBe(1);
+    expect(activeAfterRoot[0].textContent?.toLowerCase()).toContain('generate');
   });
 });

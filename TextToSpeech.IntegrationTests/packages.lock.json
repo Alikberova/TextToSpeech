@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
+      "Bogus": {
+        "type": "Direct",
+        "requested": "[35.5.1, )",
+        "resolved": "35.5.1",
+        "contentHash": "GBp2peww04szEJ0GlBlzCYilFDaSkL7Ja4m37YeTRjC/mgoiZnUuifmgUxVD/oLU2MC1uoXfQYK91doGp7Zkpg=="
+      },
       "coverlet.collector": {
         "type": "Direct",
         "requested": "[6.0.2, )",
@@ -44,11 +50,6 @@
         "requested": "[3.1.0, )",
         "resolved": "3.1.0",
         "contentHash": "K9O9TOzugqOo4LJ87uuq1VG8RAqGp20Ng85Wx932oT5LNBkIgeeGYubVW5UMnOOTanFNbGavmbuYrJr4INzSwg=="
-      },
-      "Bogus": {
-        "type": "Transitive",
-        "resolved": "35.5.1",
-        "contentHash": "GBp2peww04szEJ0GlBlzCYilFDaSkL7Ja4m37YeTRjC/mgoiZnUuifmgUxVD/oLU2MC1uoXfQYK91doGp7Zkpg=="
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
@@ -807,10 +808,13 @@
           "Npgsql": "9.0.3"
         }
       },
-      "OpenAI-DotNet": {
+      "OpenAI": {
         "type": "Transitive",
-        "resolved": "7.7.8",
-        "contentHash": "q8g5vMDPbD/T6ymcCRH+Q/7yYlnVgI9xUO/O16L7s2O8a3G9jqCC8AXepyPPikCwuv3yPrzI7JT87yWmIM3XUg=="
+        "resolved": "2.5.0",
+        "contentHash": "DADdrU3XcqwcRfANPl+mmrIROoPZ8m4bQMoLSLq7Ao+eaRr3HdTki+h6NUiJOewb9KpQ8zV3ujXUZIQjIGH7aQ==",
+        "dependencies": {
+          "System.ClientModel": "1.6.1"
+        }
       },
       "PdfPig": {
         "type": "Transitive",
@@ -987,6 +991,15 @@
         "resolved": "4.5.1",
         "contentHash": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg=="
       },
+      "System.ClientModel": {
+        "type": "Transitive",
+        "resolved": "1.6.1",
+        "contentHash": "xcHHhDqB5MnOOY8yIn64Vzp6gtBEs6k5J1hluG04CrShSvQNXOx4PSDs7wJiXLDidlY/FZJmxJdKTKskyJwjvw==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
+          "System.Memory.Data": "8.0.1"
+        }
+      },
       "System.CodeDom": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -1028,6 +1041,11 @@
         "dependencies": {
           "System.CodeDom": "7.0.0"
         }
+      },
+      "System.Memory.Data": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "BVYuec3jV23EMRDeR7Dr1/qhx7369dZzJ9IWy2xylvb4YfXsrUxspWc4UWYid/tj4zZK58uGZqn2WQiaDMhmAg=="
       },
       "System.Reflection.Metadata": {
         "type": "Transitive",
@@ -1119,7 +1137,6 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[8.0.6, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[8.0.6, )",
           "Microsoft.Extensions.Caching.Memory": "[8.0.1, )",
-          "OpenAI-DotNet": "[7.7.8, )",
           "System.IdentityModel.Tokens.Jwt": "[7.6.0, )"
         }
       },
@@ -1133,6 +1150,7 @@
           "Microsoft.NETCore.App": "[2.0.3, )",
           "MimeKit": "[4.7.1, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[9.0.4, )",
+          "OpenAI": "[2.5.0, )",
           "PdfPig": "[0.1.8, )",
           "StackExchange.Redis": "[2.7.33, )",
           "System.Text.Json": "[8.0.5, )",
@@ -1143,7 +1161,6 @@
       "texttospeech.testinginfra": {
         "type": "Project",
         "dependencies": {
-          "Bogus": "[35.5.1, )",
           "Moq": "[4.20.70, )",
           "TextToSpeech.Infra": "[1.0.0, )"
         }

@@ -4,8 +4,15 @@
   margin-top: $space-6;
   margin-bottom: $space-6;
   text-align: center;
-  .title { font: var(--mat-sys-headline-large); }
-  .subtitle { font: var(--mat-sys-body-large); opacity: 0.8; }
+
+  .title {
+    font: var(--mat-sys-headline-large);
+  }
+
+  .subtitle {
+    font: var(--mat-sys-body-large);
+    opacity: 0.8;
+  }
 }
 
 .tts-form {
@@ -14,12 +21,26 @@
   gap: $space-4;
 
   // Breakpoints: 640 / 768 / 1024 / 1280
-  @media (min-width: $bp-sm) { grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: $bp-md) { grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: $bp-lg) { grid-template-columns: repeat(3, 1fr); }
-  @media (min-width: $bp-xl) { grid-template-columns: repeat(3, 1fr); gap: $space-5; }
+  @media (min-width: $bp-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-  .field { width: 100%; }
+  @media (min-width: $bp-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: $bp-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: $bp-xl) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-5;
+  }
+
+  .field {
+    width: 100%;
+  }
 
   .upload {
     grid-column: 1 / -1; // full width
@@ -41,52 +62,133 @@
     justify-content: center;
     background: var(--flower-petal);
     cursor: pointer;
-    &:focus { @include focus-ring(); }
-    &:hover { background: color-mix(in oklab, var(--flower-petal) 85%, white); }
+
+    &:focus {
+      @include focus-ring();
+    }
+
+    &:hover {
+      background: color-mix(in oklab, var(--flower-petal) 95%, white);
+    }
   }
 
-  .dz-text { display: flex; gap: $space-2; align-items: center; flex-wrap: wrap; }
-  .dz-text .link { text-decoration: underline; }
+  .dz-text {
+    display: flex;
+    gap: $space-2;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .dz-text .link {
+    text-decoration: underline;
+  }
 
   .file-info {
-    display: flex; align-items: center; gap: $space-2;
-    padding: $space-2 $space-3; border-radius: $radius-sm;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    border-radius: $radius-sm;
     background: var(--flower-leaf);
   }
 
   .slider-field {
     grid-column: 1 / -1;
   }
+
   .text-field {
     grid-column: 1 / -1;
-    @media (min-width: $bp-lg) { grid-column: 1 / span 2; }
+
+    @media (min-width: $bp-lg) {
+      grid-column: 1 / span 2;
+    }
   }
 
   .actions {
     grid-column: 1 / -1;
-    display: flex; gap: $space-2; flex-wrap: wrap; justify-content: flex-end;
+    display: flex;
+    gap: $space-2;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
-  .actions .hidden { display: none; }
 
-  .progress {
-    grid-column: 1 / -1;
+  .actions .hidden {
+    display: none;
+  }
+
+  // Response format chips
+  .format-field {
     display: grid;
     gap: $space-2;
-    align-items: center;
+    // Force full-width row in the grid and start on a new line
+    grid-column: 1 / -1;
   }
-  .progress-text {
-    display: flex;
-    gap: $space-3;
-    align-items: center;
-    justify-content: space-between;
-    font: var(--mat-sys-body-medium);
+
+  .format-field .field-label {
+    font: var(--mat-sys-title-small);
     color: color-mix(in oklab, var(--mat-sys-on-surface) 80%, transparent);
+  }
+
+  .format-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  .format-chips .mat-mdc-chip {
+    --mdc-chip-label-text-color: var(--mat-sys-on-surface);
+    --mdc-chip-elevated-container-color: color-mix(in oklab, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+    border-radius: $radius-sm;
+  }
+
+  .format-chips .mdc-evolution-chip--selected {
+    --mdc-chip-elevated-container-color: color-mix(in oklab, var(--mat-sys-primary) 12%, var(--mat-sys-surface));
+  }
+
+  .progress-panel {
+    grid-column: 1 / -1;
+    @extend %card;
+    padding: $space-3 $space-4;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--mat-sys-primary) 5%, transparent), transparent),
+      var(--mat-sys-surface);
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    margin-bottom: $space-3;
+  }
+
+  .status-icon {
+    color: var(--mat-sys-primary);
+  }
+
+  .status-copy .primary {
+    font: var(--mat-sys-title-small);
+  }
+
+  .status-copy .secondary {
+    font: var(--mat-sys-body-small);
+    opacity: 0.8;
+  }
+
+  .cancel-btn {
+    margin-left: auto;
+    border-color: var(--mat-sys-primary);
+  }
+
+  .pretty-bar {
+    height: 6px;
+    border-radius: $radius-sm;
+    overflow: hidden;
   }
 }
 
 .form-error {
   margin-top: $space-2;
-  margin-bottom: $space-2;
+  margin-bottom: $space-5;
   padding: $space-2 $space-3;
   border: 1px solid var(--mat-sys-error);
   color: var(--mat-sys-on-error-container);
@@ -96,15 +198,43 @@
 
 .sr-only {
   position: absolute !important;
-  height: 1px; width: 1px; overflow: hidden;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
 }
 
 // Voice options styling
 .mat-mdc-option .preview {
   margin-right: $space-2;
 }
+
 .mat-mdc-option .option-label {
   vertical-align: middle;
+}
+
+/* Position the play button inside the outlined box */
+.has-overlay-play {
+  position: relative;
+}
+
+.has-overlay-play .sample-play-overlay {
+  position: absolute;
+  right: 12px;
+  bottom: 16px;
+  z-index: 1;
+  color: var(--mat-sys-primary);
+}
+
+/* Ensure clicks pass to textarea except on the icon */
+.has-overlay-play textarea {
+  padding-right: 50px;
+  /* leave space so text doesn’t sit under the button */
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }

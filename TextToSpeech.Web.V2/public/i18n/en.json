@@ -28,7 +28,7 @@
       "label": "Sample text",
       "placeholder": "Type something to preview…",
       "play": "Play sample",
-      "help": "Preview how this voice will sound for your text.",
+      "help": "Type to listen to how AI will voice this text. Choose provider, model, and voice",
       "defaultText": "This is a sample for voice preview.\nYou can edit it to test how your text will sound"
     },
     "file": {
@@ -39,9 +39,13 @@
       "help": "Accepted: {{types}}",
       "remove": "Remove"
     },
+    "format": {
+      "label": "Response format",
+      "help": "Select the audio file format you prefer."
+    },
     "speed": {
       "label": "Speed",
-      "help": "Current: {{value}}× (min {{min}}, max {{max}}, step {{step}})"
+      "help": "Current: {{value}} (min {{min}}, max {{max}})"
     },
     "actions": {
       "submit": "Generate",

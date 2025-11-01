@@ -1,101 +1,105 @@
-﻿using TextToSpeech.Core.Config;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
-using OpenAI.Models;
-using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core;
-using Microsoft.Extensions.Logging;
+using TextToSpeech.Core.Dto;
+using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core.Models;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
 /// <summary>
-/// 50 requests/min for model tts1 // todo handle if more than 50
+/// 50 requests/min for model tts-1
 /// </summary>
-public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiService> _logger) : ITtsService
+public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiService> _logger) : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
+    private const int MaxParallelChunks = 20;
+    private static readonly bool IsTestMode = HostingEnvironment.IsTestMode();
 
     /// <summary>
     /// Client shouldn't be initialized in constructor because the key is absent in tests and this will crash
     /// </summary>
-    private OpenAIClient Client { get; set; } = default!;
-
-    private const string Model = "tts-1";
+    private AudioClient Client { get; set; } = default!;
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
-        string voice,
         Guid fileId,
-        double speed,
+        TtsRequestOptions ttsRequest,
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var isTestMode = HostingEnvironment.IsTestMode();
-
-        if (!isTestMode)
+        if (!IsTestMode)
         {
-            Client ??= GetClient();
+            Client ??= GetClient(ttsRequest.Model!);
         }
 
-        var voiceEnum = GetVoiceEnum(voice);
         var totalChunks = textChunks.Count;
         var completedChunks = 0;
 
+        // preallocate to preserve original order
+        var results = new ReadOnlyMemory<byte>[totalChunks];
+
+        using var gate = new SemaphoreSlim(MaxParallelChunks);
+
+        _logger.LogInformation("Initialized SemaphoreSlim with max parallel chunk limit {Limit}",
+            MaxParallelChunks);
+
         var tasks = textChunks.Select((chunk, index) =>
         {
-            return Task.Run(() =>
+            return Task.Run(async() =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                completedChunks++;
-                ReportProgress(fileId, progress, totalChunks, completedChunks);
-                if (isTestMode)
-                {
-                    return Test(chunk);
-                }
-                return RequestSpeechWithRetries(fileId, completedChunks, CreateRequest(chunk, Model, voiceEnum, speed));
-            }, cancellationToken);
-        }).ToList(); // Convert to list to materialize the tasks
+                await gate.WaitAsync(cancellationToken);
 
-        // Await all tasks to complete
-        return await Task.WhenAll(tasks);
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var bytes = !IsTestMode
+                        ? await GenerateSpeech(chunk, ttsRequest.Voice, ttsRequest.Speed,
+                            ttsRequest.ResponseFormat, cancellationToken)
+                        : await Test();
+
+                    results[index] = bytes;
+
+                    var done = Interlocked.Increment(ref completedChunks);
+
+                    _logger.LogInformation("Done {done} for {id}", done, fileId);
+                    ReportProgress(fileId, progress, totalChunks, done);
+                }
+                finally
+                {
+                    gate.Release();
+                }
+            }, cancellationToken);
+        }).ToList();
+
+        await Task.WhenAll(tasks);
+
+        return results;
     }
 
     public async Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
-        string voice,
-        double speed)
+        TtsRequestOptions ttsRequest,
+        CancellationToken cancellationToken = default)
     {
-        Client ??= GetClient();
-        return await Client.AudioEndpoint.CreateSpeechAsync(CreateRequest(text, Model, GetVoiceEnum(voice), speed));
+        Client ??= GetClient(ttsRequest.Model!);
+
+        return await GenerateSpeech(text, ttsRequest.Voice, ttsRequest.Speed, ttsRequest.ResponseFormat, cancellationToken);
     }
 
-    private async Task<ReadOnlyMemory<byte>> RequestSpeechWithRetries(Guid fileId, int completedChunks, SpeechRequest request)
+    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, string voice, double speed,
+        SpeechResponseFormat generatedSpeechFormat,
+        CancellationToken cancellationToken)
     {
-        int attempt = 0;
-        const int maxAttempts = 3;
-        ReadOnlyMemory<byte> result = default;
-        while (attempt < maxAttempts)
+        SpeechGenerationOptions options = new()
         {
-            try
-            {
-                result = await Client.AudioEndpoint.CreateSpeechAsync(request);
+            SpeedRatio = Convert.ToSingle(speed),
+            ResponseFormat = generatedSpeechFormat.ToString()
+        };
 
-                break; // Successful, break out of retry loop
-            }
-            catch (HttpRequestException ex) when (ex.Message.Contains("The server had an error processing your request. Sorry about that!"))
-            {
-                _logger.LogError(ex.Message);
+        var result = await Client.GenerateSpeechAsync(text, voice, options, cancellationToken);
 
-                attempt++;
-
-                if (attempt == maxAttempts)
-                {
-                    throw new Exception($"Failed after {maxAttempts} retries. Failed chunk: {completedChunks + 1}. Audio: {fileId}. " +
-                        $"Last exception: {ex.Message}", ex);
-                }
-            }
-        }
-
-        return result;
+        return result.Value.ToMemory();
     }
 
     private static void ReportProgress(Guid fileId, IProgress<ProgressReport>? progress, int totalChunks, int completedChunks)
@@ -105,28 +109,23 @@ public sealed class OpenAiService(IConfiguration _configuration, ILogger<OpenAiS
             return;
         }
 
-        int progressPercentage = (int)((double)completedChunks / totalChunks * 100);
-        progress.Report(new ProgressReport { FileId = fileId, ProgressPercentage = progressPercentage });
+        double ratio = (double)completedChunks / totalChunks;
+
+        var progressPercentage = (int)(ratio * 100);
+
+        progress.Report(new ProgressReport()
+        {
+            FileId = fileId,
+            ProgressPercentage = progressPercentage
+        });
     }
 
-    private async Task<ReadOnlyMemory<byte>> Test(string chunk)
+    private static async Task<ReadOnlyMemory<byte>> Test()
     {
         // simulate processing
         await Task.Delay(1000);
         return Array.Empty<byte>();  
     }
 
-    private static SpeechRequest CreateRequest(string input, string model, SpeechVoice voice, double speed)
-    {
-        return new SpeechRequest(input, new Model(model), voice, SpeechResponseFormat.MP3, Convert.ToSingle(speed));
-    }
-
-    private static SpeechVoice GetVoiceEnum(string voice)
-    {
-        return Enum.TryParse<SpeechVoice>(voice, true, out var voiceEnum) 
-            ? voiceEnum
-            : throw new Exception("Cannot parse voice " + voice);
-    }
-
-    private OpenAIClient GetClient() => new(_configuration[ConfigConstants.OpenAiApiKey]);
+    private AudioClient GetClient(string model) => _openAiClient.GetAudioClient(model);
 }

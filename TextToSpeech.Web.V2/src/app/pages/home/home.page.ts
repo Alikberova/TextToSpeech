@@ -1,4 +1,5 @@
 import { Component, Signal, ViewChild, ElementRef, OnDestroy, OnInit, computed, signal, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,11 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NARAKEET_KEY, OPEN_AI_KEY, OPEN_AI_VOICES, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES } from '../../constants/tts-constants';
+import { SpeechResponseFormat } from '../../dto/tts-request';
 import { NarakeetVoice } from '../../dto/narakeet-voice';
-import { LANGUAGES } from '../../constants/language';
 import { TtsService } from '../../core/http/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { API_BASE_URL } from '../../constants/tokens';
@@ -30,6 +32,7 @@ import { API_BASE_URL } from '../../constants/tokens';
     MatSliderModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatChipsModule,
     TranslateModule,
   ],
   templateUrl: './home.page.html',
@@ -74,17 +77,22 @@ export class HomePage implements OnInit, OnDestroy {
   language = signal<string | ''>('');
   voice = signal<string | ''>('');
   speed = signal<number>(1.0);
+  responseFormat = signal<SpeechResponseFormat>(SpeechResponseFormat.MP3);
   file = signal<File | null>(null);
   statusMessage = signal<string>('');
   submitAttempt = signal(false);
+  // Marks a failed attempt to play a sample, to highlight missing fields
+  sampleAttempt = signal(false);
   fileTouched = signal(false);
 
   // Sample playback state
   sampleText = signal<string>('');
-  samplePlaying = signal<boolean>(false);
+  // Playback status for the sample audio
+  sampleStatus = signal<'stopped' | 'playing' | 'paused'>('stopped');
   sampleError = signal<string | null>(null);
   private sampleAudio?: HTMLAudioElement;
   private sampleUrl?: string;
+  private sampleRequestSub?: Subscription;
 
   // Generation state
   private currentFileId = signal<string | null>(null);
@@ -93,22 +101,34 @@ export class HomePage implements OnInit, OnDestroy {
   errorMessage = signal<string | undefined>(undefined);
 
   // 5) Derived computed values
-  // Sorted by current locale (e.g., 'uk' vs 'en') and reactive to language changes
+  // Narakeet languages derived from loaded voices; OpenAI does not need language
   readonly languages = computed(() => {
-    this.langChangeTrigger();
-    const current = this.translate.currentLang || this.translate.getDefaultLang() || 'en';
-    return [...LANGUAGES].sort((a, b) => {
-      const aLabel = this.translate.instant(a.label);
-      const bLabel = this.translate.instant(b.label);
-      return aLabel.localeCompare(bLabel, current);
-    });
+    if (this.provider() !== NARAKEET_KEY) {
+      return [] as { key: string; label: string }[];
+    }
+    const map = new Map<string, string>();
+    for (const v of this.narakeetVoices()) {
+      if (v.languageCode && !map.has(v.languageCode)) {
+        map.set(v.languageCode, v.language || v.languageCode);
+      }
+    }
+    return Array.from(map.entries())
+      .map(([key, label]) => ({ key, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   });
 
   voicesForProvider: Signal<readonly { key: string; label: string }[]> = computed(() => {
     const providerKey = this.provider();
-    if (!providerKey) return [] as const;
-    if (providerKey === OPEN_AI_KEY) return OPEN_AI_VOICES;
-    return this.narakeetVoices().map(v => ({ key: v.name, label: v.name }));
+    if (!providerKey) {
+      return [] as const;
+    }
+    if (providerKey === OPEN_AI_KEY) {
+      return OPEN_AI_VOICES;
+    }
+    const lang = this.language();
+    const list = this.narakeetVoices().filter(v => !lang || v.languageCode === lang);
+    const capitalized = (s: string) => s ? (s[0].toUpperCase() + s.slice(1)) : s;
+    return list.map(v => ({ key: v.name, label: capitalized(v.name) }));
   });
 
   requiresModel: Signal<boolean> = computed(() => {
@@ -125,7 +145,7 @@ export class HomePage implements OnInit, OnDestroy {
   formValid: Signal<boolean> = computed(() => {
     const providerOk = !!this.provider();
     const modelOk = this.requiresModel() ? !!this.model() : true;
-    const languageOk = !!this.language();
+    const languageOk = this.provider() === NARAKEET_KEY ? !!this.language() : true;
     const voiceOk = !!this.voice();
     const fileOk = !!this.file();
     return providerOk && modelOk && languageOk && voiceOk && fileOk;
@@ -133,6 +153,14 @@ export class HomePage implements OnInit, OnDestroy {
 
   hasResult = signal(false); // Stub: flips after fake submit
   selectedVoiceLabel = computed(() => this.voicesForProvider().find(v => v.key === this.voice())?.label ?? '');
+  readonly responseFormats = [
+    { key: SpeechResponseFormat.MP3, label: 'MP3' },
+    { key: SpeechResponseFormat.Opus, label: 'OPUS' },
+    { key: SpeechResponseFormat.AAC, label: 'AAC' },
+    { key: SpeechResponseFormat.Flac, label: 'FLAC' },
+    { key: SpeechResponseFormat.WAV, label: 'WAV' },
+    { key: SpeechResponseFormat.PCM, label: 'PCM' },
+  ] as const;
 
   // 6) Constructor
   constructor() {
@@ -142,10 +170,12 @@ export class HomePage implements OnInit, OnDestroy {
     });
     this.signalR.startConnection(this.apiBaseUrl);
     this.signalR.addAudioStatusListener((fileId, status, progress, errorMessage) => {
-      if (!this.currentFileId() || fileId !== this.currentFileId()) return;
+      const id = this.currentFileId();
+      if (!id || fileId !== id) return;
       this.status.set(status as AudioStatus);
       this.progress.set(progress ?? 0);
       this.errorMessage.set(errorMessage);
+      console.log(`Progress update for ${fileId}: status=${status}, progress=${progress}, error=${errorMessage}`);
       if (status === 'Completed') this.hasResult.set(true);
       if (status === 'Failed') this.openErrorSnackbar('home.progress.failed');
     });
@@ -171,7 +201,8 @@ export class HomePage implements OnInit, OnDestroy {
     if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey]!.length > 0) {
       this.model.set(this.providerModels[providerKey]![0]);
     }
-    if (providerKey === NARAKEET_KEY && this.narakeetVoices().length === 0) {
+    if (providerKey === NARAKEET_KEY) {
+      this.language.set('');
       this.http.get<NarakeetVoice[]>('/voices/narakeet').subscribe({
         next: (voices) => this.narakeetVoices.set(voices ?? []),
         error: (error) => {
@@ -179,7 +210,22 @@ export class HomePage implements OnInit, OnDestroy {
           this.narakeetVoices.set([]);
         },
       });
+    } else {
+      // OpenAI does not use language
+      this.language.set('');
     }
+  }
+
+  onLanguageChange(value: string) {
+    this.language.set(value);
+    if (this.provider() !== NARAKEET_KEY) {
+      return;
+    }
+    // Refresh the list from backend; voicesForProvider filters by selected language
+    this.http.get<NarakeetVoice[]>('/voices/narakeet').subscribe({
+      next: (voices) => this.narakeetVoices.set(voices ?? []),
+      error: (error) => console.error('Failed to refresh Narakeet voices', error),
+    });
   }
 
   onFileSelected(input: HTMLInputElement) {
@@ -218,80 +264,136 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   playOrToggleSample() {
-    if (this.samplePlaying()) { this.stopSample(); return; }
+    // Toggle between play/pause/resume based on current state
+    const state = this.sampleStatus();
+    if (state === 'playing') { this.pauseSample(); return; }
+    if (state === 'paused') { this.resumeSample(); return; }
     this.sampleError.set(null);
-    if (!this.provider() || !this.language() || !this.voice()) {
+    // Cancel any inflight request from a previous click
+    if (this.sampleRequestSub) {
+      try { this.sampleRequestSub.unsubscribe(); } catch { /* noop */ }
+      this.sampleRequestSub = undefined;
+    }
+    if (!this.provider() || (this.provider() === NARAKEET_KEY && !this.language()) || !this.voice()) {
+      // Flag sample attempt for field highlighting (but do not mark upload/file errors)
+      this.sampleAttempt.set(true);
+      // Focus first missing field for better UX
+      this.focusSampleMissing();
       this.openErrorSnackbar('home.errors.required');
       return;
     }
     const req = {
       ttsApi: this.provider()!,
-      languageCode: this.language()!,
-      model: this.requiresModel() ? this.model() || undefined : undefined,
-      speed: this.speed(),
-      voice: this.voice()!,
+      languageCode: this.provider() === OPEN_AI_KEY ? '' : this.language()!,
       input: this.sampleText(),
-    };
-    this.tts.getSpeechSample(req).subscribe({
+      ttsRequestOptions: {
+        model: this.requiresModel() ? this.model() || undefined : undefined,
+        speed: this.speed(),
+        voice: this.voice()!,
+        // Force MP3 for sample per requirements
+        responseFormat: SpeechResponseFormat.MP3,
+      },
+    } as const;
+    this.sampleRequestSub = this.tts.getSpeechSample(req).subscribe({
       next: (blob: Blob) => {
+        this.sampleAttempt.set(false);
         if (this.sampleUrl) URL.revokeObjectURL(this.sampleUrl);
         this.sampleUrl = URL.createObjectURL(blob);
         this.sampleAudio = new Audio(this.sampleUrl);
         this.sampleAudio.onended = () => this.stopSample();
         this.sampleAudio.onerror = () => { this.sampleError.set('playback'); this.stopSample(); };
         this.sampleAudio.play()
-          .then(() => this.samplePlaying.set(true))
+          .then(() => this.sampleStatus.set('playing'))
           .catch((e) => {
             console.error(e);
             this.sampleError.set('permission');
-            this.samplePlaying.set(false);
+            this.sampleStatus.set('stopped');
           });
       },
-      error: () => {
+      error: (e) => {
+        console.error('Sample request failed', e);
         this.sampleError.set('request');
         this.openErrorSnackbar('home.voice.sampleError');
       },
+      complete: () => { this.sampleRequestSub = undefined; },
     });
   }
 
+  pauseSample() {
+    try { this.sampleAudio?.pause(); } catch { /* noop */ }
+    this.sampleStatus.set('paused');
+  }
+
+  resumeSample() {
+    try {
+      void this.sampleAudio?.play();
+      this.sampleStatus.set('playing');
+    } catch (e) {
+      console.error(e);
+      this.sampleStatus.set('stopped');
+    }
+  }
+
   stopSample() {
+    if (this.sampleRequestSub) {
+      try { this.sampleRequestSub.unsubscribe(); } catch { /* noop */ }
+      this.sampleRequestSub = undefined;
+    }
     this.sampleAudio?.pause();
     if (this.sampleAudio) { this.sampleAudio.src = ''; this.sampleAudio.load(); }
     if (this.sampleUrl) { URL.revokeObjectURL(this.sampleUrl); }
     this.sampleAudio = undefined;
     this.sampleUrl = undefined;
-    this.samplePlaying.set(false);
+    this.sampleStatus.set('stopped');
   }
 
   submit() {
     this.submitAttempt.set(true);
     if (!this.formValid()) { this.focusFirstInvalid(); return; }
     const req = {
-      ttsApi: this.provider(),
-      languageCode: this.language(),
-      model: this.requiresModel() ? this.model() : undefined,
-      speed: this.speed(),
-      voice: this.voice(),
+      ttsApi: this.provider()!,
+      languageCode: this.provider() === OPEN_AI_KEY ? '' : this.language()!,
       file: this.file()!,
       input: undefined,
+      ttsRequestOptions: {
+        model: this.requiresModel() ? this.model() || undefined : undefined,
+        speed: this.speed(),
+        voice: this.voice()!,
+        responseFormat: this.responseFormat(),
+      },
     } as const;
     this.status.set('Created');
     this.progress.set(0);
     this.hasResult.set(false);
     this.tts.createSpeech(req).subscribe({
-      next: (id: string) => { this.currentFileId.set(id); },
-      error: () => { this.status.set('Failed'); this.openErrorSnackbar('home.errors.failed'); },
+      next: (id: string) => {
+        this.currentFileId.set(id);
+      },
+      error: () => {
+        this.status.set('Failed');
+        this.openErrorSnackbar('home.errors.failed');
+      },
     });
   }
 
   clear(formEl?: HTMLFormElement) {
+    // Stop any ongoing sample playback and clear errors
+    this.stopSample();
+    this.sampleError.set(null);
+
     this.provider.set('');
     this.model.set('');
     this.language.set('');
     this.voice.set('');
     this.speed.set(1.0);
+    this.responseFormat.set(SpeechResponseFormat.MP3);
     this.file.set(null);
     this.hasResult.set(false);
+    // Reset sample text back to its default and mark as not user-edited
+    const initialSample = this.resolveDefaultSampleText();
+    this.sampleText.set(initialSample);
+    this.lastAutoSampleText.set(initialSample);
+    this.isSampleUserEdited.set(false);
     formEl?.reset();
     this.announce('Form reset');
     this.submitAttempt.set(false);
@@ -308,7 +410,11 @@ export class HomePage implements OnInit, OnDestroy {
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = `speech-${id}.mp3`;
+        a.href = url; 
+        const name = this.file()!.name;
+        const dotIndex = name.lastIndexOf('.');
+        const baseName = name.substring(0, dotIndex);
+        a.download = `${baseName}.${this.responseFormat()}`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -336,7 +442,7 @@ export class HomePage implements OnInit, OnDestroy {
     queueMicrotask(() => {
       if (!this.provider()) { this.providerEl?.focus(); return; }
       if (this.requiresModel() && !this.model()) { this.modelEl?.focus(); return; }
-      if (!this.language()) { this.languageEl?.focus(); return; }
+      if (this.provider() === NARAKEET_KEY && !this.language()) { this.languageEl?.focus(); return; }
       if (!this.voice()) { this.voiceEl?.focus(); return; }
       if (!this.file()) { this.fileInput?.nativeElement.focus(); return; }
     });
@@ -358,6 +464,35 @@ export class HomePage implements OnInit, OnDestroy {
     const next = this.resolveDefaultSampleText();
     this.sampleText.set(next);
     this.lastAutoSampleText.set(next);
+  }
+
+  // Icon helper for progress header to keep template tidy
+  progressIcon(): string {
+    const s = this.status();
+    if (s === 'Created') {
+      return 'schedule';
+    }
+    if (s === 'Processing') {
+      return 'autorenew';
+    }
+    if (s === 'Completed') {
+      return 'check_circle';
+    }
+    if (s === 'Failed') {
+      return 'error';
+    }
+    if (s === 'Canceled') {
+      return 'cancel';
+    }
+    return 'info';
+  }
+
+  private focusSampleMissing() {
+    queueMicrotask(() => {
+      if (!this.provider()) { this.providerEl?.focus(); return; }
+      if (this.provider() === NARAKEET_KEY && !this.language()) { this.languageEl?.focus(); return; }
+      if (!this.voice()) { this.voiceEl?.focus(); return; }
+    });
   }
 }
 

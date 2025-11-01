@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using TextToSpeech.Infra.Services;
-using UglyToad.PdfPig.Content;
+﻿using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Core;
 using Xunit;
 using UglyToad.PdfPig.Writer;
 using UglyToad.PdfPig.Fonts.Standard14Fonts;
+using TextToSpeech.Infra.Services.FileProcessing;
 
 namespace TextToSpeech.UnitTests;
 
@@ -57,16 +56,10 @@ public sealed class PdfProcessorTests
 
         page.AddText(expected, 16, new PdfPoint(25, 700), font);
 
-        using var pdfStream = new MemoryStream(builder.Build());
-
-        var file = new FormFile(pdfStream, 0, pdfStream.Length, "dummy", "test.pdf")
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = "application/pdf"
-        };
+        byte[] pdfBytes = builder.Build();
 
         // Act
-        var actual = (await _pdfProcessor.ExtractTextAsync(file)).Trim();
+        var actual = (await _pdfProcessor.ExtractTextAsync(pdfBytes)).Trim();
 
         // Assert
         Assert.Equal(expected, actual);

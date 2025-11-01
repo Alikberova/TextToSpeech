@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Repositories;
 
@@ -18,8 +17,8 @@ public sealed class AudioController : ControllerBase
         _audioFileRepository = audioFileRepository;
     }
 
-    [HttpGet("downloadmp3/{fileId}/{fileName}")]
-    public async Task<IActionResult> DownloadMp3(string fileId, string fileName)
+    [HttpGet("download/{fileId}")]
+    public async Task<IActionResult> Download(string fileId)
     {
         if (!Guid.TryParse(fileId, out Guid parsedFileId))
         {
@@ -34,25 +33,12 @@ public sealed class AudioController : ControllerBase
 
             if (dbAudioFile is not null)
             {
-                SetHeader(fileName);
                 return File(dbAudioFile.Data, "audio/mpeg");
             }
 
             return NotFound("File not found.");
         }
 
-        SetHeader(fileName);
-
         return File(System.IO.File.ReadAllBytes(filePath), "audio/mpeg");
-    }
-
-    private void SetHeader(string fileName)
-    {
-        var contentDisposition = new ContentDispositionHeaderValue("attachment")
-        {
-            FileName = fileName
-        };
-
-        Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
     }
 }

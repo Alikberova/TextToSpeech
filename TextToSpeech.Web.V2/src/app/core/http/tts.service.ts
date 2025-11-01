@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TtsRequest } from '../../dto/tts-request';
+import { SpeechResponseFormat, TtsRequest } from '../../dto/tts-request';
+import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from './endpoints';
 
 /**
  * TTS API client.
@@ -12,33 +13,45 @@ import { TtsRequest } from '../../dto/tts-request';
 export class TtsService {
   private readonly http = inject(HttpClient);
 
-  /** Request and receive a short audio sample for the given parameters (no file). */
   getSpeechSample(request: TtsRequest): Observable<Blob> {
-    const { ttsApi, languageCode, model, speed, voice, input } = request;
-    const payload = { ttsApi, languageCode, model, speed, voice, input };
-    return this.http.post('/speech/sample', payload, { responseType: 'blob' });
+    const options: Record<string, unknown> = {};
+    options['voice'] = request.ttsRequestOptions.voice;
+    if (request.ttsRequestOptions.model) {
+      options['model'] = request.ttsRequestOptions.model;
+    }
+    // Force MP3 for sample regardless of UI choice
+    options['responseFormat'] = SpeechResponseFormat.MP3;
+    options['speed'] = request.ttsRequestOptions.speed;
+
+    const payload: Record<string, unknown> = {};
+    payload['ttsApi'] = request.ttsApi;
+    payload['languageCode'] = request.languageCode;
+    payload['input'] = request.input;
+    payload['ttsRequestOptions'] = options;
+
+    return this.http.post(SPEECH_SAMPLE, payload, { responseType: 'blob' });
   }
 
-  /** Start full audio generation; returns backend FileId (guid as string). */
   createSpeech(request: TtsRequest): Observable<string> {
     if (!request.file) {
       throw new Error('File is required for full speech generation');
     }
 
     const form = new FormData();
-    form.append('ttsApi', request.ttsApi);
-    form.append('languageCode', request.languageCode);
-    form.append('file', request.file);
-    if (request.model) form.append('model', request.model);
-    if (request.voice) form.append('voice', request.voice);
-    if (request.speed != null) form.append('speed', String(request.speed));
-    if (request.input) form.append('input', request.input);
+    form.append('TtsApi', request.ttsApi);
+    form.append('LanguageCode', request.languageCode);
+    form.append('File', request.file);
 
-    return this.http.post('/speech', form, { responseType: 'text' });
+    const opts = request.ttsRequestOptions;
+    if (opts.model) form.append('TtsRequestOptions.Model', opts.model);
+    form.append('TtsRequestOptions.Voice', opts.voice);
+    form.append('TtsRequestOptions.Speed', String(opts.speed));
+    form.append('TtsRequestOptions.ResponseFormat', String(opts.responseFormat));
+
+    return this.http.post<string>(SPEECH_BASE, form);
   }
 
-  /** Download generated audio by FileId as Blob for custom handling. */
   downloadById(fileId: string): Observable<Blob> {
-    return this.http.get(`/speech/${encodeURIComponent(fileId)}`, { responseType: 'blob' });
+    return this.http.get(`${AUDIO_DOWNLOAD}/${fileId}`, { responseType: 'blob' });
   }
 }

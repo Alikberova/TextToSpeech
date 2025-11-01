@@ -1,7 +1,7 @@
 ﻿namespace TextToSpeech.Core;
 
-public sealed class ProgressReport
+public sealed record ProgressReport
 {
-    public Guid FileId { get; set; }
-    public int ProgressPercentage { get; set; }
+    public required Guid FileId { get; init; }
+    public required int ProgressPercentage { get; init; }
 }

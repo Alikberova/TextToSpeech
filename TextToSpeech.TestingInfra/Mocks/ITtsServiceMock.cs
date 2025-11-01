@@ -1,5 +1,6 @@
 ﻿using Moq;
 using TextToSpeech.Core;
+using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Infra.Services.FileProcessing;
 
@@ -15,37 +16,41 @@ internal static class ITtsServiceMock
             service.MaxLengthPerApiRequest)
                 .Returns(150);
 
-        mockOpenAiService.Setup(service =>
-            service.RequestSpeechChunksAsync(
-                It.IsAny<List<string>>(),
-                It.IsAny<string>(),
-                It.IsAny<Guid>(),
-                It.IsAny<double>(),
-                It.IsAny<IProgress<ProgressReport>>(),
-                It.IsAny<CancellationToken>()))
-            .Returns((List<string> textChunks, string voice, Guid fileId, double speed, IProgress<ProgressReport> progress, CancellationToken cancellationToken) =>
-            {
-                return Task.Run(() =>
+        mockOpenAiService
+            .Setup(service =>
+                service.RequestSpeechChunksAsync(
+                    It.IsAny<List<string>>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<TtsRequestOptions>(),
+                    It.IsAny<IProgress<ProgressReport>>(),
+                    It.IsAny<CancellationToken>()))
+            .Returns((List<string> textChunks,
+                Guid fileId,
+                TtsRequestOptions options,
+                IProgress<ProgressReport>? progress,
+                CancellationToken cancellationToken) =>
                 {
-                    // Simulate progress updates
-                    for (int i = 0; i <= 100; i += 10)
+                    return Task.Run(() =>
                     {
-                        progress.Report(new ProgressReport
+                        // Simulate progress updates
+                        for (int i = 0; i <= 100; i += 10)
                         {
-                            FileId = fileId,
-                            ProgressPercentage = i
-                        });
-                        Task.Delay(100).Wait();  // Simulate work being done
-                    }
-                    return GetAudioBytesArray();
+                            progress?.Report(new ProgressReport
+                            {
+                                FileId = fileId,
+                                ProgressPercentage = i
+                            });
+                            Task.Delay(100).Wait();  // Simulate work being done
+                        }
+                        return GetAudioBytesArray();
+                    });
                 });
-            });
 
-        mockOpenAiService.Setup(s =>
-            s.RequestSpeechSample(
+        mockOpenAiService
+            .Setup(s => s.RequestSpeechSample(
                 It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<double>()))
+                It.IsAny<TtsRequestOptions>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(AudioFileService.GenerateSilentMp3(2));
 
         return mockOpenAiService;
