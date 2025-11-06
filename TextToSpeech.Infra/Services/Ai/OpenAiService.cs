@@ -27,7 +27,6 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
         var totalChunks = textChunks.Count;
         var completedChunks = 0;
 
-        // preallocate to preserve original order
         var results = new ReadOnlyMemory<byte>[totalChunks];
 
         using var gate = new SemaphoreSlim(MaxParallelChunks);

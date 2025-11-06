@@ -32,10 +32,8 @@ public sealed class SimulatedTtsService : ITtsService, INarakeetService
             var delayMs = 250 + (i % 5) * 75;
             await Task.Delay(delayMs, cancellationToken);
 
-            // Generate 1 second of silent MP3 for each chunk
             simulated[i] = AudioFileService.GenerateSilentMp3(1);
 
-            // Report simple linear progress
             var completed = i + 1;
             var percentage = (int)((double)completed / total * 100);
             progress?.Report(new ProgressReport { FileId = fileId, ProgressPercentage = percentage });

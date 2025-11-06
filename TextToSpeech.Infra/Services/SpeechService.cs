@@ -50,7 +50,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         if (audioFileId is not null)
         {
             _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: 100);
-            _logger.LogInformation("Audio is found for {audioFileId}", audioFileId);
+            _logger.LogInformation("Found existing audio for {audioFileId}", audioFileId);
+
             return audioFileId.Value;
         }
 
@@ -134,7 +135,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = Status.Completed;
             audioFile.Data = bytes;
 
-            _metaDataService.AddMetaData(localFilePath, fileName);
+            _metaDataService.AddMetaData(localFilePath, title: fileName);
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);

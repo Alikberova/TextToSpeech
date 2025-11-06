@@ -20,12 +20,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  backend-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       matrix:
-        test_type: [ Selenium, Unit, Integration, Unit-Web ]
+        test_type: [ Selenium, Unit, Integration ]
 
     steps:
       - uses: actions/checkout@v5
@@ -75,14 +75,12 @@ jobs:
           docker compose up -d
 
       - name: Cache NuGet Packages
-        if: matrix.test_type != 'Unit-Web'
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
 
       - name: Restore dependencies
-        if: matrix.test_type != 'Unit-Web'
         run: dotnet restore
 
       - name: Override Redis for test runner
@@ -90,29 +88,47 @@ jobs:
         run: echo "ConnectionStrings__Redis=localhost:6379,allowAdmin=true" >> $GITHUB_ENV
 
       - name: Run Tests
-        if: matrix.test_type != 'Unit-Web'
         run: dotnet test --no-restore --filter TextToSpeech.${{ matrix.test_type }}Tests
 
       - name: Show backend logs
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs api || true
+  
+  frontend-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      FRONTEND_DIR: TextToSpeech.Web.V2
+    defaults:
+      run:
+        working-directory: ${{ env.FRONTEND_DIR }}
 
-      # todo check if really needed
+    steps:
+      - uses: actions/checkout@v5
+
       - name: Setup Node
-        if: matrix.test_type == 'Unit-Web'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-      - name: Install deps (Angular)
-        if: matrix.test_type == 'Unit-Web'
-        working-directory: TextToSpeech.Web.V2
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Angular tests
-        if: matrix.test_type == 'Unit-Web'
-        working-directory: TextToSpeech.Web.V2
+      - name: Lint
         run: |
           npx ng lint
-          npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
+
+      - name: Unit tests
+        run: |
+          npx ng test --watch=false --browsers=ChromeHeadless
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-coverage
+          path: ${{ env.FRONTEND_DIR }}/coverage/**
+          if-no-files-found: ignore
