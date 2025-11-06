@@ -264,10 +264,10 @@ describe('HomePage validation UX', () => {
 
     rStub.trigger('id-1', 'Processing', 40);
     fixture2.detectChanges();
-    expect(component2.hasResult()).toBeFalse();
+    expect(component2.status()).toBe('Processing');
     rStub.trigger('id-1', 'Completed', 100);
     fixture2.detectChanges();
-    expect(component2.hasResult()).toBeTrue();
+    expect(component2.status()).toBe('Completed');
     const downloadBtn = fixture2.debugElement.query(By.css('button[mat-stroked-button]'));
     expect(downloadBtn.properties['disabled']).toBeFalse();
   });

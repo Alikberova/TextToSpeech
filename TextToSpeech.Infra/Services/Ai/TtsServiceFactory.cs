@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces.Ai;
 
@@ -8,6 +9,11 @@ public sealed class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsS
 {
     public ITtsService Get(string key)
     {
+        if (HostingEnvironment.IsTestMode())
+        {
+            return _serviceProvider.GetRequiredService<SimulatedTtsService>();
+        }
+
         ITtsService service = key switch
         {
             SharedConstants.OpenAiKey => _serviceProvider.GetServices<ITtsService>().OfType<OpenAiService>().Single(),

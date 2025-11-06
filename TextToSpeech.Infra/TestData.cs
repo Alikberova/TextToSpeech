@@ -1,24 +1,40 @@
-﻿using static TextToSpeech.Core.Enums;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Infra.Services.FileProcessing;
-using TextToSpeech.Infra.Services;
-using TextToSpeech.Core.Entities;
+﻿using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
+using TextToSpeech.Core.Dto.Narakeet;
+using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Services;
+using TextToSpeech.Infra.Services.FileProcessing;
+using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Infra;
 
 public static class TestData
 {
+    public static class TextToSpeechFormConstants
+    {
+        public const string English = "English";
+        public const string GermanStandard = "German (Standard)";
+        public const string NarakeetVoiceHans = "Hans";
+        public const string NarakeetVoiceAmanda = "Amanda";
+        public const string OpenAiVoiceFable = "Fable";
+        public const string OpenAiVoiceAlloy = "Alloy";
+    }
+
+    public const string TtsSampleRequest =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 11a47387-8d4a-4956-9a1e-352628301dab";
+    public const string TtsFullRequest = "Test content for audio file full type";
+
     public static AudioFile CreateAudioSampleAlloy()
     {
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
-            "en",
+            string.Empty,
             AudioType.Sample,
-            SharedConstants.AngularDemoText,
+            TtsSampleRequest,
             new TtsRequestOptions()
             {
-                Voice = "alloy",
+                Voice = TextToSpeechFormConstants.OpenAiVoiceAlloy.ToLower(),
+                Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
@@ -33,13 +49,14 @@ public static class TestData
 
     public static AudioFile CreateAudioFullFable()
     {
-        var audio = AudioFileBuilder.Create("  "u8.ToArray(),
-            "en",
+        var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(3),
+            string.Empty,
             AudioType.Full,
-            SharedConstants.FullAudioFileContentForTesting,
+            TtsFullRequest,
             new TtsRequestOptions()
             {
-                Voice = "fable",
+                Voice = TextToSpeechFormConstants.OpenAiVoiceFable.ToLower(),
+                Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
@@ -50,5 +67,40 @@ public static class TestData
         audio.Status = Status.Completed;
 
         return audio;
+    }
+
+    public static List<VoiceResponse> GetVoicesNarakeet()
+    {
+        var voices = new List<VoiceResponse>
+        {
+            new() {
+                Name = "anders",
+                Language = "Danish",
+                LanguageCode = "da-DK",
+                Styles = []
+            },
+            new() {
+                Name = "amanda",
+                Language = TextToSpeechFormConstants.English,
+                LanguageCode = "en-US",
+                Styles = []
+            },
+            new() {
+                Name = "armin",
+                Language = TextToSpeechFormConstants.GermanStandard,
+                LanguageCode = "de-DE",
+                Styles = []
+            },
+            new() {
+                Name = TextToSpeechFormConstants.NarakeetVoiceHans,
+                Language = TextToSpeechFormConstants.GermanStandard,
+                LanguageCode = "de-DE",
+                Styles = []
+            },
+        };
+
+        // .ToLowerInvariant() as it comes from api in low case
+
+        return [.. voices.Select(v => v with { Name = v.Name.ToLowerInvariant() })];
     }
 }

@@ -2,26 +2,6 @@
   "version": 1,
   "dependencies": {
     "net8.0": {
-      "DotNetSeleniumExtras.WaitHelpers": {
-        "type": "Direct",
-        "requested": "[3.11.0, )",
-        "resolved": "3.11.0",
-        "contentHash": "xc6jVVl5ymgk3ZNWnC/KHxkEup1QpnwYbrwF+NQoCOGERsD8YMlLwmsX4lGhLXCLo/YQTRTIwlKCN9E/doGUNg==",
-        "dependencies": {
-          "Selenium.WebDriver": "3.10.0"
-        }
-      },
-      "MartinCostello.Logging.XUnit": {
-        "type": "Direct",
-        "requested": "[0.6.0, )",
-        "resolved": "0.6.0",
-        "contentHash": "0E2k25V6+jt6zIUZjMVXMhOAQuCv0eqzC30FM44r1MJkI48F1Jz1p9u/cfiC5U3/LlTJn17g7T3K8VkV+cGTkQ==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging": "8.0.1",
-          "xunit.abstractions": "2.0.3",
-          "xunit.extensibility.execution": "2.4.1"
-        }
-      },
       "Microsoft.Extensions.Configuration.UserSecrets": {
         "type": "Direct",
         "requested": "[8.0.0, )",

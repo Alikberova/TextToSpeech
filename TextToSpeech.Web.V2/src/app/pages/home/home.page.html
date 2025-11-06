@@ -5,12 +5,12 @@
 
 <!-- Form-level error shown only after failed submit -->
 @if (submitAttempt() && !formValid()) {
-  <div class="form-error" role="alert" aria-live="assertive">
+  <div class="form-error" role="alert" aria-live="assertive" data-testid="formErrorBanner">
     {{ 'home.form.fixErrors' | translate }}
   </div>
 }
 
-<form class="tts-form" (submit)="$event.preventDefault(); submit()" #formEl="ngForm" aria-labelledby="formTitle">
+<form class="tts-form" (submit)="$event.preventDefault(); submit()" #formEl="ngForm" aria-labelledby="formTitle" data-testid="ttsForm">
   <h3 id="formTitle" class="sr-only">{{ 'home.form.title' | translate }}</h3>
 
   <!-- Provider -->
@@ -142,6 +142,7 @@
       (dragover)="onDragOver($event)"
       [attr.aria-describedby]="'fileHelp'"
       [attr.aria-invalid]="(fileTouched() || submitAttempt()) && !file() && 'true'"
+      data-testid="fileDropzone"
     >
       <mat-icon aria-hidden="true">upload_file</mat-icon>
       <div class="dz-text">
@@ -160,6 +161,7 @@
       (change)="onFileSelected(fileInput)"
       [attr.accept]="acceptAttr"
       aria-hidden="true"
+      data-testid="fileInput"
     />
 
     @if (file(); as f) {
@@ -194,6 +196,7 @@
       rows="3"
       maxlength="250"
       [ngModel]="sampleText()"
+      data-testid="sampleTextArea"
       (ngModelChange)="onSampleTextInput($event)"
       [ngModelOptions]="{ standalone: true }"
       placeholder="{{ 'home.sample.placeholder' | translate }}">
@@ -213,14 +216,14 @@
 
   <!-- Actions -->
   <div class="actions">
-    <button type="submit" mat-raised-button color="primary">{{ 'home.actions.submit' | translate }}</button>
-    <button type="button" mat-stroked-button color="primary" (click)="download()" [disabled]="!hasResult()" [class.hidden]="!hasResult()">{{ 'home.actions.download' | translate }}</button>
-    <button type="button" mat-button (click)="clear()">{{ 'home.actions.clear' | translate }}</button>
+    <button type="submit" mat-raised-button color="primary" data-testid="submitBtn">{{ 'home.actions.submit' | translate }}</button>
+    <button type="button" mat-stroked-button color="primary" (click)="download()" [disabled]="status() !== 'Completed'" [class.hidden]="status() !== 'Completed'" data-testid="downloadBtn">{{ 'home.actions.download' | translate }}</button>
+    <button type="button" mat-button (click)="clear()" data-testid="clearBtn">{{ 'home.actions.clear' | translate }}</button>
   </div>
 
   <!-- Progress -->
   @if (status() !== 'Idle') {
-    <section class="progress-panel" role="status" aria-live="polite">
+    <section class="progress-panel" role="status" aria-live="polite" data-testid="progressPanel">
       <div class="progress-header">
         <mat-icon class="status-icon">{{ progressIcon() }}</mat-icon>
         <div class="status-copy">
@@ -237,7 +240,7 @@
             <div class="secondary">{{ progress() }}%</div>
           }
         </div>
-        @if (status() === 'Processing') {
+        @if (status() === 'Processing' || status() === 'Created') {
           <button type="button" mat-stroked-button color="primary" class="cancel-btn" (click)="cancel()">
             {{ 'home.actions.cancel' | translate }}
           </button>

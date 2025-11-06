@@ -15,11 +15,7 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     private const int MaxParallelChunks = 20;
-    private static readonly bool IsTestMode = HostingEnvironment.IsTestMode();
 
-    /// <summary>
-    /// Client shouldn't be initialized in constructor because the key is absent in tests and this will crash
-    /// </summary>
     private AudioClient Client { get; set; } = default!;
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
@@ -28,11 +24,6 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
         IProgress<ProgressReport>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        if (!IsTestMode)
-        {
-            Client ??= GetClient(ttsRequest.Model!);
-        }
-
         var totalChunks = textChunks.Count;
         var completedChunks = 0;
 
@@ -54,10 +45,8 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var bytes = !IsTestMode
-                        ? await GenerateSpeech(chunk, ttsRequest.Voice, ttsRequest.Speed,
-                            ttsRequest.ResponseFormat, cancellationToken)
-                        : await Test();
+                    var bytes = await GenerateSpeech(chunk, ttsRequest.Voice, ttsRequest.Speed,
+                        ttsRequest.ResponseFormat, cancellationToken);
 
                     results[index] = bytes;
 
@@ -118,13 +107,6 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
             FileId = fileId,
             ProgressPercentage = progressPercentage
         });
-    }
-
-    private static async Task<ReadOnlyMemory<byte>> Test()
-    {
-        // simulate processing
-        await Task.Delay(1000);
-        return Array.Empty<byte>();  
     }
 
     private AudioClient GetClient(string model) => _openAiClient.GetAudioClient(model);

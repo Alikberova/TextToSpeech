@@ -63,5 +63,5 @@ public struct SpeechResponseFormat
     }
 
     public static string UnsupportedFormatError(string? value) =>
-        $"Unsupported response format: '{value}'. Allowed: {string.Join(", ", _valid)}.";
+        $"Unsupported Response Format: \"{value}\". Allowed: {string.Join(", ", _valid)}.";
 }

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
@@ -60,6 +59,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         var cts = new CancellationTokenSource();
         _taskManager.AddTask(audioFileId.Value, cts);
 
+        _ = UpdateAudioStatus(audioFileId.Value, Status.Created.ToString(), delayMs: 100);
+
         _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
         {
             token = cts.Token;
@@ -68,6 +69,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             await speechService.ProcessSpeechAsync(request, fileText, fileName, langCode, ttsApi,
                 audioFileId.Value, hash, token);
         });
+
+        _logger.LogInformation("Initializing TTS for {audioFileId}", audioFileId);
 
         return audioFileId.Value;
     }
@@ -96,6 +99,10 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 fileName,
                 fileId
             );
+
+            audioFile.Status = Status.Processing;
+
+            _ = UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
 
             var ttsService = _ttsServiceFactory.Get(ttsApi);
 

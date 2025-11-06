@@ -45,9 +45,16 @@ public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
 
         foreach (var audio in audios)
         {
-            if (!dbContext.AudioFiles.Any(a => a.Id == audio.Id))
+            var existing = await dbContext.AudioFiles.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == audio.Id);
+
+            if (existing is null)
             {
                 await dbContext.AudioFiles.AddAsync(audio);
+            }
+            else if (existing.Hash != audio.Hash)
+            {
+                dbContext.AudioFiles.Update(audio);
             }
         }
 

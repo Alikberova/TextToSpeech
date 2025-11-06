@@ -18,6 +18,7 @@ import { NarakeetVoice } from '../../dto/narakeet-voice';
 import { TtsService } from '../../core/http/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { API_BASE_URL } from '../../constants/tokens';
+import { VOICES_NARAKEET } from '../../core/http/endpoints';
 
 @Component({
   selector: 'app-home-page',
@@ -151,7 +152,6 @@ export class HomePage implements OnInit, OnDestroy {
     return providerOk && modelOk && languageOk && voiceOk && fileOk;
   });
 
-  hasResult = signal(false); // Stub: flips after fake submit
   selectedVoiceLabel = computed(() => this.voicesForProvider().find(v => v.key === this.voice())?.label ?? '');
   readonly responseFormats = [
     { key: SpeechResponseFormat.MP3, label: 'MP3' },
@@ -173,11 +173,14 @@ export class HomePage implements OnInit, OnDestroy {
       const id = this.currentFileId();
       if (!id || fileId !== id) return;
       this.status.set(status as AudioStatus);
-      this.progress.set(progress ?? 0);
+      if (this.progress()) {
+        this.progress.set(progress!);
+      }
       this.errorMessage.set(errorMessage);
       console.log(`Progress update for ${fileId}: status=${status}, progress=${progress}, error=${errorMessage}`);
-      if (status === 'Completed') this.hasResult.set(true);
-      if (status === 'Failed') this.openErrorSnackbar('home.progress.failed');
+      if (status === 'Failed') {
+        this.openErrorSnackbar('home.progress.failed');
+      }
     });
   }
 
@@ -203,7 +206,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
     if (providerKey === NARAKEET_KEY) {
       this.language.set('');
-      this.http.get<NarakeetVoice[]>('/voices/narakeet').subscribe({
+      this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
         next: (voices) => this.narakeetVoices.set(voices ?? []),
         error: (error) => {
           console.error('Failed to load Narakeet voices', error);
@@ -222,7 +225,7 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     // Refresh the list from backend; voicesForProvider filters by selected language
-    this.http.get<NarakeetVoice[]>('/voices/narakeet').subscribe({
+    this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
       next: (voices) => this.narakeetVoices.set(voices ?? []),
       error: (error) => console.error('Failed to refresh Narakeet voices', error),
     });
@@ -363,14 +366,13 @@ export class HomePage implements OnInit, OnDestroy {
       },
     } as const;
     this.status.set('Created');
-    this.progress.set(0);
-    this.hasResult.set(false);
     this.tts.createSpeech(req).subscribe({
       next: (id: string) => {
         this.currentFileId.set(id);
       },
-      error: () => {
+      error: (e) => {
         this.status.set('Failed');
+        console.error(e);
         this.openErrorSnackbar('home.errors.failed');
       },
     });
@@ -388,7 +390,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.speed.set(1.0);
     this.responseFormat.set(SpeechResponseFormat.MP3);
     this.file.set(null);
-    this.hasResult.set(false);
     // Reset sample text back to its default and mark as not user-edited
     const initialSample = this.resolveDefaultSampleText();
     this.sampleText.set(initialSample);

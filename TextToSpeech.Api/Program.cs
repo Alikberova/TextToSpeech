@@ -45,7 +45,16 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
     {
-        var details = new ValidationProblemDetails(context.ModelState)
+        var errorDict = context.ModelState
+            .Where(kv => kv.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kv => kv.Key,
+                kv => kv.Value!.Errors.Select(e =>
+                    !string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.ErrorMessage : e.Exception?.Message
+                        ?? string.Empty)
+                .ToArray());
+
+        var details = new ValidationProblemDetails(errorDict)
         {
             Status = StatusCodes.Status400BadRequest,
             Type = "https://httpstatuses.com/400",

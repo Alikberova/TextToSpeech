@@ -41,7 +41,7 @@ public sealed class SpeechResponseTypeConverter : TypeConverter
         {
             return valueResult;
         }
-
-        throw new FormatException();
+        
+        throw new NotSupportedException(SpeechResponseFormat.UnsupportedFormatError(value.ToString()));
     }
 }
