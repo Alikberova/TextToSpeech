@@ -123,12 +123,12 @@ jobs:
 
       - name: Unit tests
         run: |
-          npx ng test --watch=false --browsers=ChromeHeadless
+          npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
 
       - name: Upload coverage artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
-          name: web-coverage
+          name: frontend-coverage
           path: ${{ env.FRONTEND_DIR }}/coverage/**
           if-no-files-found: ignore
