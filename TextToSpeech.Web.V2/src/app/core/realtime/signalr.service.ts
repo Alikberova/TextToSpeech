@@ -8,7 +8,7 @@ export class SignalRService {
 
   startConnection() {
     if (this.hub && this.hub.state === signalR.HubConnectionState.Connected) return;
-    const audioHubUrl = `${inject(SERVER_URL)}/audiohub`
+    const audioHubUrl = `${inject(SERVER_URL)}/audioHub`
     this.hub = new signalR.HubConnectionBuilder().withUrl(audioHubUrl).build();
     void this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
   }
