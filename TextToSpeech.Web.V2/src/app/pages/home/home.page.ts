@@ -63,6 +63,14 @@ export class HomePage implements OnInit, OnDestroy {
   readonly acceptableFileTypes = ACCEPTABLE_FILE_TYPES;
   readonly acceptAttr: string = ACCEPTABLE_FILE_TYPES.join(',');
   readonly acceptableTypesText = computed(() => this.acceptableFileTypes.join(', '));
+  readonly responseFormats = [
+    { key: SpeechResponseFormat.MP3, label: 'MP3' },
+    { key: SpeechResponseFormat.Opus, label: 'OPUS' },
+    { key: SpeechResponseFormat.AAC, label: 'AAC' },
+    { key: SpeechResponseFormat.Flac, label: 'FLAC' },
+    { key: SpeechResponseFormat.WAV, label: 'WAV' },
+    { key: SpeechResponseFormat.PCM, label: 'PCM' },
+  ] as const;
 
   // 4) Internal reactive state
   private readonly narakeetVoices = signal<NarakeetVoice[]>([]);
@@ -110,7 +118,8 @@ export class HomePage implements OnInit, OnDestroy {
     const map = new Map<string, string>();
     for (const v of this.narakeetVoices()) {
       if (v.languageCode && !map.has(v.languageCode)) {
-        map.set(v.languageCode, v.language || v.languageCode);
+        // Use i18n keys for labels, resolved via translate pipe in template
+        map.set(v.languageCode, `languages.${v.languageCode}`);
       }
     }
     return Array.from(map.entries())
@@ -153,14 +162,8 @@ export class HomePage implements OnInit, OnDestroy {
   });
 
   selectedVoiceLabel = computed(() => this.voicesForProvider().find(v => v.key === this.voice())?.label ?? '');
-  readonly responseFormats = [
-    { key: SpeechResponseFormat.MP3, label: 'MP3' },
-    { key: SpeechResponseFormat.Opus, label: 'OPUS' },
-    { key: SpeechResponseFormat.AAC, label: 'AAC' },
-    { key: SpeechResponseFormat.Flac, label: 'FLAC' },
-    { key: SpeechResponseFormat.WAV, label: 'WAV' },
-    { key: SpeechResponseFormat.PCM, label: 'PCM' },
-  ] as const;
+  // Selected provider label for displaying placeholder text in trigger when empty
+  selectedProviderLabel = computed(() => this.providers.find(p => p.key === this.provider())?.label ?? '');
 
   formatSpeed = (v: number | null) => (v == null ? '' : v.toFixed(1));
 
@@ -203,15 +206,13 @@ export class HomePage implements OnInit, OnDestroy {
     const providerKey = (value === OPEN_AI_KEY || value === NARAKEET_KEY) ? (value as ProviderKey) : '';
     this.provider.set(providerKey);
     this.model.set('');
+    this.voice.set('');
+    this.language.set('');
     if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey]!.length > 0) {
       this.model.set(this.providerModels[providerKey]![0]);
     }
     if (providerKey === NARAKEET_KEY) {
-      this.language.set('');
-      this.getNarakeeVoices('Failed to load Narakeet voices');
-    } else {
-      // OpenAI does not use language
-      this.language.set('');
+      this.setNarakeeVoices('Failed to load Narakeet voices');
     }
   }
 
@@ -221,7 +222,7 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     // Refresh the list from backend; voicesForProvider filters by selected language
-    this.getNarakeeVoices('Failed to refresh Narakeet voices');
+    this.setNarakeeVoices('Failed to refresh Narakeet voices');
   }
 
   onFileSelected(input: HTMLInputElement) {
@@ -270,7 +271,9 @@ export class HomePage implements OnInit, OnDestroy {
       try { this.sampleRequestSub.unsubscribe(); } catch { /* noop */ }
       this.sampleRequestSub = undefined;
     }
-    if (!this.provider() || (this.provider() === NARAKEET_KEY && !this.language()) || !this.voice()) {
+    if (!this.provider() ||
+      (this.provider() === NARAKEET_KEY && !this.language()) ||
+      !this.voice()) {
       // Flag sample attempt for field highlighting (but do not mark upload/file errors)
       this.sampleAttempt.set(true);
       // Focus first missing field for better UX
@@ -404,7 +407,7 @@ export class HomePage implements OnInit, OnDestroy {
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; 
+        a.href = url;
         const name = this.file()!.name;
         const dotIndex = name.lastIndexOf('.');
         const baseName = name.substring(0, dotIndex);
@@ -422,7 +425,7 @@ export class HomePage implements OnInit, OnDestroy {
     const id = this.currentFileId();
     if (id) this.signalR.cancelProcessing(id);
   }
-  
+
   // Icon helper for progress header to keep template tidy
   progressIcon(): string {
     const s = this.status();
@@ -486,8 +489,8 @@ export class HomePage implements OnInit, OnDestroy {
       if (!this.voice()) { this.voiceEl?.focus(); return; }
     });
   }
-  
-  private getNarakeeVoices(errorMessage: string) {
+
+  private setNarakeeVoices(errorMessage: string) {
     this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
       next: (voices) => this.narakeetVoices.set(voices ?? []),
       error: (error) => {

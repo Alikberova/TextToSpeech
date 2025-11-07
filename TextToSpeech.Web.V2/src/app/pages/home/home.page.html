@@ -27,6 +27,10 @@
       aria-describedby="providerHelp"
     >
       <mat-option [value]="''" disabled>{{ 'home.provider.placeholder' | translate }}</mat-option>
+      <!-- Ensure placeholder is visible inside the trigger before a selection -->
+      <mat-select-trigger>
+        {{ selectedProviderLabel() || ('home.provider.placeholder' | translate) }}
+      </mat-select-trigger>
       @for (p of providers; track p.key) {
         <mat-option [value]="p.key">{{ p.label }}</mat-option>
       }
@@ -76,7 +80,7 @@
       >
         <mat-option [value]="''" disabled>{{ 'home.language.placeholder' | translate }}</mat-option>
         @for (lang of languages(); track lang.key) {
-          <mat-option [value]="lang.key">{{ lang.label }}</mat-option>
+          <mat-option [value]="lang.key">{{ lang.label | translate }}</mat-option>
         }
       </mat-select>
       @if ((languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language()) {

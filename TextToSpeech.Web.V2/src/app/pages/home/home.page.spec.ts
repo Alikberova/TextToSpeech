@@ -3,6 +3,7 @@ import { provideZonelessChangeDetection, type Signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { HomePage } from './home.page';
 import { TranslateModule, TranslateLoader, TranslateFakeLoader, TranslateService } from '@ngx-translate/core';
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { NgModel } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -192,6 +193,16 @@ describe('HomePage validation UX', () => {
     // and control is disabled to indicate initial placeholder state.
     const voiceSelect = el.querySelector('mat-select[name="voice"]');
     expect(voiceSelect?.getAttribute('aria-disabled')).toBe('true');
+
+    // Provider placeholder exists as first disabled option in the panel
+    const providerSelectDebug = fixture.debugElement.query(By.css('mat-select[name="provider"]'));
+    (providerSelectDebug.nativeElement as HTMLElement).click();
+    fixture.detectChanges();
+    const overlay = TestBed.inject(OverlayContainer);
+    const container: HTMLElement = overlay.getContainerElement();
+    const providerOptions = Array.from(container.querySelectorAll('mat-option'))
+      .map(n => (n.textContent || '').trim());
+    expect(providerOptions.some(t => t.includes('home.provider.placeholder'))).toBeTrue();
   });
 
   it('voice dropdown disabled until provider selected and enables after provider/language as needed', async () => {
@@ -213,14 +224,53 @@ describe('HomePage validation UX', () => {
     const narakeetKey = (PROVIDERS.find(p => p.key === 'narakeet') || PROVIDERS[0]).key as ProviderKey;
     component.onProviderChange(narakeetKey);
     const reqs = httpController.match(r => r.url.endsWith('/voices/narakeet'));
+    // Duplicate English (en-US) on purpose to verify uniqueness by languageCode
     const data = [
-      { name: 'a', language: 'English', languageCode: 'en-US', styles: [] },
-      { name: 'b', language: 'Ukrainian', languageCode: 'uk-UA', styles: [] },
-      { name: 'c', language: 'English', languageCode: 'en-US', styles: [] },
+      { name: 'Oliver', language: 'English (American)', languageCode: 'en-US', styles: [] },
+      { name: 'eleni', language: 'Greek', languageCode: 'el-GR', styles: [] },
+      { name: 'Amelia', language: 'English (American)', languageCode: 'en-US', styles: [] },
     ];
     reqs.forEach(r => r.flush(data));
     fixture.detectChanges();
     expect(component.languages().length).toBe(2);
+  });
+
+  it('renders translated language labels when UI language is Ukrainian', async () => {
+    const translate = TestBed.inject(TranslateService);
+    // Provide minimal needed Ukrainian translations for this test
+    translate.setTranslation('uk', {
+      languages: {
+        'en-US': 'Англійська (американська)',
+        'el-GR': 'Грецька'
+      },
+      home: { language: { placeholder: 'Оберіть мову', label: 'Мова' } }
+    }, true);
+    translate.use('uk');
+
+    const narakeetKey = (PROVIDERS.find(p => p.key === 'narakeet') || PROVIDERS[0]).key as ProviderKey;
+    component.onProviderChange(narakeetKey);
+    const reqs = httpController.match(r => r.url.endsWith('/voices/narakeet'));
+    const data = [
+      { name: 'Oliver', language: 'English (American)', languageCode: 'en-US', styles: [] },
+      { name: 'eleni', language: 'Greek', languageCode: 'el-GR', styles: [] }
+    ];
+    reqs.forEach(r => r.flush(data));
+    fixture.detectChanges();
+
+    // Open the language select to render options into the overlay
+    const languageSelectDebug = fixture.debugElement.query(By.css('mat-select[name="language"]'));
+    (languageSelectDebug.nativeElement as HTMLElement).click();
+    fixture.detectChanges();
+
+    const overlay = TestBed.inject(OverlayContainer);
+    const container: HTMLElement = overlay.getContainerElement();
+    const optionTexts = Array.from(container.querySelectorAll('mat-option'))
+      .map(n => (n.textContent || '').trim())
+      .filter(Boolean);
+
+    // Expect translated labels present
+    expect(optionTexts.some(t => t.includes('Грецька'))).toBeTrue();
+    expect(optionTexts.some(t => t.includes('Англійська (американська)'))).toBeTrue();
   });
 
   it('submit enables download when SignalR reports Completed', async () => {

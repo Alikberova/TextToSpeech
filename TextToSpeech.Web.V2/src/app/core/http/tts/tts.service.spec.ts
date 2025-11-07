@@ -29,7 +29,7 @@ describe('TtsService', () => {
   it('posts sample request to /speech/sample with forced mp3 format and expects blob', () => {
     const inputReq = {
       ttsApi: 'openai',
-      languageCode: 'en',
+      languageCode: 'en-US',
       input: 'Hello',
       ttsRequestOptions: { voice: 'alloy', model: 'tts-1', speed: 1.2, responseFormat: SpeechResponseFormat.WAV },
     } as const;
@@ -54,7 +54,7 @@ describe('TtsService', () => {
     // file is required by the full speech generation endpoint
     const request: TtsRequest = {
       ttsApi: 'openai',
-      languageCode: 'en',
+      languageCode: 'en-US',
       ttsRequestOptions: { voice: 'alloy' },
     };
     expect(() => service.createSpeech(request)).toThrow();
@@ -65,7 +65,7 @@ describe('TtsService', () => {
     let id = '';
     service.createSpeech({
       ttsApi: 'openai',
-      languageCode: 'en',
+      languageCode: 'en-US',
       file,
       ttsRequestOptions: { voice: 'alloy', model: 'tts-1', speed: 1 },
     }).subscribe(v => id = v);
