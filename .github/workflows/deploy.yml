@@ -85,6 +85,8 @@ jobs:
         username: ${{ vars.TTS_SERVER_USER }}
         key: ${{ secrets.TTS_SERVER_SSH_PRIVATE_KEY }}
         script: |
+          printf '%s' '${{ secrets.DOCKER_TOKEN }}' \
+            | docker login -u '${{ secrets.DOCKER_USERNAME }}' --password-stdin
           cd ${{ vars.APP_DATA_PATH }}
           docker network inspect elk >/dev/null 2>&1 || docker network create elk
           docker compose pull
