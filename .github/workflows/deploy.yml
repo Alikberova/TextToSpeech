@@ -45,6 +45,10 @@ jobs:
         echo "JWTCONFIG__EXPIRATIONMINUTES=${{ vars.JWTCONFIG__EXPIRATIONMINUTES }}" >> .env
         echo "JWTCONFIG__ISSUER=${{ vars.JWTCONFIG__ISSUER }}" >> .env
         echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
+        echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
+        echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> .env
+        echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
+        echo "POSTGRES_EXPOSED_PORT=${{ vars.POSTGRES_EXPOSED_PORT }}" >> .env
 
         # Environment secrets
         echo "ELASTICSEARCHCONFIG__PASSWORD=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}" >> .env
@@ -52,11 +56,13 @@ jobs:
         echo "NARAKEETCONFIG__APIKEY=${{ secrets.NARAKEETCONFIG__APIKEY }}" >> .env
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-        echo "ConnectionStrings__DefaultConnection=User ID=postgres;Password=${{ secrets.POSTGRES_PASSWORD }};Host=db;Port=5432;Database=postgres;Pooling=true;Include Error Detail=true;" >> .env
         echo "JWTCONFIG__SYMMETRIC__KEY=${{ secrets.JWTCONFIG__SYMMETRIC__KEY }}" >> .env
         echo "EMAILCONFIG__EMAILFROM=${{ secrets.EMAILCONFIG__EMAILFROM }}" >> .env
         echo "EMAILCONFIG__EMAILFROMPASSWORD=${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}" >> .env
         echo "EMAILCONFIG__EMAILTO=${{ secrets.EMAILCONFIG__EMAILTO }}" >> .env
+
+        # Variables and secrets
+        echo "ConnectionStrings__DefaultConnection=User ID=${{ vars.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Host=db;Port=5432;Database=${{ vars.POSTGRES_DB }};Pooling=true;Include Error Detail=true;" >> .env
 
     - name: Build and Push Docker Compose services
       run: |
