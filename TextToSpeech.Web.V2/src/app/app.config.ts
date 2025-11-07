@@ -5,9 +5,9 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { baseUrlInterceptor } from './core/http/api-url-interceptor/api-url-interceptor';
 import { environment } from '../environments/environment';
 import { API_URL, SERVER_URL } from './constants/tokens';
+import { baseUrlInterceptor } from './core/http/api-url-interceptor/api-url-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

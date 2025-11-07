@@ -7,15 +7,15 @@ import {
   HttpEvent,
 } from '@angular/common/http';
 import { of } from 'rxjs';
-import { baseUrlInterceptor } from './base-url-interceptor';
-import { API_BASE_URL } from '../../../constants/tokens';
+import { API_URL } from '../../../constants/tokens';
+import { baseUrlInterceptor } from './api-url-interceptor';
 
 describe('baseUrlInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        { provide: API_BASE_URL, useValue: 'https://api.example.com' },
+        { provide: API_URL, useValue: 'https://api.example.com' },
       ],
     });
   });
