@@ -1,18 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { SERVER_URL } from '../../constants/tokens';
 /** Wrapper around SignalR hub for audio generation status updates. */
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
   private hub?: signalR.HubConnection;
 
-  /**
-   * Start connection to the hub. Accepts API base like `https://localhost:7057/api`.
-   * The hub runs at `${baseWithoutApi}/audioHub`.
-   */
-  startConnection(apiBaseUrl: string) {
+  startConnection() {
     if (this.hub && this.hub.state === signalR.HubConnectionState.Connected) return;
-    const base = apiBaseUrl.replace(/\/?api\/?$/, '');
-    this.hub = new signalR.HubConnectionBuilder().withUrl(`${base}/audioHub`).build();
+    const audioHubUrl = `${inject(SERVER_URL)}/audiohub`
+    this.hub = new signalR.HubConnectionBuilder().withUrl(audioHubUrl).build();
     void this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
   }
 

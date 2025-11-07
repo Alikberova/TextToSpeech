@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SpeechResponseFormat, TtsRequest } from '../../dto/tts-request';
-import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from './endpoints';
+import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from '../endpoints';
+import { SpeechResponseFormat, TtsRequest } from '../../../dto/tts-request';
 
 /**
  * TTS API client.

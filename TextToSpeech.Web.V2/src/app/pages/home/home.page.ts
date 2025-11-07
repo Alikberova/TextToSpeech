@@ -13,12 +13,13 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NARAKEET_KEY, OPEN_AI_KEY, OPEN_AI_VOICES, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES } from '../../constants/tts-constants';
-import { SpeechResponseFormat } from '../../dto/tts-request';
-import { NarakeetVoice } from '../../dto/narakeet-voice';
-import { TtsService } from '../../core/http/tts.service';
+import { TtsService } from '../../core/http/tts/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
-import { API_BASE_URL } from '../../constants/tokens';
 import { VOICES_NARAKEET } from '../../core/http/endpoints';
+import { NarakeetVoice } from '../../dto/narakeet-voice';
+import { SpeechResponseFormat } from '../../dto/tts-request';
+
+type AudioStatus = 'Idle' | 'Created' | 'Processing' | 'Completed' | 'Failed' | 'Canceled';
 
 @Component({
   selector: 'app-home-page',
@@ -46,7 +47,6 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly tts = inject(TtsService);
   private readonly snack = inject(MatSnackBar);
   private readonly signalR = inject(SignalRService);
-  private readonly apiBaseUrl = inject(API_BASE_URL);
 
   // 2) View references
   @ViewChild('providerEl') private providerEl?: MatSelect;
@@ -162,13 +162,15 @@ export class HomePage implements OnInit, OnDestroy {
     { key: SpeechResponseFormat.PCM, label: 'PCM' },
   ] as const;
 
+  formatSpeed = (v: number | null) => (v == null ? '' : v.toFixed(1));
+
   // 6) Constructor
   constructor() {
     this.translate.onLangChange.subscribe(() => {
       this.langChangeTrigger.update((v) => v + 1);
       this.applyDefaultSampleIfNotEdited();
     });
-    this.signalR.startConnection(this.apiBaseUrl);
+    this.signalR.startConnection();
     this.signalR.addAudioStatusListener((fileId, status, progress, errorMessage) => {
       const id = this.currentFileId();
       if (!id || fileId !== id) return;
@@ -206,13 +208,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
     if (providerKey === NARAKEET_KEY) {
       this.language.set('');
-      this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
-        next: (voices) => this.narakeetVoices.set(voices ?? []),
-        error: (error) => {
-          console.error('Failed to load Narakeet voices', error);
-          this.narakeetVoices.set([]);
-        },
-      });
+      this.getNarakeeVoices('Failed to load Narakeet voices');
     } else {
       // OpenAI does not use language
       this.language.set('');
@@ -225,10 +221,7 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     // Refresh the list from backend; voicesForProvider filters by selected language
-    this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
-      next: (voices) => this.narakeetVoices.set(voices ?? []),
-      error: (error) => console.error('Failed to refresh Narakeet voices', error),
-    });
+    this.getNarakeeVoices('Failed to refresh Narakeet voices');
   }
 
   onFileSelected(input: HTMLInputElement) {
@@ -429,8 +422,27 @@ export class HomePage implements OnInit, OnDestroy {
     const id = this.currentFileId();
     if (id) this.signalR.cancelProcessing(id);
   }
-
-  formatSpeed = (v: number | null) => (v == null ? '' : v.toFixed(1));
+  
+  // Icon helper for progress header to keep template tidy
+  progressIcon(): string {
+    const s = this.status();
+    if (s === 'Created') {
+      return 'schedule';
+    }
+    if (s === 'Processing') {
+      return 'autorenew';
+    }
+    if (s === 'Completed') {
+      return 'check_circle';
+    }
+    if (s === 'Failed') {
+      return 'error';
+    }
+    if (s === 'Canceled') {
+      return 'cancel';
+    }
+    return 'info';
+  }
 
   // 9) Private helpers
   private announce(msg: string) {
@@ -467,27 +479,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.lastAutoSampleText.set(next);
   }
 
-  // Icon helper for progress header to keep template tidy
-  progressIcon(): string {
-    const s = this.status();
-    if (s === 'Created') {
-      return 'schedule';
-    }
-    if (s === 'Processing') {
-      return 'autorenew';
-    }
-    if (s === 'Completed') {
-      return 'check_circle';
-    }
-    if (s === 'Failed') {
-      return 'error';
-    }
-    if (s === 'Canceled') {
-      return 'cancel';
-    }
-    return 'info';
-  }
-
   private focusSampleMissing() {
     queueMicrotask(() => {
       if (!this.provider()) { this.providerEl?.focus(); return; }
@@ -495,6 +486,14 @@ export class HomePage implements OnInit, OnDestroy {
       if (!this.voice()) { this.voiceEl?.focus(); return; }
     });
   }
+  
+  private getNarakeeVoices(errorMessage: string) {
+    this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
+      next: (voices) => this.narakeetVoices.set(voices ?? []),
+      error: (error) => {
+        console.error(errorMessage, error);
+        this.narakeetVoices.set([]);
+      },
+    });
+  }
 }
-
-type AudioStatus = 'Idle' | 'Created' | 'Processing' | 'Completed' | 'Failed' | 'Canceled';

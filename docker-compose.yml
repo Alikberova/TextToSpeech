@@ -33,7 +33,7 @@ services:
 
   web:
     build:
-      context: TextToSpeech.Web
+      context: TextToSpeech.Web.V2
       dockerfile: ../docker/web.Dockerfile
       cache_from:
         - alikberova/texttospeech.web:${IMAGE_TAG_VERSION}

@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TtsService } from './tts.service';
-import { SpeechResponseFormat, TtsRequest } from '../../dto/tts-request';
-import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from './endpoints';
+import { SpeechResponseFormat, TtsRequest } from '../../../dto/tts-request';
+import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from '../endpoints';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 describe('TtsService', () => {

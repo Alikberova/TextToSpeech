@@ -1,11 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { API_BASE_URL } from '../../../constants/tokens';
+import { API_URL } from '../../../constants/tokens';
 
 export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
-  const base = inject(API_BASE_URL);
+  const apiUrl = inject(API_URL);
 
-  if (!base) {
+  if (!apiUrl) {
     return next(req);
   }
 
@@ -23,6 +23,6 @@ export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const url = req.url.startsWith('/') ? `${base}${req.url}` : `${base}/${req.url}`;
+  const url = req.url.startsWith('/') ? `${apiUrl}${req.url}` : `${apiUrl}/${req.url}`;
   return next(req.clone({ url }));
 };

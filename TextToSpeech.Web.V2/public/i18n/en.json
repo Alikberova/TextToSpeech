@@ -1,7 +1,7 @@
 {
   "app": {
     "skipToContent": "Skip to content",
-    "footer": { "copyright": "TTS Web" }
+    "footer": { "copyright": "TTS" }
   },
   "nav": {
     "generate": "Generate",

@@ -5,16 +5,17 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
-import { environment } from '../environments/environment.development';
-import { API_BASE_URL } from './constants/tokens';
-import { baseUrlInterceptor } from './core/http/base-url/base-url-interceptor';
+import { baseUrlInterceptor } from './core/http/api-url-interceptor/api-url-interceptor';
+import { environment } from '../environments/environment';
+import { API_URL, SERVER_URL } from './constants/tokens';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    { provide: API_BASE_URL, useValue: environment.apiBase },
+    { provide: API_URL, useValue: `${environment.serverUrl}/api` },
+    { provide: SERVER_URL, useValue: environment.serverUrl },
     provideHttpClient(withInterceptors([baseUrlInterceptor])),
     // Configure ngx-translate to load JSON files from /i18n/* via the public folder.
     importProvidersFrom(

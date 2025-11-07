@@ -9,7 +9,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { OPEN_AI_VOICES, PROVIDER_MODELS, PROVIDERS, type ProviderKey } from '../../constants/tts-constants';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { SpeechResponseFormat } from '../../dto/tts-request';
-import { API_BASE_URL } from '../../constants/tokens';
+import { API_URL } from '../../constants/tokens';
 import { SPEECH_BASE, SPEECH_SAMPLE } from '../../core/http/endpoints';
 
 describe('HomePage validation UX', () => {
@@ -21,7 +21,7 @@ describe('HomePage validation UX', () => {
     provideZonelessChangeDetection(),
     provideHttpClient(),
     provideHttpClientTesting(),
-    { provide: API_BASE_URL, useValue: 'https://fake-localhost:1234/api' }
+    { provide: API_URL, useValue: 'https://fake-localhost:1234/api' }
   ];
 
   beforeEach(async () => {

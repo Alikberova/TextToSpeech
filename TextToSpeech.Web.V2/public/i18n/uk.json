@@ -1,7 +1,7 @@
 {
   "app": {
     "skipToContent": "Перейти до вмісту",
-    "footer": { "copyright": "TTS Web" }
+    "footer": { "copyright": "TTS" }
   },
   "nav": {
     "generate": "Створити",
