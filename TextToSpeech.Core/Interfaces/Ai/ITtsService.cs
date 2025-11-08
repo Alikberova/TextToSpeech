@@ -1,4 +1,5 @@
 ﻿using TextToSpeech.Core.Dto;
+using TextToSpeech.Core.Models;
 
 namespace TextToSpeech.Core.Interfaces.Ai;
 

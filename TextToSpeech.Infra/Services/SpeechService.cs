@@ -2,13 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
+using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services.FileProcessing;
 using TextToSpeech.Infra.SignalR;

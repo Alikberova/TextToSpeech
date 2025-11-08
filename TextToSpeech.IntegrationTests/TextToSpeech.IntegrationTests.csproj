@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+	<PackageReference Include="Moq" Version="4.20.70" />
 	<PackageReference Include="Bogus" Version="35.5.1" />
 	<PackageReference Include="xunit" Version="2.8.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
@@ -26,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TextToSpeech.Api\TextToSpeech.Api.csproj" />
-    <ProjectReference Include="..\TextToSpeech.TestingInfra\TextToSpeech.TestingInfra.csproj" />
   </ItemGroup>
 
 </Project>

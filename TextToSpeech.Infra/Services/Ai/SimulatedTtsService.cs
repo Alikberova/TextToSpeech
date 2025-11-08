@@ -1,7 +1,7 @@
-using TextToSpeech.Core;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Services.FileProcessing;
 
 namespace TextToSpeech.Infra.Services.Ai;

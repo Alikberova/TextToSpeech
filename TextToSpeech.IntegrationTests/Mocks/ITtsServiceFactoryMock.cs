@@ -1,7 +1,7 @@
 ﻿using Moq;
 using TextToSpeech.Core.Interfaces.Ai;
 
-namespace TextToSpeech.TestingInfra.Mocks;
+namespace TextToSpeech.IntegrationTests.Mocks;
 
 public static class ITtsServiceFactoryMock
 {

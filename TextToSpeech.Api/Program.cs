@@ -13,6 +13,7 @@ using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,9 +34,9 @@ builder.Services.AddServices(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}",
-        $"https://localhost:{SharedConstants.ClientPort}",
-        SharedConstants.Domain)
+        builder => builder.WithOrigins($"http://localhost:{AppConstants.ClientPort}",
+        $"https://localhost:{AppConstants.ClientPort}",
+        AppConstants.Domain)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
@@ -155,7 +156,7 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
+        var indexFormat = $"{AppConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
             $"-{DateTime.UtcNow:yyyy-MM}";
 
         var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))

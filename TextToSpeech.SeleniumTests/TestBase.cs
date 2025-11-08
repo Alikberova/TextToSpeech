@@ -49,7 +49,7 @@ public class TestBase : IDisposable
 
         Wait = GetWait(Driver);
 
-        Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
+        Driver.Navigate().GoToUrl($"https://localhost:{AppConstants.ClientPort}");
     }
 
     public void Dispose()

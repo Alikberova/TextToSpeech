@@ -1,9 +1,9 @@
-﻿using static TextToSpeech.Core.Enums;
-using TextToSpeech.Core.Entities;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Security.Cryptography;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
+using TextToSpeech.Core.Entities;
+using TextToSpeech.Infra.Constants;
+using static TextToSpeech.Core.Enums;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -28,7 +28,7 @@ public static class AudioFileBuilder
             Description = $"{type}_" +
                 $"{options.Voice}_" +
                 $"{langCode}_" +
-                $"{SharedConstants.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId ).Key}_" +
+                $"{SharedConstants.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId).Key}_" +
                 $"{options.Speed}_" +
                 $"{options.Model}",
             Hash = hash ?? GenerateHash(input, langCode, options),

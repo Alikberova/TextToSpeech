@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
 using TextToSpeech.Api;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Constants;
 
 namespace TextToSpeech.IntegrationTests;
 

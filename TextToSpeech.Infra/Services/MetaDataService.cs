@@ -10,7 +10,7 @@ public sealed class MetaDataService() : IMetaDataService
         using var file = TagLib.File.Create(pathFile);
 
         file.Tag.Title = title;
-        file.Tag.Comment = $"Website: {SharedConstants.Domain}";
+        file.Tag.Comment = $"Website: {AppConstants.Domain}";
         file.Save();
     }
 }

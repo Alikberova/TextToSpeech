@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Repositories;
-using TextToSpeech.TestingInfra.Mocks;
-using TextToSpeech.TestingInfra.Utils;
+using TextToSpeech.Infra.Constants;
+using TextToSpeech.IntegrationTests.Mocks;
+using TextToSpeech.IntegrationTests.Utils;
 using Xunit.Abstractions;
 using static TextToSpeech.Core.Enums;
 

@@ -1,8 +1,8 @@
-﻿using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Dto;
+﻿using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.FileProcessing;
 using static TextToSpeech.Core.Enums;

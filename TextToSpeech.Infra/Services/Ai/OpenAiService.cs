@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
-using TextToSpeech.Core;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
@@ -36,7 +35,7 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
 
         var tasks = textChunks.Select((chunk, index) =>
         {
-            return Task.Run(async() =>
+            return Task.Run(async () =>
             {
                 await gate.WaitAsync(cancellationToken);
 

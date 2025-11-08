@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
-using UglyToad.PdfPig;
 using TextToSpeech.Core.Interfaces;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace TextToSpeech.Infra.Services.FileProcessing;
 

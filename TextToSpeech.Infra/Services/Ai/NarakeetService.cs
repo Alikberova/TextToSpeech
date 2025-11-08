@@ -2,11 +2,11 @@
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using TextToSpeech.Core;
 using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Dto.Narakeet;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 
 namespace TextToSpeech.Infra.Services.Ai;
@@ -34,7 +34,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
         CancellationToken cancellationToken = default)
     {
         var tasks = textChunks
-            .Select(chunk => RequestLongContent(chunk, fileId, ttsRequest, progress,cancellationToken))
+            .Select(chunk => RequestLongContent(chunk, fileId, ttsRequest, progress, cancellationToken))
             .ToList();
 
         return await Task.WhenAll(tasks);
@@ -121,7 +121,7 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
-            
+
             if (buildTaskStatus is null ||
                 (string.IsNullOrWhiteSpace(buildTaskStatus.Result) && string.IsNullOrWhiteSpace(buildTaskStatus.Message)))
             {

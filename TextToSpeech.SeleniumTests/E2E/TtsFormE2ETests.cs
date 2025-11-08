@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Text;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.SeleniumTests.Pages;
 using Xunit.Abstractions;
 using static TextToSpeech.Infra.TestData;
@@ -14,7 +14,7 @@ namespace TextToSpeech.SeleniumTests.E2E;
 /// </summary>
 public sealed class TtsFormE2ETests(ITestOutputHelper output) : TestBase(output)
 {
-    private TtsFormPage CreatePage() => new (Driver, Wait);
+    private TtsFormPage CreatePage() => new(Driver, Wait);
 
     [Fact]
     public void ShouldGenerateSpeech_AndDownload_PreSeededDbAudio()

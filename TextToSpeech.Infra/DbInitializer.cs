@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Constants;
 
 namespace TextToSpeech.Infra;
 

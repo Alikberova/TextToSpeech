@@ -66,7 +66,7 @@ public sealed class TtsFormPage
     public string? WaitStatusIconText(string status)
     {
         IWebElement? icon = null;
-        
+
         try
         {
             icon = _wait.UntilElement(By.CssSelector(Selectors.StatusIcon),

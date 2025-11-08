@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core;
+﻿namespace TextToSpeech.Core.Models;
 
 public sealed record ProgressReport
 {

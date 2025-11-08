@@ -34,6 +34,15 @@
           "Microsoft.TestPlatform.TestHost": "17.13.0"
         }
       },
+      "Moq": {
+        "type": "Direct",
+        "requested": "[4.20.70, )",
+        "resolved": "4.20.70",
+        "contentHash": "4rNnAwdpXJBuxqrOCzCyICXHSImOTRktCgCWXWykuF1qwoIsVvEnR7PjbMk/eLOxWvhmj5Kwt+kDV3RGUYcNwg==",
+        "dependencies": {
+          "Castle.Core": "5.1.1"
+        }
+      },
       "xunit": {
         "type": "Direct",
         "requested": "[2.8.1, )",
@@ -769,14 +778,6 @@
           "System.Security.Cryptography.Pkcs": "8.0.0"
         }
       },
-      "Moq": {
-        "type": "Transitive",
-        "resolved": "4.20.70",
-        "contentHash": "4rNnAwdpXJBuxqrOCzCyICXHSImOTRktCgCWXWykuF1qwoIsVvEnR7PjbMk/eLOxWvhmj5Kwt+kDV3RGUYcNwg==",
-        "dependencies": {
-          "Castle.Core": "5.1.1"
-        }
-      },
       "NETStandard.Library": {
         "type": "Transitive",
         "resolved": "2.0.0",
@@ -1156,13 +1157,6 @@
           "System.Text.Json": "[8.0.5, )",
           "TextToSpeech.Core": "[1.0.0, )",
           "taglib-sharp-netstandard2.0": "[2.1.0, )"
-        }
-      },
-      "texttospeech.testinginfra": {
-        "type": "Project",
-        "dependencies": {
-          "Moq": "[4.20.70, )",
-          "TextToSpeech.Infra": "[1.0.0, )"
         }
       }
     }

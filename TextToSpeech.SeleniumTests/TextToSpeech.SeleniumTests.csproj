@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TextToSpeech.TestingInfra\TextToSpeech.TestingInfra.csproj" />
+    <ProjectReference Include="..\TextToSpeech.Infra\TextToSpeech.Infra.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
-﻿using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Dto;
+﻿using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
 using Xunit;
 using static TextToSpeech.Core.Enums;

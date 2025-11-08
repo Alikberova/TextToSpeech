@@ -1,4 +1,4 @@
-using TextToSpeech.Core.Config;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.SeleniumTests.Pages;
 using Xunit.Abstractions;
 using static TextToSpeech.Infra.TestData;
