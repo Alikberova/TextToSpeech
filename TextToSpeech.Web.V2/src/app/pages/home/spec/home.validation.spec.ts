@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { NgModel } from '@angular/forms';
 import { createHomeFixture, providerKeyWithModel, providerKeyWithoutModel, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, FORM_ERROR_SELECTOR, DEFAULT_OPENAI_VOICE_KEY, LANGUAGE_CODE_EN_US, SELECTOR_MODEL_SELECT, SELECTOR_FORM_FIELD, ATTR_ARIA_INVALID, getMatErrors, clickSubmit, clickPlayButton, setProviderNarakeet, selectOpenAiMinimal } from './home.page.spec-setup';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { PROVIDERS, PROVIDER_MODELS, ProviderKey } from '../../../constants/tts-constants';
+import { ProviderKey } from '../../../constants/tts-constants';
 import { HomePage } from '../home.page';
 import { VOICES_NARAKEET } from '../../../core/http/endpoints';
 
@@ -95,8 +95,7 @@ describe('HomePage - Validation UX', () => {
     expect(modelFieldEl!.attributes[ATTR_ARIA_INVALID]).not.toBe('true');
 
     // Switch to provider that does NOT require model -> model field disappears
-    const providerWithoutModel = (PROVIDERS.find(p => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key as ProviderKey;
-    component.onProviderChange(providerWithoutModel);
+    component.onProviderChange(providerKeyWithoutModel());
     fixture.detectChanges();
 
     const formFields2 = fixture.debugElement.queryAll(By.css(SELECTOR_FORM_FIELD));

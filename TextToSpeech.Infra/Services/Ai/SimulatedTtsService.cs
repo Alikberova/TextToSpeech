@@ -9,7 +9,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// Simulates TTS processing in test mode without calling external APIs.
 /// </summary>
-public sealed class SimulatedTtsService : ITtsService, INarakeetService
+public sealed class SimulatedTtsService : INarakeetService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
 

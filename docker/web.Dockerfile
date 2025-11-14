@@ -8,7 +8,7 @@ RUN npm install
 COPY . /src
 # Build the Angular app
 ARG ANGULAR_ENVIRONMENT
-RUN npx ng build --configuration=$ANGULAR_ENVIRONMENT
+RUN npx ng build --configuration="$ANGULAR_ENVIRONMENT"
 
 # Stage 2: Serve the app with Nginx
 FROM nginx:stable-alpine

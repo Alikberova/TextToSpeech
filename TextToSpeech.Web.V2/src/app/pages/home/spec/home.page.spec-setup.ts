@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { DebugElement, provideZonelessChangeDetection } from '@angular/core';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -72,11 +71,11 @@ export async function createHomeFixture(extraProviders: unknown[] = []) {
 }
 
 export function providerKeyWithModel(): ProviderKey {
-  return (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key as ProviderKey;
+  return (PROVIDERS.find(p => Array.isArray(PROVIDER_MODELS[p.key])) || PROVIDERS[0]).key;
 }
 
 export function providerKeyWithoutModel(): ProviderKey {
-  return (PROVIDERS.find(p => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key as ProviderKey;
+  return (PROVIDERS.find(p => PROVIDER_MODELS[p.key] === null) || PROVIDERS[0]).key;
 }
 
 export function fillValidFormForOpenAI(component: HomePage): void {

@@ -31,10 +31,7 @@ export class SampleAudioPlayer {
   }
 
   async resume(): Promise<void> {
-    if (!this.audio) {
-      return;
-    }
-    await this.audio.play();
+    await this.play();
   }
 
   stop(): void {

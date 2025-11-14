@@ -31,6 +31,7 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
     - name: Create .env file
+      # redeclare secrets for security reeasons
       env:
         ES_PASS: ${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}
         GOOGLE_KEY: ${{ secrets.GOOGLECLOUDAPIKEY }}

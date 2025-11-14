@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { PROVIDERS, ProviderKey } from '../../../constants/tts-constants';
+import { NARAKEET_KEY, PROVIDERS, ProviderKey } from '../../../constants/tts-constants';
 import { HomePage } from '../home.page';
 
 describe('HomePage - Language dropdown behavior (Narakeet only)', () => {
@@ -40,7 +40,7 @@ describe('HomePage - Language dropdown behavior (Narakeet only)', () => {
 function act(component: HomePage, httpController: HttpTestingController, fixture: ComponentFixture<HomePage>,
   overlayContainer: OverlayContainer): string[] {
 
-  const narakeetKey = (PROVIDERS.find(p => p.key === 'narakeet') || PROVIDERS[0]).key as ProviderKey;
+  const narakeetKey = (PROVIDERS.find(p => p.key === NARAKEET_KEY))!.key as ProviderKey;
   component.onProviderChange(narakeetKey);
   flushNarakeetVoices(httpController);
   fixture.detectChanges();

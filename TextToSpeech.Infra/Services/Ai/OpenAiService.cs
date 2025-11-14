@@ -50,7 +50,7 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
 
                     var done = Interlocked.Increment(ref completedChunks);
 
-                    _logger.LogInformation("Done {done} for {id}", done, fileId);
+                    _logger.LogInformation("Done {Done} for {Id}", done, fileId);
                     ReportProgress(fileId, progress, totalChunks, done);
                 }
                 finally

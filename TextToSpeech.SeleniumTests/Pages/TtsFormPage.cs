@@ -82,9 +82,10 @@ public sealed class TtsFormPage
         ClickDropdownOption(language);
     }
 
-    public void SelectVoice(string voice)
+    public async Task SelectVoice(string voice)
     {
         OpenVoiceOptions();
+        await Task.Delay(100);
         ClickDropdownOption(voice);
     }
 

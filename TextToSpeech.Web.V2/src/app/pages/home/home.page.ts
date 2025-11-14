@@ -50,11 +50,11 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly signalR = inject(SignalRService);
 
   // 2) View references
-  @ViewChild('providerEl') private providerEl?: MatSelect;
-  @ViewChild('modelEl') private modelEl?: MatSelect;
-  @ViewChild('languageEl') private languageEl?: MatSelect;
-  @ViewChild('voiceEl') private voiceEl?: MatSelect;
-  @ViewChild('fileInput') private fileInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('providerEl') private readonly providerEl?: MatSelect;
+  @ViewChild('modelEl') private readonly modelEl?: MatSelect;
+  @ViewChild('languageEl') private readonly languageEl?: MatSelect;
+  @ViewChild('voiceEl') private readonly voiceEl?: MatSelect;
+  @ViewChild('fileInput') private readonly fileInput?: ElementRef<HTMLInputElement>;
 
   // 3) Constants and options exposed to the template
   readonly providers = PROVIDERS;
@@ -87,14 +87,14 @@ export class HomePage implements OnInit, OnDestroy {
 
   private sampleRequestSub?: Subscription;
   // Generation state
-  private currentFileId = signal<string | null>(null);
+  private readonly currentFileId = signal<string | null>(null);
 
   // Form signals
   provider = signal<ProviderKey | ''>('');
-  model = signal<string | ''>('');
-  language = signal<string | ''>('');
-  voice = signal<string | ''>('');
-  speed = signal<number>(1.0);
+  model = signal<string>('');
+  language = signal<string>('');
+  voice = signal<string>('');
+  speed = signal<number>(1);
   responseFormat = signal<SpeechResponseFormat>(SpeechResponseFormat.MP3);
   file = signal<File | null>(null);
   statusMessage = signal<string>('');
@@ -190,13 +190,13 @@ export class HomePage implements OnInit, OnDestroy {
 
   // 8) Public event handlers and actions (template-facing)
   onProviderChange(provider: string): void {
-    const providerKey = (provider === OPEN_AI_KEY || provider === NARAKEET_KEY) ? (provider as ProviderKey) : '';
+    const providerKey = (provider === OPEN_AI_KEY || provider === NARAKEET_KEY) ? provider: '';
     this.provider.set(providerKey);
     this.model.set('');
     this.voice.set('');
     this.language.set('');
     if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey]!.length > 0) {
-      this.model.set(this.providerModels[providerKey]![0]);
+      this.model.set(this.providerModels[providerKey][0]);
     }
     if (providerKey === NARAKEET_KEY) {
       this.loadNarakeetVoices('Failed to load Narakeet voices');
@@ -366,7 +366,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.model.set('');
     this.language.set('');
     this.voice.set('');
-    this.speed.set(1.0);
+    this.speed.set(1);
     this.responseFormat.set(SpeechResponseFormat.MP3);
     this.file.set(null);
     // Reset sample text back to its default and mark as not user-edited

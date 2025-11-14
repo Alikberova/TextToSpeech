@@ -1,8 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
@@ -34,7 +33,11 @@ export const appConfig: ApplicationConfig = {
 
 // Minimal JSON loader for ngx-translate using HttpClient
 class JsonTranslateLoader implements TranslateLoader {
-  constructor(private http: HttpClient, private prefix = '/i18n/', private suffix = '.json') {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly prefix = '/i18n/',
+    private readonly suffix = '.json') {}
+
   getTranslation(lang: string) {
     return this.http.get<Record<string, unknown>>(`${this.prefix}${lang}${this.suffix}`);
   }

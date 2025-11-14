@@ -50,7 +50,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         if (audioFileId is not null)
         {
             _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: 100);
-            _logger.LogInformation("Found existing audio for {audioFileId}", audioFileId);
+            _logger.LogInformation("Found existing audio for {AudioFileId}", audioFileId);
 
             return audioFileId.Value;
         }
@@ -71,7 +71,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 audioFileId.Value, hash, token);
         });
 
-        _logger.LogInformation("Initializing TTS for {audioFileId}", audioFileId);
+        _logger.LogInformation("Initializing TTS for {AudioFileId}", audioFileId);
 
         return audioFileId.Value;
     }
@@ -90,7 +90,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         string? errorMessage = null;
         try
         {
-            _logger.LogInformation("Processing speech for {fileId}", fileId);
+            _logger.LogInformation("Processing speech for {FileId}", fileId);
 
             audioFile = AudioFileBuilder.Create([],
                 langCode,
@@ -161,10 +161,10 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             }
             catch (Exception e)
             {
-                _logger.LogWarning(e, "Failed to update status for {fileId}", fileId);
+                _logger.LogWarning(e, "Failed to update status for {FileId}", fileId);
             }
 
-            _logger.LogInformation("Speech processing is {status} for {fileId}", finalStatus, fileId);
+            _logger.LogInformation("Speech processing is {Status} for {FileId}", finalStatus, fileId);
         }
     }
 

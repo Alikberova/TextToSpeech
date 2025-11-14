@@ -10,16 +10,18 @@ export class SignalRService {
 
   startConnection() {
     if (this.hub && this.hub.state === signalR.HubConnectionState.Connected) return;
-    const audioHubUrl = `${inject(SERVER_URL)}/audioHub`
+    const audioHubUrl = `${inject(SERVER_URL)}/audioHub`;
     this.hub = new signalR.HubConnectionBuilder().withUrl(audioHubUrl).build();
-    void this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
+    this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
   }
 
   stopConnection() {
-    if (this.hub) {
-      void this.hub.stop().catch((err: unknown) => console.error('SignalR stop error', err));
-      this.hub = undefined;
+    if (!this.hub) {
+      return;
     }
+    const currentHub = this.hub;
+    this.hub = undefined;
+    currentHub.stop().catch((err: unknown) => console.error('SignalR stop error', err));
   }
 
   addAudioStatusListener(callback: AudioStatusCallback) {
@@ -29,6 +31,9 @@ export class SignalRService {
   }
 
   cancelProcessing(fileId: string) {
-    void this.hub?.invoke('CancelProcessing', fileId).catch((err: unknown) => console.error('SignalR invoke error', err));
+    if (!this.hub) {
+      return;
+    }
+    this.hub.invoke('CancelProcessing', fileId).catch((err: unknown) => console.error('SignalR invoke error', err));
   }
 }

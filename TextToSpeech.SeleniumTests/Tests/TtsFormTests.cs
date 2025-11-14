@@ -17,7 +17,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
     private TtsFormPage CreatePage() => new(Driver, Wait);
 
     [Fact]
-    public void ShouldGenerateSpeech_AndDownload_PreSeededDbAudio()
+    public async Task ShouldGenerateSpeech_AndDownload_PreSeededDbAudio()
     {
         const string fileName = "integration-seeded";
         const string sourceExt = "txt";
@@ -29,7 +29,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.OpenAI);
-        page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceAlloy);
+        await page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceAlloy);
 
         page.TypeSampleText();
 
@@ -40,7 +40,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         Assert.True(page.IsIconVisible("play_circle"));
 
         page.SelectProvider(SharedConstants.OpenAI);
-        page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceFable);
+        await page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceFable);
         page.UploadFile(sourcePath);
         page.ClickSubmit();
 
@@ -54,25 +54,25 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         while (sw.ElapsedMilliseconds < 3000 && !File.Exists(expectedPath))
         {
-            Thread.Sleep(100);
+            await Task.Delay(100);
         }
 
         Assert.True(File.Exists(expectedPath));
     }
 
     [Fact]
-    public void ShouldCancelSpeechProcessing()
+    public async Task ShouldCancelSpeechProcessing()
     {
         var path1 = Path.Combine(TestDirectory, "test.txt");
-        File.WriteAllText(path1, "abc");
+        await File.WriteAllTextAsync(path1, "abc");
         var path2 = Path.Combine(TestDirectory, "processing.txt");
-        WriteBigFileText(path2, TtsFullRequest, 500);
+        await WriteBigFileText(path2, TtsFullRequest, 500);
 
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.Narakeet);
         page.SelectLanguage(TextToSpeechFormConstants.GermanStandard);
-        page.SelectVoice(TextToSpeechFormConstants.NarakeetVoiceHans);
+        await page.SelectVoice(TextToSpeechFormConstants.NarakeetVoiceHans);
         
         page.UploadFile(path1);
         page.RemoveUploadedFile();
@@ -83,14 +83,14 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         Assert.True(page.IsProgressPanelVisible());
 
         // when running all selenium tests, it needs timeout to pass for some reason
-        Thread.Sleep(1250);
+        await Task.Delay(1250);
         page.ClickCancel();
 
         const string cancelIcon = "cancel";
         Assert.Equal(cancelIcon, page.WaitStatusIconText(cancelIcon));
     }
 
-    private static void WriteBigFileText(string filePath, string content, int repetitions)
+    private static async Task WriteBigFileText(string filePath, string content, int repetitions)
     {
         var stringBuilder = new StringBuilder();
 
@@ -101,6 +101,6 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         stringBuilder.Append(Guid.NewGuid());
 
-        File.WriteAllText(filePath, stringBuilder.ToString());
+        await File.WriteAllTextAsync(filePath, stringBuilder.ToString());
     }
 }
