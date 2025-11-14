@@ -5,14 +5,14 @@ using TextToSpeech.SeleniumTests.Pages;
 using Xunit.Abstractions;
 using static TextToSpeech.Infra.TestData;
 
-namespace TextToSpeech.SeleniumTests.E2E;
+namespace TextToSpeech.SeleniumTests.Tests;
 
 /// <summary>
 /// End-to-end tests for Home page behaviors against a running app and API.
 /// Uses pre-seeded DB data (Infra.TestData) and SignalR to validate generation,
 /// download, and cancellation scenarios.
 /// </summary>
-public sealed class TtsFormE2ETests(ITestOutputHelper output) : TestBase(output)
+public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 {
     private TtsFormPage CreatePage() => new(Driver, Wait);
 
@@ -29,8 +29,18 @@ public sealed class TtsFormE2ETests(ITestOutputHelper output) : TestBase(output)
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.OpenAI);
+        page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceAlloy);
+
+        page.TypeSampleText();
+
+        page.ClickPlayButton();
+        Assert.True(page.IsIconVisible("pause_circle"));
+
+        page.ClickPlayButton();
+        Assert.True(page.IsIconVisible("play_circle"));
+
+        page.SelectProvider(SharedConstants.OpenAI);
         page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceFable);
-        // audio format is preselected to mp3 by default
         page.UploadFile(sourcePath);
         page.ClickSubmit();
 
@@ -53,15 +63,21 @@ public sealed class TtsFormE2ETests(ITestOutputHelper output) : TestBase(output)
     [Fact]
     public void ShouldCancelSpeechProcessing()
     {
-        var path = Path.Combine(TestDirectory, "processing.txt");
-        WriteBigFileText(path, TtsFullRequest, 500);
+        var path1 = Path.Combine(TestDirectory, "test.txt");
+        File.WriteAllText(path1, "abc");
+        var path2 = Path.Combine(TestDirectory, "processing.txt");
+        WriteBigFileText(path2, TtsFullRequest, 500);
 
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.Narakeet);
         page.SelectLanguage(TextToSpeechFormConstants.GermanStandard);
         page.SelectVoice(TextToSpeechFormConstants.NarakeetVoiceHans);
-        page.UploadFile(path);
+        
+        page.UploadFile(path1);
+        page.RemoveUploadedFile();
+
+        page.UploadFile(path2);
         page.ClickSubmit();
 
         Assert.True(page.IsProgressPanelVisible());
