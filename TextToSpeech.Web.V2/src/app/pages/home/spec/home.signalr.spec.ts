@@ -1,7 +1,9 @@
 import { By } from '@angular/platform-browser';
-import { createHomeFixture, fillValidFormForOpenAI, DOWNLOAD_BUTTON_SELECTOR, SUBMIT_BUTTON_SELECTOR, PROGRESS_PROCESSING_VALUE, PROGRESS_COMPLETE_VALUE, PROGRESS_VALID_VALUE } from './home.page.spec-setup';
+import { createHomeFixture, fillValidFormForOpenAI, DOWNLOAD_BUTTON_SELECTOR, PROGRESS_PROCESSING_VALUE, PROGRESS_COMPLETE_VALUE, PROGRESS_VALID_VALUE, clickSubmit, expectOneEndsWith } from './home.page.spec-setup';
 import { SPEECH_BASE } from '../../../core/http/endpoints';
 import { SignalRService } from '../../../core/realtime/signalr.service';
+import { SignalRStub } from '../../../../testing/signalr-test-utils';
+import { AUDIO_STATUS } from '../home.types';
 
 describe('HomePage - SignalR and Progress', () => {
   it('enables Download button when SignalR reports Completed', async () => {
@@ -14,19 +16,18 @@ describe('HomePage - SignalR and Progress', () => {
     fillValidFormForOpenAI(component);
     fixture.detectChanges();
 
-    fixture.debugElement.query(By.css(SUBMIT_BUTTON_SELECTOR)).nativeElement.click();
-    fixture.detectChanges();
-    const testRequest = httpController.expectOne(SPEECH_BASE);
+    clickSubmit(fixture);
+    const testRequest = expectOneEndsWith(httpController, SPEECH_BASE);
     const formdata = testRequest.request.body as FormData;
     expect(formdata.get('TtsRequestOptions.ResponseFormat')).toBe('mp3');
     testRequest.flush('id-1');
 
-    signalRStub.trigger('id-1', 'Processing', PROGRESS_PROCESSING_VALUE);
+    signalRStub.trigger('id-1', AUDIO_STATUS.Processing, PROGRESS_PROCESSING_VALUE);
     fixture.detectChanges();
-    expect(component.status()).toBe('Processing');
-    signalRStub.trigger('id-1', 'Completed', PROGRESS_COMPLETE_VALUE);
+    expect(component.status()).toBe(AUDIO_STATUS.Processing);
+    signalRStub.trigger('id-1', AUDIO_STATUS.Completed, PROGRESS_COMPLETE_VALUE);
     fixture.detectChanges();
-    expect(component.status()).toBe('Completed');
+    expect(component.status()).toBe(AUDIO_STATUS.Completed);
     const downloadButton = fixture.debugElement.query(By.css(DOWNLOAD_BUTTON_SELECTOR));
     expect(downloadButton.properties['disabled']).toBeFalse();
   });
@@ -41,25 +42,16 @@ describe('HomePage - SignalR and Progress', () => {
     fillValidFormForOpenAI(component);
     fixture.detectChanges();
 
-    fixture.debugElement.query(By.css(SUBMIT_BUTTON_SELECTOR)).nativeElement.click();
-    fixture.detectChanges();
-    const testRequest = httpController.expectOne(SPEECH_BASE);
+    clickSubmit(fixture);
+    const testRequest = expectOneEndsWith(httpController, SPEECH_BASE);
     testRequest.flush('file-xyz');
 
-    stub.trigger('file-xyz', 'Processing', PROGRESS_VALID_VALUE);
+    stub.trigger('file-xyz', AUDIO_STATUS.Processing, PROGRESS_VALID_VALUE);
     fixture.detectChanges();
     expect(component.progress()).toBe(PROGRESS_VALID_VALUE);
 
-    stub.trigger('file-xyz', 'Processing', Number.NaN);
+    stub.trigger('file-xyz', AUDIO_STATUS.Processing, Number.NaN);
     fixture.detectChanges();
     expect(component.progress()).toBe(PROGRESS_VALID_VALUE);
   });
 });
-
-class SignalRStub {
-  private callback?: (id: string, status: string, progress: number, error?: string) => void;
-  startConnection() { return; }
-  addAudioStatusListener(cb: (id: string, s: string, p: number, e?: string) => void) { this.callback = cb; }
-  cancelProcessing() { return; }
-  trigger(id: string, s: string, p: number, e?: string) { this.callback?.(id, s, p, e); }
-}

@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { SERVER_URL } from '../../constants/tokens';
+import { AudioStatusCallback } from './audio-status-callback';
+
 /** Wrapper around SignalR hub for audio generation status updates. */
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
@@ -20,7 +22,7 @@ export class SignalRService {
     }
   }
 
-  addAudioStatusListener(callback: (fileId: string, status: string, progress: number | null, errorMessage?: string) => void) {
+  addAudioStatusListener(callback: AudioStatusCallback) {
     this.hub?.on('AudioStatusUpdated', (fileId: string, status: string, progress?: number | null, errorMessage?: string) => {
       callback(fileId, status, progress ?? null, errorMessage);
     });

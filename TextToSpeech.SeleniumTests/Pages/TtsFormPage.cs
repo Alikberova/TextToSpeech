@@ -26,8 +26,7 @@ public sealed class TtsFormPage
     private IWebElement VoiceSelect => _driver.FindElement(By.CssSelector($"mat-select[name='{NameAttributes.Voice}']"));
     private IWebElement FileInput => _driver.FindElement(By.Id(Ids.FileInput));
     private IWebElement SampleTextArea => _driver.FindElement(By.CssSelector($"textarea[data-testid='{DataTestId.SampleTextArea}']"));
-    private IWebElement? SamplePlayButton => _driver.FindElements(By.XPath("//button[normalize-space()='play_circle']")).FirstOrDefault();
-    private IWebElement? SamplePauseButton => _driver.FindElements(By.XPath("//button[normalize-space()='pause_circle']")).FirstOrDefault();
+    private IWebElement? SamplePlayButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SamplePlayButton}']"));
     private IWebElement SubmitButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.SubmitBtn}']"));
     private IWebElement DownloadButton => _wait.UntilVisibleAndEnabled(DownloadButtonBy);
     private IWebElement ClearButton => _driver.FindElement(By.CssSelector($"button[data-testid='{DataTestId.ClearBtn}']"));
@@ -42,10 +41,10 @@ public sealed class TtsFormPage
     public bool IsFormElementErrorlVisible() => _driver.FindElements(By.TagName("mat-error")).Count != 0;
     public bool IsProgressPanelVisible() => _driver.FindElements(By.CssSelector(Selectors.ProgressPanel)).Count != 0;
     public bool IsCancelButtonVisible() => CancelProcessingButton is not null;
-    public bool IsPlayButtonVisible() => SamplePlayButton is not null;
-    public bool IsPauseButtonVisible()
+
+    public bool IsIconVisible(string icon)
     {
-        return _wait.Until(_ => SamplePauseButton is not null);
+        return _wait.Until(_ => SamplePlayButton?.Text.Trim() == icon);
     }
 
     public bool IsDownloadHiddenOrDisabled()
@@ -128,8 +127,7 @@ public sealed class TtsFormPage
     public void ClickSubmit() => SubmitButton.Click();
     public void ClickClear() => ClearButton.Click();
     public void ClickDownload() => DownloadButton.Click();
-    public void ClickPlay() => SamplePlayButton!.Click();
-    public void ClickPause() => SamplePauseButton!.Click();
+    public void ClickPlayButton() => SamplePlayButton!.Click();
 
     public void RemoveUploadedFile()
     {

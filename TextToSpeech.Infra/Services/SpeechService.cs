@@ -85,7 +85,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         string hash,
         CancellationToken cancellationToken)
     {
-        AudioFile audioFile = null!;
+        AudioFile? audioFile = null;
+        var finalStatus = Status.Processing;
         string? errorMessage = null;
         try
         {
@@ -101,20 +102,20 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 fileId
             );
 
-            audioFile.Status = Status.Processing;
+            finalStatus = Status.Processing;
 
-            _ = UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString());
+            await UpdateAudioStatus(fileId, finalStatus.ToString());
 
             var ttsService = _ttsServiceFactory.Get(ttsApi);
 
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
 
             var progress = new Progress<ProgressReport>();
-            progress.ProgressChanged += async (sender, report) =>
+            progress.ProgressChanged += async (_, report) =>
             {
                 if (ShouldTriggerUpdate(report.FileId, report.ProgressPercentage))
                 {
-                    await UpdateAudioStatus(report.FileId, Status.Processing.ToString(), report.ProgressPercentage).ConfigureAwait(false);
+                    await UpdateAudioStatus(report.FileId, finalStatus.ToString(), report.ProgressPercentage).ConfigureAwait(false);
                     _lastProgressDictionary[fileId] = report.ProgressPercentage;
                 }
             };
@@ -132,7 +133,9 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             await File.WriteAllBytesAsync(localFilePath, bytes, cancellationToken);
 
-            audioFile.Status = Status.Completed;
+            finalStatus = Status.Completed;
+
+            audioFile.Status = finalStatus;
             audioFile.Data = bytes;
 
             _metaDataService.AddMetaData(localFilePath, title: fileName);
@@ -142,18 +145,26 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
         catch (OperationCanceledException)
         {
-            audioFile.Status = Status.Canceled;
+            finalStatus = Status.Canceled;
         }
         catch (Exception ex)
         {
-            audioFile.Status = Status.Failed;
+            finalStatus = Status.Failed;
             errorMessage = ex.Message;
             throw;
         }
         finally
         {
-            await UpdateAudioStatus(audioFile.Id, audioFile.Status.ToString(), errorMessage: errorMessage);
-            _logger.LogInformation("Speech processing is {status} for {fileId}", audioFile.Status, fileId);
+            try
+            {
+                await UpdateAudioStatus(fileId, finalStatus.ToString(), errorMessage: errorMessage);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed to update status for {fileId}", fileId);
+            }
+
+            _logger.LogInformation("Speech processing is {status} for {fileId}", finalStatus, fileId);
         }
     }
 

@@ -39,6 +39,6 @@ public sealed class AudioController : ControllerBase
             return NotFound("File not found.");
         }
 
-        return File(System.IO.File.ReadAllBytes(filePath), "audio/mpeg");
+        return File(await System.IO.File.ReadAllBytesAsync(filePath), "audio/mpeg");
     }
 }

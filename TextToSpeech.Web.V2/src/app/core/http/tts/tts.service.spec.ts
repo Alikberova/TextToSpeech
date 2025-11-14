@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TtsService } from './tts.service';
 import { SpeechResponseFormat, TtsRequest } from '../../../dto/tts-request';
 import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from '../endpoints';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { getZonelessProviders } from '../../../../testing/spec-test-utils';
 
 describe('TtsService', () => {
   let service: TtsService;
@@ -13,7 +13,7 @@ describe('TtsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideZonelessChangeDetection(),
+        ...getZonelessProviders(),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

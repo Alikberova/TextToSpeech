@@ -113,7 +113,7 @@ using var scope = app.Services.CreateScope();
 
 await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
-app.Run();
+await app.RunAsync();
 
 static void AddAuthentication(WebApplicationBuilder builder)
 {

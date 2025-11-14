@@ -1,18 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
 import { I18nService } from './i18n.service';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
+import { getTranslateTestingModule, getZonelessProviders } from '../../../testing/spec-test-utils';
 
 describe('I18nService', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          useDefaultLang: true,
-        }),
-      ],
-      providers: [provideZonelessChangeDetection()],
+      imports: [getTranslateTestingModule()],
+      providers: getZonelessProviders(),
     }).compileComponents();
   });
 

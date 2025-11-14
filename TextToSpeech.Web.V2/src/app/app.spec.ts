@@ -1,20 +1,16 @@
-import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { provideRouter } from '@angular/router';
-import { TranslateLoader, TranslateModule, TranslateFakeLoader } from '@ngx-translate/core';
+import { getTranslateTestingModule, getZonelessProviders } from '../testing/spec-test-utils';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
         App,
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          useDefaultLang: true,
-        }),
+        getTranslateTestingModule(),
       ],
-      providers: [provideZonelessChangeDetection(), provideRouter([])]
+      providers: getZonelessProviders([provideRouter([])]),
     }).compileComponents();
   });
 

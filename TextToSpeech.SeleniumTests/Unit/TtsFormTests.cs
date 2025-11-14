@@ -22,7 +22,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
     public void Selecting_OpenAI_Enables_Voice_And_Shows_Model()
     {
         var page = CreatePage();
-        page.SelectProvider("OpenAI");
+        page.SelectProvider(SharedConstants.OpenAI);
         Assert.False(page.IsVoiceDisabled());
         Assert.True(page.IsModelEnabled());
     }
@@ -31,7 +31,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
     public void Selecting_Narakeet_Shows_Language_Then_Voice()
     {
         var page = CreatePage();
-        page.SelectProvider("Narakeet");
+        page.SelectProvider(SharedConstants.Narakeet);
         Assert.True(page.IsLanguageEnabled());
 
         page.SelectLanguage(TextToSpeechFormConstants.GermanStandard);
@@ -80,7 +80,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
     public void Sample_Play_With_Missing_Fields_Shows_Validation()
     {
         var page = CreatePage();
-        page.ClickPlay();
+        page.ClickPlayButton();
         Assert.True(page.IsFormElementErrorlVisible());
     }
 
@@ -94,14 +94,17 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         page.TypeSampleText();
 
-        page.ClickPlay();
-        Assert.True(page.IsPauseButtonVisible());
+        const string playIcon = "play_circle";
+        const string pauseIcon = "pause_circle";
 
-        page.ClickPause();
-        Assert.True(page.IsPlayButtonVisible());
+        page.ClickPlayButton();
+        Assert.True(page.IsIconVisible(pauseIcon));
 
-        page.ClickPlay();
-        Assert.True(page.IsPauseButtonVisible());
+        page.ClickPlayButton();
+        Assert.True(page.IsIconVisible(playIcon));
+
+        page.ClickPlayButton();
+        Assert.True(page.IsIconVisible(pauseIcon));
     }
 }
 

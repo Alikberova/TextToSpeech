@@ -1,6 +1,6 @@
 import { OPEN_AI_KEY, OPEN_AI_VOICES } from '../../constants/tts-constants';
 import type { NarakeetVoice } from '../../dto/narakeet-voice';
-import type { AudioStatus, SelectOption } from './home.types';
+import { AUDIO_STATUS, type AudioStatus, type SelectOption } from './home.types';
 
 // Capitalize only the first letter, leave the rest intact
 export function capitalizeFirstLetter(text: string): string {
@@ -42,17 +42,17 @@ export function getVoicesForProvider(
 // Map server status to an appropriate Material icon name
 export function mapStatusToIcon(status: AudioStatus): string {
   switch (status) {
-    case 'Created':
+    case AUDIO_STATUS.Created:
       return 'schedule';
-    case 'Processing':
+    case AUDIO_STATUS.Processing:
       return 'autorenew';
-    case 'Completed':
+    case AUDIO_STATUS.Completed:
       return 'check_circle';
-    case 'Failed':
+    case AUDIO_STATUS.Failed:
       return 'error';
-    case 'Canceled':
+    case AUDIO_STATUS.Canceled:
       return 'cancel';
-    case 'Idle':
+    case AUDIO_STATUS.Idle:
     default:
       return 'info';
   }

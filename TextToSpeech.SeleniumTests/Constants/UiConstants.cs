@@ -12,6 +12,7 @@ internal static class UiConstants
         public const string DownloadBtn = "downloadBtn";
         public const string ClearBtn = "clearBtn";
         public const string SampleTextArea = "sampleTextArea";
+        public const string SamplePlayButton = "samplePlayButton";
     }
 
     internal static class NameAttributes

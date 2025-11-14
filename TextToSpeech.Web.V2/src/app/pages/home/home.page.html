@@ -210,7 +210,8 @@
       type="button"
       class="sample-play-overlay"
       [attr.aria-label]="sampleStatus() === 'playing' ? ('home.sample.pause' | translate) : ('home.sample.play' | translate)"
-      (click)="playOrToggleSample()">
+      (click)="playOrToggleSample()"
+      data-testid="samplePlayButton">
       <mat-icon>
         {{ sampleStatus() === 'playing' ? 'pause_circle' : 'play_circle' }}
       </mat-icon>

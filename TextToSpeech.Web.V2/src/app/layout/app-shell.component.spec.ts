@@ -1,20 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { AppShellComponent } from './app-shell.component';
 import { provideRouter, Router } from '@angular/router';
-import { TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
-import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { Component } from '@angular/core';
+import { getTranslateTestingModule, getZonelessProviders } from '../../testing/spec-test-utils';
 
 describe('AppShellComponent layout', () => {
   it('centers the footer container', async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        AppShellComponent,
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          useDefaultLang: true,
-        }),
-      ],
-      providers: [provideZonelessChangeDetection(), provideRouter([])],
+      imports: [AppShellComponent, getTranslateTestingModule()],
+      providers: getZonelessProviders([provideRouter([])]),
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppShellComponent);
@@ -39,21 +33,14 @@ describe('AppShellComponent layout', () => {
     class DummyComponent {}
 
     await TestBed.configureTestingModule({
-      imports: [
-        AppShellComponent,
-        TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          useDefaultLang: true,
-        }),
-      ],
-      providers: [
-        provideZonelessChangeDetection(),
+      imports: [AppShellComponent, getTranslateTestingModule()],
+      providers: getZonelessProviders([
         provideRouter([
           { path: '', component: DummyComponent },
           { path: 'feedback', component: DummyComponent },
           { path: 'about', component: DummyComponent },
         ]),
-      ],
+      ]),
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppShellComponent);

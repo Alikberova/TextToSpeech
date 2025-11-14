@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
 import {
   HttpRequest,
   HttpHandlerFn,
@@ -9,14 +8,14 @@ import {
 import { of } from 'rxjs';
 import { API_URL } from '../../../constants/tokens';
 import { baseUrlInterceptor } from './api-url-interceptor';
+import { getZonelessProviders } from '../../../../testing/spec-test-utils';
 
 describe('baseUrlInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideZonelessChangeDetection(),
+      providers: getZonelessProviders([
         { provide: API_URL, useValue: 'https://api.example.com' },
-      ],
+      ]),
     });
   });
 

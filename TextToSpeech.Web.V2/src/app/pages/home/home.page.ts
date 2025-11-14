@@ -20,7 +20,7 @@ import { NarakeetVoice } from '../../dto/narakeet-voice';
 import { SpeechResponseFormat } from '../../dto/tts-request';
 import { SampleAudioPlayer } from './home.sample-audio';
 import { buildDownloadFilename, getLanguagesFromNarakeetVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
-import type { AudioStatus, SelectOption } from './home.types';
+import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
 
 @Component({
   selector: 'app-home-page',
@@ -105,9 +105,9 @@ export class HomePage implements OnInit, OnDestroy {
   // Sample playback state
   sampleText = signal<string>('');
   // Playback status for the sample audio
-  sampleStatus = signal<'stopped' | 'playing' | 'paused'>('stopped');
+  sampleStatus = signal<SampleStatus>(SAMPLE_STATUS.Stopped);
   sampleError = signal<string | null>(null);
-  status = signal<AudioStatus>('Idle');
+  status = signal<AudioStatus>(AUDIO_STATUS.Idle);
   progress = signal<number>(0);
   errorMessage = signal<string | undefined>(undefined);
 
@@ -170,7 +170,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
       this.errorMessage.set(errorMessage);
       console.log(`Progress update for ${fileId}: status=${status}, progress=${progress}, error=${errorMessage}`);
-      if (status === 'Failed') {
+      if (status === AUDIO_STATUS.Failed) {
         this.openErrorSnackbar('home.progress.failed');
       }
     });
@@ -254,31 +254,22 @@ export class HomePage implements OnInit, OnDestroy {
   playOrToggleSample(): void {
     // Toggle between play/pause/resume based on current state
     const state = this.sampleStatus();
-    if (state === 'playing') {
+    if (state === SAMPLE_STATUS.Playing) {
       this.pauseSample();
       return;
     }
-    if (state === 'paused') {
+    if (state === SAMPLE_STATUS.Paused) {
       this.resumeSample();
       return;
     }
     this.sampleError.set(null);
-    // Cancel any inflight request from a previous click
-    if (this.sampleRequestSub) {
-      try {
-        this.sampleRequestSub.unsubscribe();
-      } catch {
-        // no-op
-      }
-      this.sampleRequestSub = undefined;
-    }
-    if (!this.provider() ||
-      (this.provider() === NARAKEET_KEY && !this.language()) ||
-      !this.voice()) {
+    this.cancelSampleRequest();
+    const missingField = this.findFirstMissingField({ includeModel: false, includeFile: false });
+    if (missingField) {
       // Flag sample attempt for field highlighting (but do not mark upload/file errors)
       this.sampleAttempt.set(true);
       // Focus first missing field for better UX
-      this.focusSampleMissing();
+      this.focusSampleMissing(missingField);
       this.openErrorSnackbar('home.errors.required');
       return;
     }
@@ -290,7 +281,7 @@ export class HomePage implements OnInit, OnDestroy {
         model: this.requiresModel() ? this.model() || undefined : undefined,
         speed: this.speed(),
         voice: this.voice()!,
-        // Force MP3 for sample per requirements
+        // Force MP3 for sample
         responseFormat: SpeechResponseFormat.MP3,
       },
     } as const;
@@ -299,11 +290,11 @@ export class HomePage implements OnInit, OnDestroy {
         this.sampleAttempt.set(false);
         this.samplePlayer.setBlob(blob);
         this.samplePlayer.play()
-          .then(() => this.sampleStatus.set('playing'))
+          .then(() => this.sampleStatus.set(SAMPLE_STATUS.Playing))
           .catch((e) => {
             console.error(e);
             this.sampleError.set('permission');
-            this.sampleStatus.set('stopped');
+            this.sampleStatus.set(SAMPLE_STATUS.Stopped);
           });
       },
       error: (e) => {
@@ -317,29 +308,22 @@ export class HomePage implements OnInit, OnDestroy {
 
   pauseSample(): void {
     this.samplePlayer.pause();
-    this.sampleStatus.set('paused');
+    this.sampleStatus.set(SAMPLE_STATUS.Paused);
   }
 
   resumeSample(): void {
     this.samplePlayer.resume()
-      .then(() => this.sampleStatus.set('playing'))
+      .then(() => this.sampleStatus.set(SAMPLE_STATUS.Playing))
       .catch((e) => {
         console.error(e);
-        this.sampleStatus.set('stopped');
+        this.sampleStatus.set(SAMPLE_STATUS.Stopped);
       });
   }
 
   stopSample(): void {
-    if (this.sampleRequestSub) {
-      try {
-        this.sampleRequestSub.unsubscribe();
-      } catch {
-        // no-op
-      }
-      this.sampleRequestSub = undefined;
-    }
+    this.cancelSampleRequest();
     this.samplePlayer.stop();
-    this.sampleStatus.set('stopped');
+    this.sampleStatus.set(SAMPLE_STATUS.Stopped);
   }
 
   submit(): void {
@@ -360,13 +344,13 @@ export class HomePage implements OnInit, OnDestroy {
         responseFormat: this.responseFormat(),
       },
     } as const;
-    this.status.set('Created');
+    this.status.set(AUDIO_STATUS.Created);
     this.tts.createSpeech(req).subscribe({
       next: (id: string) => {
         this.currentFileId.set(id);
       },
       error: (e) => {
-        this.status.set('Failed');
+        this.status.set(AUDIO_STATUS.Failed);
         console.error(e);
         this.openErrorSnackbar('home.errors.failed');
       },
@@ -394,7 +378,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.announce('Form reset');
     this.submitAttempt.set(false);
     this.fileTouched.set(false);
-    this.status.set('Idle');
+    this.status.set(AUDIO_STATUS.Idle);
     this.progress.set(0);
     this.currentFileId.set(null);
   }
@@ -441,11 +425,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   private focusFirstInvalid() {
     queueMicrotask(() => {
-      if (!this.provider()) { this.providerEl?.focus(); return; }
-      if (this.requiresModel() && !this.model()) { this.modelEl?.focus(); return; }
-      if (this.provider() === NARAKEET_KEY && !this.language()) { this.languageEl?.focus(); return; }
-      if (!this.voice()) { this.voiceEl?.focus(); return; }
-      if (!this.file()) { this.fileInput?.nativeElement.focus(); return; }
+      const missingField = this.findFirstMissingField({ includeModel: true, includeFile: true });
+      this.focusField(missingField);
     });
   }
 
@@ -467,12 +448,63 @@ export class HomePage implements OnInit, OnDestroy {
     this.lastAutoSampleText.set(next);
   }
 
-  private focusSampleMissing(): void {
+  private focusField(field: FieldKey | null | undefined): void {
+    switch (field) {
+      case 'provider':
+        this.providerEl?.focus();
+        break;
+      case 'model':
+        this.modelEl?.focus();
+        break;
+      case 'language':
+        this.languageEl?.focus();
+        break;
+      case 'voice':
+        this.voiceEl?.focus();
+        break;
+      case 'file':
+        this.fileInput?.nativeElement.focus();
+        break;
+      default:
+        break;
+    }
+  }
+
+  private findFirstMissingField(options: { includeModel: boolean; includeFile: boolean }): FieldKey | null {
+    if (!this.provider()) {
+      return 'provider';
+    }
+    if (options.includeModel && this.requiresModel() && !this.model()) {
+      return 'model';
+    }
+    if (this.provider() === NARAKEET_KEY && !this.language()) {
+      return 'language';
+    }
+    if (!this.voice()) {
+      return 'voice';
+    }
+    if (options.includeFile && !this.file()) {
+      return 'file';
+    }
+    return null;
+  }
+
+  private focusSampleMissing(field?: FieldKey): void {
     queueMicrotask(() => {
-      if (!this.provider()) { this.providerEl?.focus(); return; }
-      if (this.provider() === NARAKEET_KEY && !this.language()) { this.languageEl?.focus(); return; }
-      if (!this.voice()) { this.voiceEl?.focus(); return; }
+      const missingField = field ?? this.findFirstMissingField({ includeModel: false, includeFile: false });
+      this.focusField(missingField);
     });
+  }
+
+  private cancelSampleRequest(): void {
+    if (this.sampleRequestSub) {
+      try {
+        this.sampleRequestSub.unsubscribe();
+      } catch {
+        // no-op
+      }
+      this.sampleRequestSub = undefined;
+    }
   }
 
   private loadNarakeetVoices(errorMessage: string): void {

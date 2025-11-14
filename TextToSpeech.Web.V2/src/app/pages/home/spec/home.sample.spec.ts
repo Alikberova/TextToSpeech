@@ -1,10 +1,9 @@
-import { createHomeFixture, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, providerKeyWithModel } from './home.page.spec-setup';
+import { createHomeFixture, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, DEFAULT_SAMPLE_I18N_KEY, LOCALE_UK, LOCALE_EN, clickPlayButton, selectOpenAiMinimal, expectOneEndsWith } from './home.page.spec-setup';
 import { ComponentFixture } from '@angular/core/testing';
 import { Signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HomePage } from '../home.page';
 import { By } from '@angular/platform-browser';
-import { OPEN_AI_VOICES } from '../../../constants/tts-constants';
 import { SPEECH_SAMPLE } from '../../../core/http/endpoints';
 import { HttpTestingController } from '@angular/common/http/testing';
 
@@ -53,36 +52,31 @@ describe('HomePage - Sample text and file interactions', () => {
 
   it('initializes sampleText from i18n key with FakeLoader and respects user edits on language change', async () => {
     // With TranslateFakeLoader, translations echo keys
-    expect(component.sampleText()).toBe('home.sample.defaultText');
+    expect(component.sampleText()).toBe(DEFAULT_SAMPLE_I18N_KEY);
 
     const userText = 'My personal sample input';
     component.onSampleTextInput(userText);
     fixture.detectChanges();
     // Trigger language change and ensure it does not overwrite user edits
     const translate = fixture.debugElement.injector.get(TranslateService) as TranslateService;
-    translate.use('uk');
+    translate.use(LOCALE_UK);
     expect(component.sampleText()).toBe(userText);
 
     // If user clears back to empty (treated as not edited), next language change applies default again
     component.onSampleTextInput('');
     fixture.detectChanges();
-    translate.use('en');
+    translate.use(LOCALE_EN);
     fixture.detectChanges();
-    expect(component.sampleText()).toBe('home.sample.defaultText');
+    expect(component.sampleText()).toBe(DEFAULT_SAMPLE_I18N_KEY);
   });
 
   it('sample play posts to /speech/sample', async () => {
-    const providerWithModel = providerKeyWithModel();
-    component.onProviderChange(providerWithModel);
-    // No language for OpenAI
-    component.voice.set(OPEN_AI_VOICES[0].key);
+    selectOpenAiMinimal(component);
     fixture.detectChanges();
 
-    const playBtn = fixture.debugElement.query(By.css('button[mat-icon-button]'));
-    playBtn.nativeElement.click();
-    fixture.detectChanges();
+    clickPlayButton(fixture);
 
-    const testRequest = httpController.expectOne(SPEECH_SAMPLE);
+    const testRequest = expectOneEndsWith(httpController, SPEECH_SAMPLE);
     expect(testRequest.request.method).toBe('POST');
     testRequest.flush(new Blob([new Uint8Array([1])], { type: 'audio/mpeg' }));
   });
