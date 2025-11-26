@@ -6,7 +6,7 @@ import { AudioStatusCallback } from '../app/core/realtime/audio-status-callback'
  * Assigns a mock HubConnection to the SignalRService private field for testing.
  */
 export function setSignalRHub(service: SignalRService, hub: Partial<signalR.HubConnection>): void {
-  (service as unknown as { hub?: signalR.HubConnection }).hub = hub as signalR.HubConnection;
+  (service as unknown as { hub?: Partial<signalR.HubConnection> }).hub = hub;
 }
 
 /**

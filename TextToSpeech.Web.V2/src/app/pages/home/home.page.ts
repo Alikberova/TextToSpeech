@@ -190,12 +190,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   // 8) Public event handlers and actions (template-facing)
   onProviderChange(provider: string): void {
-    const providerKey = (provider === OPEN_AI_KEY || provider === NARAKEET_KEY) ? provider: '';
+    const providerKey = (provider === OPEN_AI_KEY || provider === NARAKEET_KEY) ? provider : '';
     this.provider.set(providerKey);
     this.model.set('');
     this.voice.set('');
     this.language.set('');
-    if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey]!.length > 0) {
+    if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey].length > 0) {
       this.model.set(this.providerModels[providerKey][0]);
     }
     if (providerKey === NARAKEET_KEY) {

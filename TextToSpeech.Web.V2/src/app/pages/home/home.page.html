@@ -135,10 +135,9 @@
   <div class="upload">
     <label class="upload-label" [attr.for]="fileInputId">{{ 'home.file.label' | translate }}</label>
 
-    <div
+    <button
+      type="button"
       class="dropzone"
-      tabindex="0"
-      role="button"
       (keydown.enter)="openFileDialog(fileInput)"
       (keydown.space)="openFileDialog(fileInput)"
       (click)="openFileDialog(fileInput)"
@@ -155,7 +154,7 @@
         <span class="link">{{ 'home.file.browse' | translate }}</span>
         <small id="fileHelp">{{ 'home.file.help' | translate:{ types: acceptableTypesText() } }}</small>
       </div>
-    </div>
+    </button>
 
     <input
       #fileInput
@@ -164,7 +163,7 @@
       type="file"
       (change)="onFileSelected(fileInput)"
       [attr.accept]="acceptAttr"
-      aria-hidden="true"
+      hidden
       data-testid="fileInput"
     />
 
