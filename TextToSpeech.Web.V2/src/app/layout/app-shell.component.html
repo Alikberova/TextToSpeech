@@ -2,17 +2,17 @@
 <a class="skip-link" href="#main">{{ 'app.skipToContent' | translate }}</a>
 
 <!-- Header: sticky dense top app bar with product name and actions -->
-<header role="banner">
+<header>
   <mat-toolbar color="primary" class="app-toolbar" [class.sticky]="true">
     <div class="toolbar-content">
-      <div class="brand" role="heading" aria-level="1">
+      <h1 class="brand">
         <!-- Exact match so home is not active on other routes -->
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Home">
           <span class="product">{{ title() }}</span>
         </a>
-      </div>
+      </h1>
 
-      <nav class="nav" role="navigation" aria-label="Primary">
+      <nav class="nav" aria-label="Primary">
         <!-- Use exact matching so only the active link is underlined -->
         <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.generate' | translate }}</a>
         <a mat-button routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.feedback' | translate }}</a>
@@ -36,13 +36,13 @@
   </mat-toolbar>
 </header>
 
-<main id="main" role="main" class="app-main">
+<main id="main" class="app-main">
   <div class="container">
     <router-outlet></router-outlet>
   </div>
 </main>
 
-<footer role="contentinfo" class="app-footer">
+<footer class="app-footer">
   <div class="container footer-content">
     <div class="copy">© {{ 'app.footer.copyright' | translate }}</div>
     <nav class="footer-nav" aria-label="Footer">

@@ -1,4 +1,3 @@
-
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
 // components according to the Material 3 design spec.
@@ -8,14 +7,12 @@
 @use 'styles/tokens' as *;
 
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$magenta-palette,
-      tertiary: mat.$violet-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme((color: (primary: mat.$magenta-palette,
+        tertiary: mat.$violet-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
 }
 
 body {
@@ -33,11 +30,15 @@ body {
 
   // Reset the user agent margin.
   margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
 
 // Pastel background accents that harmonize with magenta–violet theme
 :root {
@@ -46,12 +47,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 /* Ensure sizing calculations don’t cause overflow/cropping */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 // Utility: visually-hidden for ARIA live regions
 .visually-hidden {
   position: absolute !important;
-  height: 1px; width: 1px; overflow: hidden;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
-  white-space: nowrap; border: 0; padding: 0; margin: -1px;
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
 }

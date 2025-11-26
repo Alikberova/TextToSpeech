@@ -7,6 +7,7 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
+
   &:focus {
     left: 16px;
     top: 8px;
@@ -27,6 +28,7 @@
   z-index: 1000;
   min-height: $appbar-height;
   backdrop-filter: saturate(1.2) blur(6px);
+
   .toolbar-content {
     @include container();
     display: flex;
@@ -34,27 +36,33 @@
     justify-content: space-between;
     gap: $space-4;
   }
+
   .brand a {
     color: inherit;
     text-decoration: none;
     font-weight: 600;
     letter-spacing: 0.2px;
   }
+
   .brand .product {
     font-variation-settings: 'wght' 650;
   }
+
   .brand .descriptor {
     opacity: 0.9;
   }
+
   .nav a.active {
     text-decoration: underline;
     text-underline-offset: 6px;
   }
+
   .actions {
     display: flex;
     align-items: center;
     gap: $space-2;
   }
+
   .lang-toggle {
     @extend %elevated;
   }
@@ -73,6 +81,7 @@
   padding: $space-6 0;
   background: var(--mat-sys-surface-container);
   border-top: 1px solid var(--mat-sys-outline-variant);
+
   .footer-content {
     display: flex;
     align-items: center;
@@ -81,6 +90,7 @@
     flex-wrap: wrap;
     font: var(--mat-sys-body-small);
   }
+
   .footer-nav a {
     margin-right: $space-2;
   }
