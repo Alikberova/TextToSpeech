@@ -7,12 +7,9 @@
 	<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <UserSecretsId>0489380f-7fed-43e7-b774-a8589d824f1c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
-    <PackageReference Include="MartinCostello.Logging.XUnit" Version="0.6.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Selenium.Support" Version="4.21.0" />
@@ -26,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TextToSpeech.TestingInfra\TextToSpeech.TestingInfra.csproj" />
+    <ProjectReference Include="..\TextToSpeech.Infra\TextToSpeech.Infra.csproj" />
   </ItemGroup>
 
 </Project>

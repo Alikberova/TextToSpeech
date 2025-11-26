@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeech.IntegrationTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeech.SeleniumTests", "TextToSpeech.SeleniumTests\TextToSpeech.SeleniumTests.csproj", "{CECEA4BF-8588-6AE4-A846-DEA49C6EF6B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeech.TestingInfra", "TextToSpeech.TestingInfra\TextToSpeech.TestingInfra.csproj", "{7B94B98C-35A3-9176-F4A0-32053A44A981}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextToSpeech.UnitTests", "TextToSpeech.UnitTests\TextToSpeech.UnitTests.csproj", "{2DD2E5BB-6F6F-F77D-F9D5-8028B6087EC5}"
 EndProject
 Global
@@ -53,10 +51,6 @@ Global
 		{CECEA4BF-8588-6AE4-A846-DEA49C6EF6B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CECEA4BF-8588-6AE4-A846-DEA49C6EF6B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CECEA4BF-8588-6AE4-A846-DEA49C6EF6B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B94B98C-35A3-9176-F4A0-32053A44A981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B94B98C-35A3-9176-F4A0-32053A44A981}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B94B98C-35A3-9176-F4A0-32053A44A981}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B94B98C-35A3-9176-F4A0-32053A44A981}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2DD2E5BB-6F6F-F77D-F9D5-8028B6087EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2DD2E5BB-6F6F-F77D-F9D5-8028B6087EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DD2E5BB-6F6F-F77D-F9D5-8028B6087EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,7 +62,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C27874E4-3039-5B29-8AB6-C2291DBEA060} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 		{CECEA4BF-8588-6AE4-A846-DEA49C6EF6B0} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
-		{7B94B98C-35A3-9176-F4A0-32053A44A981} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 		{2DD2E5BB-6F6F-F77D-F9D5-8028B6087EC5} = {CF9E2D8C-15F7-4744-A53D-6F5B1E4BA3C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  backend-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
@@ -94,3 +94,41 @@ jobs:
         if: matrix.test_type == 'Selenium' && failure()
         run: |
           docker logs api || true
+  
+  frontend-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      FRONTEND_DIR: TextToSpeech.Web.V2
+    defaults:
+      run:
+        working-directory: ${{ env.FRONTEND_DIR }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: |
+          npx ng lint
+
+      - name: Unit tests
+        run: |
+          npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: frontend-coverage
+          path: ${{ env.FRONTEND_DIR }}/coverage/**
+          if-no-files-found: ignore

@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Repositories;
-using TextToSpeech.TestingInfra.DataGenerators;
-using TextToSpeech.TestingInfra.Mocks;
-using TextToSpeech.TestingInfra.Utils;
+using TextToSpeech.Infra.Constants;
+using TextToSpeech.IntegrationTests.Mocks;
+using TextToSpeech.IntegrationTests.Utils;
 using Xunit.Abstractions;
 using static TextToSpeech.Core.Enums;
 
@@ -170,11 +170,14 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         var formData = new MultipartFormDataContent
         {
             { new StringContent(speechRequest.TtsApi), nameof(speechRequest.TtsApi) },
-            { new StringContent(speechRequest.Model!), nameof(speechRequest.Model) },
-            { new StringContent(speechRequest.Voice.ToString()), nameof(speechRequest.Voice) },
-            { new StringContent(speechRequest.Speed.ToString(CultureInfo.CurrentCulture)), nameof(speechRequest.Speed) },
+            { new StringContent(speechRequest.LanguageCode!), nameof(speechRequest.LanguageCode) },
+            { new StringContent(speechRequest.TtsRequestOptions.Model ?? string.Empty), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Model)}" },
+            { new StringContent(speechRequest.TtsRequestOptions.Voice), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Voice)}" },
+            { new StringContent(speechRequest.TtsRequestOptions.Speed.ToString(CultureInfo.InvariantCulture)), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.Speed)}" },
+            { new StringContent(speechRequest.TtsRequestOptions.ResponseFormat.ToString()), $"{nameof(speechRequest.TtsRequestOptions)}.{nameof(TtsRequestOptions.ResponseFormat)}" },
             { fileContent, nameof(speechRequest.File), speechRequest.File.FileName }
         };
+
         return formData;
     }
 }

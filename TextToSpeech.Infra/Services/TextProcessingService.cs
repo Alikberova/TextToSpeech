@@ -46,7 +46,7 @@ public sealed class TextProcessingService : ITextProcessingService
             {
                 chunks.Add(chunk);
             }
-            
+
             start = lastSentenceEnd;
         }
 

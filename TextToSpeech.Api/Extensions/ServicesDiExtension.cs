@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
+using OpenAI;
 using TextToSpeech.Api.Services;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
@@ -22,11 +23,10 @@ internal static class ServicesDiExtension
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
-        
+
         services.AddScoped<AuthenticationService>();
         services.AddScoped<IBtaUserManager, BtaUserManager>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<ITtsService, OpenAiService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
@@ -36,35 +36,47 @@ internal static class ServicesDiExtension
         services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
         services.AddScoped<ISmtpClient, SmtpClient>();
 
-        if (HostingEnvironment.IsTestMode())
-        {
-            services.AddScoped<IEmailService, EmailServiceStub>();
-        }
-        else
-        {
-            services.AddScoped<IEmailService, EmailService>();
-        }
-
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IPathService, PathService>();
         services.AddSingleton<IFileProcessorFactory, FileProcessorFactory>();
         services.AddSingleton<IFileProcessor, TextFileProcessor>();
         services.AddSingleton<IFileProcessor, PdfProcessor>();
         services.AddSingleton<IFileProcessor, EpubProcessor>();
-        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(configuration.GetConnectionString("Redis")));
         services.AddSingleton<ITaskManager, TaskManager>();
         services.AddSingleton<IProgressTracker, ProgressTracker>();
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-        AddServicesWithHttpClient(services);
-
         services.AddHostedService<QueuedHostedService>();
+
+        RegisterServicesBasedOnTestMode(services, configuration);
+
+        services.AddRedis(configuration);
 
         return services;
     }
 
-    private static void AddServicesWithHttpClient(IServiceCollection services)
+    private static void RegisterServicesBasedOnTestMode(IServiceCollection services, IConfiguration configuration)
     {
+        if (HostingEnvironment.IsTestMode())
+        {
+            // used for selenium tests
+            services.AddScoped<IEmailService, EmailServiceStub>();
+            services.AddScoped<SimulatedTtsService>();
+            services.AddScoped<ITtsService>(sp => sp.GetRequiredService<SimulatedTtsService>());
+            services.AddScoped<INarakeetService>(sp => sp.GetRequiredService<SimulatedTtsService>());
+
+            return;
+        }
+
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ITtsService, OpenAiService>();
+
+        services.AddSingleton(serviceProvider =>
+        {
+            var apiKey = configuration[ConfigConstants.OpenAiApiKey];
+            return new OpenAIClient(apiKey);
+        });
+
         services.AddHttpClient<INarakeetService, NarakeetService>((provider, client) =>
         {
             var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
