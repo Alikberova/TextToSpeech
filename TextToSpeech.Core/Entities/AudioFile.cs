@@ -10,7 +10,7 @@ public sealed class AudioFile
     public DateTime CreatedAt { get; init; }
     public string Description { get; init; } = string.Empty;
     public Status Status { get; set; }
-    public string Hash { get; set; } = string.Empty;
+    public string Hash { get; init; } = string.Empty;
     public string Voice { get; init; } = string.Empty;
     public string LanguageCode { get; init; } = string.Empty;
     public double Speed { get; init; }
@@ -21,12 +21,17 @@ public sealed class AudioFile
 
     public override bool Equals(object? obj)
     {
-        return obj is AudioFile other && Hash == other.Hash;
+        return obj is AudioFile other
+            && Hash == other.Hash
+            && Data.SequenceEqual(other.Data);
     }
 
     public override int GetHashCode()
     {
-        return Hash.GetHashCode();
+        var hashCode = new HashCode();
+        hashCode.Add(Hash);
+        hashCode.AddBytes(Data);
+        return hashCode.ToHashCode();
     }
 
     public static bool operator ==(AudioFile left, AudioFile right)

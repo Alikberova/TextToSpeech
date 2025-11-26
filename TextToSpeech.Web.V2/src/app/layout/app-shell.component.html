@@ -1,0 +1,54 @@
+<!-- Accessibility: skip link to jump to main -->
+<a class="skip-link" href="#main">{{ 'app.skipToContent' | translate }}</a>
+
+<!-- Header: sticky dense top app bar with product name and actions -->
+<header>
+  <mat-toolbar color="primary" class="app-toolbar" [class.sticky]="true">
+    <div class="toolbar-content">
+      <h1 class="brand">
+        <!-- Exact match so home is not active on other routes -->
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" aria-label="Home">
+          <span class="product">{{ title() }}</span>
+        </a>
+      </h1>
+
+      <nav class="nav" aria-label="Primary">
+        <!-- Use exact matching so only the active link is underlined -->
+        <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.generate' | translate }}</a>
+        <a mat-button routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.feedback' | translate }}</a>
+        <a mat-button routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.about' | translate }}</a>
+      </nav>
+
+      <div class="actions">
+        <button
+          mat-stroked-button
+          type="button"
+          class="lang-toggle"
+          (click)="i18n.toggle()"
+          [attr.aria-pressed]="false"
+          aria-label="Toggle language"
+        >
+          <mat-icon aria-hidden="true">translate</mat-icon>
+          <span class="label">{{ i18n.current() | uppercase }}</span>
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
+</header>
+
+<main id="main" class="app-main">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer class="app-footer">
+  <div class="container footer-content">
+    <div class="copy">© {{ 'app.footer.copyright' | translate }}</div>
+    <nav class="footer-nav" aria-label="Footer">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.generate' | translate }}</a>
+      <a routerLink="/feedback" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.feedback' | translate }}</a>
+      <a routerLink="/about" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.about' | translate }}</a>
+    </nav>
+  </div>
+</footer>

@@ -2,5 +2,5 @@
 
 public interface IEmailService
 {
-  public  void SendEmail(Dto.EmailRequest request);
+    public void SendEmail(Dto.EmailRequest request);
 }

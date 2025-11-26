@@ -1,12 +1,12 @@
-﻿using Moq.Protected;
-using Moq;
+﻿using Moq;
+using Moq.Protected;
 using System.Net;
+using System.Net.Http.Json;
 using TextToSpeech.Core.Dto.Narakeet;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services.Ai;
 using Xunit;
-using TextToSpeech.Infra.Constants;
-using TextToSpeech.Core.Interfaces;
-using System.Net.Http.Json;
 
 namespace TextToSpeech.UnitTests;
 

@@ -1,14 +1,14 @@
-﻿using TextToSpeech.Core.Config;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Common;
 
 public sealed class PathService(IConfiguration _configuration) : IPathService
 {
-    public string ResolveFilePathForStorage(Guid fileId, string fileExtension = ".mp3")
+    public string ResolveFilePathForStorage(Guid fileId, string fileExtension = "mp3")
     {
-        var path = Path.Combine(GetFileStoragePath(), $"{fileId}{fileExtension}");
+        var path = Path.Combine(GetFileStoragePath(), $"{fileId}.{fileExtension}");
 
         var fullPath = Path.GetFullPath(path);
         var basePath = Path.GetFullPath(GetFileStoragePath());
@@ -24,7 +24,7 @@ public sealed class PathService(IConfiguration _configuration) : IPathService
     public string GetFileStoragePath()
     {
         var path = Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
-            SharedConstants.AppStorage);
+            AppConstants.AppStorage);
 
         Directory.CreateDirectory(path);
 

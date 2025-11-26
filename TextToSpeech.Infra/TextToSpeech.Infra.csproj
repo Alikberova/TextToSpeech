@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -11,6 +11,7 @@
     <PackageReference Include="EpubSharp.dll" Version="1.1.5" />
     <PackageReference Include="Google.Cloud.Translation.V2" Version="3.4.0" />
     <PackageReference Include="MailKit" Version="4.6.0" />
+    <PackageReference Include="OpenAI" Version="2.5.0" />
     <PackageReference Include="PdfPig" Version="0.1.8" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
 	<PackageReference Include="taglib-sharp-netstandard2.0" Version="2.1.0" />

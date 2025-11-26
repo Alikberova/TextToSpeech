@@ -1,50 +1,34 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using System.Reflection;
 using TextToSpeech.Core;
 using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Interfaces;
-using TextToSpeech.Infra.Services;
 using Xunit.Abstractions;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IDisposable
 {
-    protected static readonly string TestDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-        "TtsTest");
+    private readonly string _testId = Guid.NewGuid().ToString("N");
+
+    protected string TestDirectory =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"TtsTest_{_testId}");
+    protected string DownloadDirectory =>
+        Path.Combine(TestDirectory, "Downloads");
+
+    protected ITestOutputHelper? TestOutputHelper { get; init; }
     protected IWebDriver Driver { get; private set; } = default!;
     protected WebDriverWait Wait { get; private set; } = default!;
-    protected IServiceProvider ServiceProvider { get; private set; } = default!;
 
-    protected readonly ITestOutputHelper? _output;
-
-    public TestBase(ITestOutputHelper? output = null)
+    public TestBase(ITestOutputHelper? testOutputHelper = null)
     {
-        _output = output;
+        TestOutputHelper = testOutputHelper;
         Setup();
     }
 
     private void Setup()
     {
-        if (Directory.Exists(TestDirectory))
-        {
-            Directory.Delete(TestDirectory, true);
-        }
-
-        Directory.CreateDirectory(TestDirectory);
-
-        // Configure services
-        var serviceCollection = new ServiceCollection();
-        ConfigureServices(serviceCollection);
-        ServiceProvider = serviceCollection.BuildServiceProvider();
-
-        SeedRedisCache();
+        VerifyTestDirectory();
 
         var options = new ChromeOptions();
 
@@ -57,15 +41,15 @@ public class TestBase : IDisposable
         options.AddArgument("--ignore-ssl-errors");
         options.AddArgument("--no-sandbox");
         options.AddArgument("--disable-dev-shm-usage");
-        options.AddUserProfilePreference("download.default_directory", TestDirectory);
+        options.AddUserProfilePreference("download.default_directory", DownloadDirectory);
 
         Driver = new ChromeDriver(options);
         Driver.Manage().Window.Maximize();
         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
 
-        Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+        Wait = GetWait(Driver);
 
-        Driver.Navigate().GoToUrl($"https://localhost:{SharedConstants.ClientPort}");
+        Driver.Navigate().GoToUrl($"https://localhost:{AppConstants.ClientPort}");
     }
 
     public void Dispose()
@@ -78,58 +62,39 @@ public class TestBase : IDisposable
     {
         if (disposing)
         {
-            if (Driver is not null)
-            {
-                Driver.Quit();
-                Driver.Dispose();
-            }
+            Driver?.Quit();
+            Driver?.Dispose();
+            DeleteTestDirectory();
         }
     }
 
-    private void ConfigureServices(IServiceCollection services)
+    private static WebDriverWait GetWait(IWebDriver driver)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddEnvironmentVariables()
-            .AddUserSecrets(Assembly.GetExecutingAssembly())
-            .Build();
-
-        var conn = configuration.GetConnectionString("Redis");
-
-        if (string.IsNullOrWhiteSpace(conn))
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))
         {
-            throw new InvalidOperationException("Redis connection string is not configured.");
-        }
+            PollingInterval = TimeSpan.FromMilliseconds(250)
+        };
 
-        services.AddSingleton<IRedisCacheProvider>(new RedisCacheProvider(conn));
-        services.AddSingleton<RedisCacheSeeder>();
+        wait.IgnoreExceptionTypes(typeof(NoSuchElementException), typeof(StaleElementReferenceException));
 
-        services.AddLogging(builder =>
-        {
-            builder.SetMinimumLevel(LogLevel.Information);
-            if (_output != null)
-            {
-                builder.AddXUnit(_output); // logs to test output
-            }
-            else
-            {
-                builder.AddSimpleConsole(options =>
-                {
-                    options.TimestampFormat = "HH:mm:ss ";
-                    options.SingleLine = true;
-                });
-            }
-        });
+        return wait;
     }
 
-    private void SeedRedisCache()
+    private void VerifyTestDirectory()
     {
-        var redisCacheSeeder = ServiceProvider.GetRequiredService<RedisCacheSeeder>();
+        DeleteTestDirectory();
 
-        if (!redisCacheSeeder.IsRedisConnected())
+        TestOutputHelper?.WriteLine($"Creating directory {TestDirectory}...");
+        Directory.CreateDirectory(TestDirectory);
+        TestOutputHelper?.WriteLine("Directory created");
+    }
+
+    private void DeleteTestDirectory()
+    {
+        if (Directory.Exists(TestDirectory))
         {
-            throw new InvalidOperationException("Redis is not connected. Cannot seed cache.");
+            TestOutputHelper?.WriteLine($"Deleting directory {TestDirectory}");
+            Directory.Delete(TestDirectory, true);
         }
-
-        redisCacheSeeder.SeedNarakeetVoices().GetAwaiter().GetResult();
     }
 }

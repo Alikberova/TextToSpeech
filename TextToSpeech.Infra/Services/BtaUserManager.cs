@@ -1,5 +1,5 @@
-﻿using TextToSpeech.Core.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Core.Services;

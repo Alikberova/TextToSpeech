@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EpubSharp;
 using TextToSpeech.Core.Interfaces;
-using EpubSharp;
 
 namespace TextToSpeech.Infra.Services.FileProcessing;
 
@@ -8,9 +7,9 @@ public sealed class EpubProcessor : IFileProcessor // another package: VersOne.E
 {
     public bool CanProcess(string fileType) => fileType.Equals(".epub", StringComparison.OrdinalIgnoreCase);
 
-    public async Task<string> ExtractTextAsync(IFormFile file)
+    public async Task<string> ExtractTextAsync(byte[] fileBytes)
     {
-        var book = EpubReader.Read(file.OpenReadStream(), false);
+        var book = EpubReader.Read(fileBytes);
 
         return await Task.FromResult(book.ToPlainText());
     }
