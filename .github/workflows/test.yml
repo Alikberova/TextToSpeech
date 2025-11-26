@@ -28,7 +28,7 @@ jobs:
         test_type: [ Selenium, Unit, Integration ]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Create .env file for tests
         env:
@@ -105,7 +105,7 @@ jobs:
         working-directory: ${{ env.FRONTEND_DIR }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup Node
         uses: actions/setup-node@v4
