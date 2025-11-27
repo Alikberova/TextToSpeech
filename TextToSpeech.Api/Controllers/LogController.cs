@@ -1,5 +1,5 @@
-﻿using TextToSpeech.Core.Dto;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Extensions;
 
 namespace TextToSpeech.Api.Controllers;
@@ -15,7 +15,7 @@ public class LogController(ILogger<LogController> logger) : ControllerBase
             "{Timestamp} {Message}" +
             "\nFileName: {FileName}, line {LineNumber}, column {ColumnNumber}" +
             "\nhas Additional: {HasAdditional}",
-            log.Timestamp, log.Message.Sanitize(), log.FileName.Sanitize(), log.LineNumber, log.ColumnNumber, 
+            log.Timestamp, log.Message.Sanitize(), log.FileName.Sanitize(), log.LineNumber, log.ColumnNumber,
             log.Additional.Count != 0);
 
         return Ok();

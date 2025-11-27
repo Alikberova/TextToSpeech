@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using TextToSpeech.Core.Config;
+﻿using TextToSpeech.Core.Config;
 
 namespace TextToSpeech.Core;
 
@@ -10,7 +9,7 @@ public static class HostingEnvironment
 
     public static bool IsDevelopment()
     {
-        return Current == Environments.Development;
+        return Current == "Development";
     }
 
     public static bool IsWindows()

@@ -1,6 +1,6 @@
-﻿using TextToSpeech.Core.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TextToSpeech.Core.Entities;
 
 namespace TextToSpeech.Infra;
 
