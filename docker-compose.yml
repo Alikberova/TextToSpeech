@@ -33,7 +33,7 @@ services:
 
   web:
     build:
-      context: TextToSpeech.Web.V2
+      context: TextToSpeech.Web
       dockerfile: ../docker/web.Dockerfile
       args:
         ANGULAR_ENVIRONMENT: ${ANGULAR_ENVIRONMENT}
