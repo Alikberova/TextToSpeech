@@ -82,7 +82,10 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly lastAutoSampleText = signal<string>('');
   private readonly samplePlayer = new SampleAudioPlayer(
     () => this.stopSample(),
-    () => { this.sampleError.set('playback'); this.stopSample(); }
+    () => {
+      this.sampleError.set('playback');
+      this.stopSample();
+    }
   );
 
   private sampleRequestSub?: Subscription;

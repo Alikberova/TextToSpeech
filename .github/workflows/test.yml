@@ -10,10 +10,12 @@ on:
     branches:
       - master
       - dev
+      - sonar
   pull_request:
     branches:
       - master
       - dev
+      - sonar
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -132,3 +134,16 @@ jobs:
           name: frontend-coverage
           path: ${{ env.FRONTEND_DIR }}/coverage/**
           if-no-files-found: ignore
+
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        # Disabling shallow clones is recommended for improving the relevancy of reporting
+        fetch-depth: 0
+
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v6
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

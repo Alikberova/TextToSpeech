@@ -25,7 +25,7 @@
     "language": { "label": "Language", "placeholder": "Select a language" },
     "voice": { "label": "Voice", "placeholder": "Select a voice", "sampleError": "Sample playback error." },
     "sample": {
-      "label": "Sample text",
+      "label": "Text to voice",
       "placeholder": "Type something to preview…",
       "play": "Play sample",
       "help": "Type to listen to how AI will voice this text. Choose provider, model, and voice",
