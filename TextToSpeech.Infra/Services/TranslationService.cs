@@ -1,6 +1,6 @@
 ﻿using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Interfaces.Ai;
+using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
