@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     env:
-      FRONTEND_DIR: TextToSpeech.Web.V2
+      FRONTEND_DIR: TextToSpeech.Web
     defaults:
       run:
         working-directory: ${{ env.FRONTEND_DIR }}
