@@ -11,9 +11,6 @@ updates:
       interval: "weekly"
     target-branch: "dev"
     versioning-strategy: increase
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
     groups:
       angular:
         applies-to: version-updates
@@ -21,6 +18,7 @@ updates:
           - "@angular*"
         update-types:
           - "minor"
+          - "patch"
 
   - package-ecosystem: "nuget"
     directories:
