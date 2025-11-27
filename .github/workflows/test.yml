@@ -10,12 +10,10 @@ on:
     branches:
       - master
       - dev
-      - sonar
   pull_request:
     branches:
       - master
       - dev
-      - sonar
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
