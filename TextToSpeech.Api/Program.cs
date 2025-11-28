@@ -1,10 +1,13 @@
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
+using Elastic.Transport;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Api.Extensions;
 using TextToSpeech.Api.Middleware;
@@ -156,26 +159,16 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var indexFormat = $"{AppConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
-            $"-{DateTime.UtcNow:yyyy-MM}";
-
         var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))
             .Get<ElasticsearchConfig>()!;
 
-        var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
+        loggerConfig.WriteTo.Elasticsearch([new Uri(elasticConfig.Url)], opts =>
         {
-            AutoRegisterTemplate = true,
-            IndexFormat = indexFormat,
-            ModifyConnectionSettings = conn =>
-            {
-                return conn.BasicAuthentication(elasticConfig.Username, elasticConfig.Password);
-            }
-        };
-
-        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
-            .Enrich.WithProperty("Environment", HostingEnvironment.Current)
-            .ReadFrom.Configuration(builder.Configuration);
+            opts.DataStream = new DataStreamName("logs", AppConstants.AppName.ToLower(), HostingEnvironment.Current.ToLower());
+            opts.BootstrapMethod = BootstrapMethod.Failure;
+        }, transport =>
+        {
+            transport.Authentication(new BasicAuthentication(elasticConfig.Username, elasticConfig.Password));
+        });
     });
 }
-
-public partial class Program { }
