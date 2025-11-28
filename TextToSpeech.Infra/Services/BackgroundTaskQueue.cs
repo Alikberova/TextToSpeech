@@ -19,8 +19,6 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 
     public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
     {
-        ArgumentNullException.ThrowIfNull(nameof(workItem));
-
         _queue.Writer.TryWrite(workItem);
     }
 

@@ -1,10 +1,13 @@
-using MailKit.Net.Smtp;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
+using Elastic.Transport;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Sinks.Elasticsearch;
 using System.Text;
 using TextToSpeech.Api.Extensions;
 using TextToSpeech.Api.Middleware;
@@ -13,6 +16,7 @@ using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,12 +37,40 @@ builder.Services.AddServices(builder.Configuration);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebCorsPolicy",
-        builder => builder.WithOrigins($"http://localhost:{SharedConstants.ClientPort}",
-        $"https://localhost:{SharedConstants.ClientPort}",
-        SharedConstants.Domain)
+        builder => builder.WithOrigins($"http://localhost:{AppConstants.ClientPort}",
+        $"https://localhost:{AppConstants.ClientPort}",
+        AppConstants.Domain)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errorDict = context.ModelState
+            .Where(kv => kv.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kv => kv.Key,
+                kv => kv.Value!.Errors.Select(e =>
+                    !string.IsNullOrWhiteSpace(e.ErrorMessage) ? e.ErrorMessage : e.Exception?.Message
+                        ?? string.Empty)
+                .ToArray());
+
+        var details = new ValidationProblemDetails(errorDict)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Type = "https://httpstatuses.com/400",
+            Title = "One or more validation errors occurred.",
+            Instance = context.HttpContext.Request.Path
+        };
+
+        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogWarning("Validation errors: {@Errors}", details.Errors);
+
+        return new BadRequestObjectResult(details);
+    };
 });
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
@@ -84,7 +116,7 @@ using var scope = app.Services.CreateScope();
 
 await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
-app.Run();
+await app.RunAsync();
 
 static void AddAuthentication(WebApplicationBuilder builder)
 {
@@ -127,26 +159,16 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var indexFormat = $"{SharedConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
-            $"-{DateTime.UtcNow:yyyy-MM}";
-
         var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))
             .Get<ElasticsearchConfig>()!;
 
-        var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
+        loggerConfig.WriteTo.Elasticsearch([new Uri(elasticConfig.Url)], opts =>
         {
-            AutoRegisterTemplate = true,
-            IndexFormat = indexFormat,
-            ModifyConnectionSettings = conn =>
-            {
-                return conn.BasicAuthentication(elasticConfig.Username, elasticConfig.Password);
-            }
-        };
-
-        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
-            .Enrich.WithProperty("Environment", HostingEnvironment.Current)
-            .ReadFrom.Configuration(builder.Configuration);
+            opts.DataStream = new DataStreamName("logs", AppConstants.AppName.ToLower(), HostingEnvironment.Current.ToLower());
+            opts.BootstrapMethod = BootstrapMethod.Failure;
+        }, transport =>
+        {
+            transport.Authentication(new BasicAuthentication(elasticConfig.Username, elasticConfig.Password));
+        });
     });
 }
-
-public partial class Program { }

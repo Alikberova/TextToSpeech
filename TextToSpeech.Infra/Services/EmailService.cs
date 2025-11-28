@@ -1,7 +1,7 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
 using MimeKit;
 using TextToSpeech.Core.Config;
-using Microsoft.Extensions.Options;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
@@ -19,11 +19,11 @@ public sealed class EmailService : IEmailService
 
     public void SendEmail(Core.Dto.EmailRequest request)
     {
-        var email = new MimeMessage();  
+        var email = new MimeMessage();
         email.From.Add(new MailboxAddress(request.Name, _emailConfig.EmailFrom));
         email.To.Add(new MailboxAddress("Admin", _emailConfig.EmailTo));
 
-        email.Subject = SharedConstants.AppName;
+        email.Subject = AppConstants.AppName;
         email.Body = new TextPart(MimeKit.Text.TextFormat.Text)
         {
             Text = $"Message from {request.UserEmail}:\n{request.Message}"

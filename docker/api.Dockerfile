@@ -13,9 +13,9 @@ RUN dotnet restore "${API_NAME}"
 RUN dotnet publish "${API_NAME}/${API_NAME}.csproj" --no-restore -c Release -o /app/publish
 
 # Stage 2: Create final image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
 
-HEALTHCHECK --interval=5s --timeout=10s --retries=3 CMD curl --silent --fail -k https://localhost/health || exit 1
+HEALTHCHECK --interval=5s --timeout=10s --retries=3 CMD curl --silent --fail -k http://localhost/health || exit 1
 
 # Install apps for debugging purposes
 RUN apk update && apk add nano && apk add curl
