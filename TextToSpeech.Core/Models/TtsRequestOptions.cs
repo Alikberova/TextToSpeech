@@ -1,6 +1,4 @@
-﻿using TextToSpeech.Core.Models;
-
-namespace TextToSpeech.Core.Dto;
+﻿namespace TextToSpeech.Core.Models;
 
 public sealed record TtsRequestOptions
 {

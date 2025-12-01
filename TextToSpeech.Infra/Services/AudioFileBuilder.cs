@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Entities;
+using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using static TextToSpeech.Core.Enums;
 

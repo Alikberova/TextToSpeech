@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Ai;
 

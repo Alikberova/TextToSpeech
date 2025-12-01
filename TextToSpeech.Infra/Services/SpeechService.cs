@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;

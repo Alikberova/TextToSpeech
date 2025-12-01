@@ -12,12 +12,13 @@ using System.Text;
 using TextToSpeech.Api.Extensions;
 using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Models;
 using TextToSpeech.Infra.SignalR;
+using static TextToSpeech.Infra.Config.ConfigConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,11 +74,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(SectionNames.JwtConfig));
 
-builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(SectionNames.EmailConfig));
 
-builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(ConfigConstants.NarakeetConfig));
+builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
@@ -120,7 +121,7 @@ await app.RunAsync();
 
 static void AddAuthentication(WebApplicationBuilder builder)
 {
-    var jwtConfig = builder.Configuration.GetRequiredSection(ConfigConstants.JwtConfig).Get<JwtConfig>();
+    var jwtConfig = builder.Configuration.GetRequiredSection(SectionNames.JwtConfig).Get<JwtConfig>();
 
     var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig!.Symmetric.Key));
 
@@ -146,7 +147,7 @@ static void AddAuthentication(WebApplicationBuilder builder)
 
 static void ConfigureLogging(WebApplicationBuilder builder)
 {
-    var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "logs", "log_.txt");
+    var logFile = Path.Combine(builder.Configuration[AppDataPath]!, "logs", "log_.txt");
 
     builder.Host.UseSerilog((context, loggerConfig) =>
     {

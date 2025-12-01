@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Config;
+﻿namespace TextToSpeech.Infra.Config;
 
 public sealed class JwtConfig
 {

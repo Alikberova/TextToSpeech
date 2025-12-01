@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Api.Extensions;
 

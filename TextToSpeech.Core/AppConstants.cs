@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Config;
+﻿namespace TextToSpeech.Core;
 
 public static class AppConstants
 {

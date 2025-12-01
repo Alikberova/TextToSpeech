@@ -1,5 +1,5 @@
-﻿using TextToSpeech.Core.Dto;
-using TextToSpeech.Core.Interfaces;
+﻿using TextToSpeech.Infra.Dto;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 

@@ -563,13 +563,7 @@
         }
       },
       "texttospeech.core": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.0.0, )",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.0, )",
-          "Microsoft.Extensions.Caching.Memory": "[10.0.0, )",
-          "System.IdentityModel.Tokens.Jwt": "[8.15.0, )"
-        }
+        "type": "Project"
       },
       "texttospeech.infra": {
         "type": "Project",
@@ -577,13 +571,17 @@
           "EpubSharp.dll": "[1.1.5, )",
           "Google.Cloud.Translation.V2": "[3.5.0, )",
           "MailKit": "[4.14.1, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[10.0.0, )",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
+          "Microsoft.Extensions.Caching.Memory": "[10.0.0, )",
           "Microsoft.NETCore.App": "[2.1.30, )",
           "MimeKit": "[4.14.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[10.0.0, )",
           "OpenAI": "[2.7.0, )",
           "PdfPig": "[0.1.12, )",
           "StackExchange.Redis": "[2.10.1, )",
+          "System.IdentityModel.Tokens.Jwt": "[8.15.0, )",
           "TextToSpeech.Core": "[1.0.0, )",
           "taglib-sharp-netstandard2.0": "[2.1.0, )"
         }

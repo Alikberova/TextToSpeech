@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace TextToSpeech.Core.Entities;
+namespace TextToSpeech.Infra.Models;
 
 public sealed class User : IdentityUser
 {

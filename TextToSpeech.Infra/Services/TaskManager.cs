@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 
-namespace TextToSpeech.Core.Services;
+namespace TextToSpeech.Infra.Services;
 
 public class TaskManager : ITaskManager
 {

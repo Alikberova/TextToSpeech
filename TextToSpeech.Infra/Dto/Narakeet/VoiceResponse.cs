@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Dto.Narakeet;
+﻿namespace TextToSpeech.Infra.Dto.Narakeet;
 
 public sealed record VoiceResponse
 {

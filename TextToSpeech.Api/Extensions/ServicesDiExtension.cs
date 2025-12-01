@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Options;
 using OpenAI;
 using TextToSpeech.Api.Services;
-using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Services;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;

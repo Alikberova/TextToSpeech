@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Interfaces;
+﻿namespace TextToSpeech.Infra.Interfaces;
 
 public interface ITaskManager
 {

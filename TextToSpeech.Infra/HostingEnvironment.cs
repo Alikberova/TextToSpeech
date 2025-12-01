@@ -1,6 +1,6 @@
-﻿using TextToSpeech.Core.Config;
+﻿using TextToSpeech.Infra.Config;
 
-namespace TextToSpeech.Core;
+namespace TextToSpeech.Infra;
 
 public static class HostingEnvironment
 {

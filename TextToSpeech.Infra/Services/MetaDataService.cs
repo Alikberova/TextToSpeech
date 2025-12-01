@@ -1,4 +1,4 @@
-﻿using TextToSpeech.Core.Config;
+﻿using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Infra.Services;

@@ -1,5 +1,4 @@
 ﻿using Moq;
-using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Services.FileProcessing;
