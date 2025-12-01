@@ -1,18 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TextToSpeech.Core.Entities;
-using TextToSpeech.Infra.Models;
 
 namespace TextToSpeech.Infra;
 
-public sealed class AppDbContext : IdentityDbContext<User>
+public sealed class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
 
     public DbSet<AudioFile> AudioFiles { get; set; }
-    public DbSet<Translation> Translations { get; set; }
     public DbSet<TtsApi> TtsApis { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

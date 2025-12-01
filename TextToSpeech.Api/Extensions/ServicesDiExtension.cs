@@ -23,15 +23,10 @@ internal static class ServicesDiExtension
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
 
-        services.AddScoped<AuthenticationService>();
-        services.AddScoped<IBtaUserManager, BtaUserManager>();
-        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
-        services.AddScoped<ITranslationRepository, TranslationRepository>();
-        services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
         services.AddScoped<ISmtpClient, SmtpClient>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();

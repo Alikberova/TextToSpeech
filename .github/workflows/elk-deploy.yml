@@ -22,7 +22,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCH__PASSWORD}}" > ${{ env.elk-source-path }}/.env
+        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD}}" > ${{ env.elk-source-path }}/.env
         echo "STACK_VERSION=9.1.4" >> ${{ env.elk-source-path }}/.env
     
     - name: Copy files to server
