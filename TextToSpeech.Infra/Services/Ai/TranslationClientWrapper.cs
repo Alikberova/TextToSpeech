@@ -1,6 +1,6 @@
 ﻿using Google.Cloud.Translation.V2;
 using Microsoft.Extensions.Configuration;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Ai;

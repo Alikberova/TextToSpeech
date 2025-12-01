@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace TextToSpeech.Core.Dto;
+namespace TextToSpeech.Infra.Dto;
 
 public sealed record Log
 {

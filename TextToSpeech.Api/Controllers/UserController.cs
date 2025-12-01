@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Api.Services;
-using TextToSpeech.Core.Dto.User;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces;
-using LoginRequest = TextToSpeech.Core.Dto.User.LoginRequest;
+using TextToSpeech.Infra.Dto.User;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Models;
 
 namespace TextToSpeech.Api.Controllers;
 

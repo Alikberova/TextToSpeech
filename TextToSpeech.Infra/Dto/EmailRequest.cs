@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Dto;
+﻿namespace TextToSpeech.Infra.Dto;
 
 public sealed record class EmailRequest
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services;
 
 namespace TextToSpeech.Infra;

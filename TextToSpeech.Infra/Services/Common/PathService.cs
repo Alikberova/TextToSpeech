@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Infra.Services.Common;
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Models;
 
-namespace TextToSpeech.Core.Services;
+namespace TextToSpeech.Infra.Services;
 
 public sealed class BtaUserManager : IBtaUserManager
 {

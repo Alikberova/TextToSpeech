@@ -1,8 +1,10 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core;
+using TextToSpeech.Infra.Config;
+using TextToSpeech.Infra.Dto;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -17,7 +19,7 @@ public sealed class EmailService : IEmailService
         _smtpClient = smtpClient;
     }
 
-    public void SendEmail(Core.Dto.EmailRequest request)
+    public void SendEmail(EmailRequest request)
     {
         var email = new MimeMessage();
         email.From.Add(new MailboxAddress(request.Name, _emailConfig.EmailFrom));

@@ -1,4 +1,4 @@
-﻿namespace TextToSpeech.Core.Dto.User;
+﻿namespace TextToSpeech.Infra.Dto.User;
 
 public sealed record LoginRequest
 {

@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 

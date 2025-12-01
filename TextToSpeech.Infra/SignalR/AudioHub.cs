@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.SignalR;
 

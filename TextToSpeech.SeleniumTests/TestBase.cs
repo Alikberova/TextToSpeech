@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Infra;
 using Xunit.Abstractions;
 
 namespace TextToSpeech.SeleniumTests;

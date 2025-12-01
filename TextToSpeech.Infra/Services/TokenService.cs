@@ -3,9 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Config;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Models;
 
 namespace TextToSpeech.Infra.Services;
 

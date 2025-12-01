@@ -1,22 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TextToSpeech.Core.Dto;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Dto;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public sealed class EmailController : ControllerBase
+public sealed class EmailController(IEmailService emailService) : ControllerBase
 {
-    private readonly IEmailService _emailService;
-    public EmailController(IEmailService emailService)
-    {
-        _emailService = emailService;
-    }
-
     [HttpPost]
     public void Send([FromBody] EmailRequest request)
     {
-        _emailService.SendEmail(request);
+        emailService.SendEmail(request);
     }
 }
