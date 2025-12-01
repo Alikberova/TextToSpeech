@@ -2,13 +2,10 @@ using Elastic.Ingest.Elasticsearch;
 using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
 using Elastic.Transport;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using System.Text;
 using TextToSpeech.Api.Extensions;
 using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core;
@@ -16,7 +13,6 @@ using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
-using TextToSpeech.Infra.Models;
 using TextToSpeech.Infra.SignalR;
 using static TextToSpeech.Infra.Config.ConfigConstants;
 
@@ -74,20 +70,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(SectionNames.JwtConfig));
-
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(SectionNames.EmailConfig));
 
 builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
-
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
-AddAuthentication(builder);
 
 builder.Services.AddHealthChecks();
 
@@ -118,32 +106,6 @@ using var scope = app.Services.CreateScope();
 await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
 await app.RunAsync();
-
-static void AddAuthentication(WebApplicationBuilder builder)
-{
-    var jwtConfig = builder.Configuration.GetRequiredSection(SectionNames.JwtConfig).Get<JwtConfig>();
-
-    var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig!.Symmetric.Key));
-
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtConfig.Issuer,
-                ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = symmetricKey
-            };
-        });
-}
 
 static void ConfigureLogging(WebApplicationBuilder builder)
 {

@@ -24,7 +24,7 @@ public sealed class PathService(IConfiguration _configuration) : IPathService
 
     public string GetFileStoragePath()
     {
-        var path = Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
+        var path = Path.Combine(_configuration[ConfigConstants.AppDataPath]!,
             AppConstants.AppStorage);
 
         Directory.CreateDirectory(path);
