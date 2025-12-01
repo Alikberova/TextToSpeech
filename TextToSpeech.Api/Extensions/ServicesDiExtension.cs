@@ -30,7 +30,6 @@ internal static class ServicesDiExtension
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
-        services.AddScoped<ITranslationService, TranslationService>();
         services.AddScoped<ITranslationRepository, TranslationRepository>();
         services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
         services.AddScoped<ISmtpClient, SmtpClient>();
