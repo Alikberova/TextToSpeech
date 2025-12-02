@@ -48,12 +48,13 @@ jobs:
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
         echo "CERTS_PATH=${{ vars.CERTS_PATH }}" >> .env
-        echo "ConnectionStrings__Redis=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
+        echo "CONNECTIONSTRINGS__REDIS=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
         echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> .env
         echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
         echo "POSTGRES_EXPOSED_PORT=${{ vars.POSTGRES_EXPOSED_PORT }}" >> .env
+        echo "ELASTICSEARCHCONFIG__URL=${{ vars.ELASTICSEARCHCONFIG__URL }}" >> .env
         echo "ConnectionStrings__DefaultConnection=User ID=${{ vars.POSTGRES_USER }};Password=$POSTGRES_PASSWORD;Host=db;Port=5432;Database=${{ vars.POSTGRES_DB }};Pooling=true;Include Error Detail=true;" >> .env
 
         echo "ELASTICSEARCHCONFIG__PASSWORD=$ES_PASS" >> .env
