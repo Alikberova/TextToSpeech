@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createHomeFixture, providerKeyWithModel, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED } from "./home.page.spec-setup";
 
 describe('HomePage - Language dropdown behavior (Narakeet only)', () => {

@@ -14,17 +14,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       IsTestMode: ${IsTestMode}
-      ASPNETCORE_Kestrel__Certificates__Default__Path: "/etc/nginx/certs/fullchain.pem"
-      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: "/etc/nginx/certs/privkey.pem"
-      ASPNETCORE_URLS: "https://+"
+      ASPNETCORE_URLS: "http://+:80"
     container_name: api
     ports:
-      - "7057:443"
+      - "7057:80"
     networks:
       - proxy_elk
-    volumes:
-      - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"
-      - "${CERTS_PATH}/privkey.pem:/etc/nginx/certs/privkey.pem:ro"
     depends_on:
       db:
         condition: service_healthy
@@ -42,6 +37,7 @@ services:
     image: alikberova/texttospeech.web:${IMAGE_TAG_VERSION}
     container_name: web
     ports:
+      - "80:80" # redirects to https in nginx
       - "${ANGULAR_PORT}:443" # for tests ANGULAR_PORT should be the same as in selenium tests; 443 for prod
     volumes:
       - "${CERTS_PATH}/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro"

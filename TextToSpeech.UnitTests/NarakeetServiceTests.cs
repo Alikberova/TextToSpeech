@@ -2,9 +2,9 @@
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;
-using TextToSpeech.Core.Dto.Narakeet;
-using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Dto.Narakeet;
+using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services.Ai;
 using Xunit;
 

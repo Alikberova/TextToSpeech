@@ -1,5 +1,4 @@
-﻿using TextToSpeech.Core.Dto;
-using TextToSpeech.Core.Models;
+﻿using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
 using Xunit;

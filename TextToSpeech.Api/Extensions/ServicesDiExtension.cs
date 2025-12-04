@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Options;
 using OpenAI;
 using TextToSpeech.Api.Services;
-using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Services;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;
@@ -24,16 +23,10 @@ internal static class ServicesDiExtension
     {
         services.AddTransient<IDbInitializer, DbInitializer>();
 
-        services.AddScoped<AuthenticationService>();
-        services.AddScoped<IBtaUserManager, BtaUserManager>();
-        services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAudioFileRepository, AudioFileRepository>();
         services.AddScoped<ISpeechService, SpeechService>();
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
-        services.AddScoped<ITranslationService, TranslationService>();
-        services.AddScoped<ITranslationRepository, TranslationRepository>();
-        services.AddScoped<ITranslationClientWrapper, TranslationClientWrapper>();
         services.AddScoped<ISmtpClient, SmtpClient>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();

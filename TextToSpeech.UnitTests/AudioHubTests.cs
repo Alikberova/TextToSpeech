@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Moq;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.SignalR;
 using Xunit;
 

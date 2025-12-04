@@ -1,20 +1,20 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
+using Elastic.Transport;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Sinks.Elasticsearch;
-using System.Text;
 using TextToSpeech.Api.Extensions;
 using TextToSpeech.Api.Middleware;
 using TextToSpeech.Core;
-using TextToSpeech.Core.Config;
-using TextToSpeech.Core.Entities;
-using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.SignalR;
+using static TextToSpeech.Infra.Config.ConfigConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,20 +70,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(ConfigConstants.JwtConfig));
+builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(SectionNames.EmailConfig));
 
-builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(ConfigConstants.EmailConfig));
-
-builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(ConfigConstants.NarakeetConfig));
+builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
-
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-
-AddAuthentication(builder);
 
 builder.Services.AddHealthChecks();
 
@@ -115,35 +107,9 @@ await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
 
 await app.RunAsync();
 
-static void AddAuthentication(WebApplicationBuilder builder)
-{
-    var jwtConfig = builder.Configuration.GetRequiredSection(ConfigConstants.JwtConfig).Get<JwtConfig>();
-
-    var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig!.Symmetric.Key));
-
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtConfig.Issuer,
-                ValidAudience = jwtConfig.Audience,
-                IssuerSigningKey = symmetricKey
-            };
-        });
-}
-
 static void ConfigureLogging(WebApplicationBuilder builder)
 {
-    var logFile = Path.Combine(builder.Configuration[ConfigConstants.AppDataPath]!, "logs", "log_.txt");
+    var logFile = Path.Combine(builder.Configuration[AppDataPath]!, "logs", "log_.txt");
 
     builder.Host.UseSerilog((context, loggerConfig) =>
     {
@@ -156,26 +122,16 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             return;
         }
 
-        var indexFormat = $"{AppConstants.AppName.ToLower()}-{HostingEnvironment.Current.ToLower().Replace(".", "-")}" +
-            $"-{DateTime.UtcNow:yyyy-MM}";
-
         var elasticConfig = builder.Configuration.GetRequiredSection(nameof(ElasticsearchConfig))
             .Get<ElasticsearchConfig>()!;
 
-        var elasticSinkOptions = new ElasticsearchSinkOptions(new Uri(elasticConfig.Url))
+        loggerConfig.WriteTo.Elasticsearch([new Uri(elasticConfig.Url)], opts =>
         {
-            AutoRegisterTemplate = true,
-            IndexFormat = indexFormat,
-            ModifyConnectionSettings = conn =>
-            {
-                return conn.BasicAuthentication(elasticConfig.Username, elasticConfig.Password);
-            }
-        };
-
-        loggerConfig.WriteTo.Elasticsearch(elasticSinkOptions)
-            .Enrich.WithProperty("Environment", HostingEnvironment.Current)
-            .ReadFrom.Configuration(builder.Configuration);
+            opts.DataStream = new DataStreamName("logs", AppConstants.AppName.ToLower(), HostingEnvironment.Current.ToLower());
+            opts.BootstrapMethod = BootstrapMethod.Failure;
+        }, transport =>
+        {
+            transport.Authentication(new BasicAuthentication(elasticConfig.Username, elasticConfig.Password));
+        });
     });
 }
-
-public partial class Program { }

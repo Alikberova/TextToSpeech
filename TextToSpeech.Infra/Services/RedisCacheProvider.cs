@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
-using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services;
 
@@ -25,7 +25,7 @@ public sealed class RedisCacheProvider : IRedisCacheProvider
 
         if (!cachedData.IsNullOrEmpty)
         {
-            return JsonSerializer.Deserialize<T>(cachedData!);
+            return JsonSerializer.Deserialize<T>((string)cachedData!);
         }
 
         return default;

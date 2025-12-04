@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
-using TextToSpeech.Core.Dto;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 

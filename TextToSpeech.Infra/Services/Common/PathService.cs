@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using TextToSpeech.Core.Config;
+using TextToSpeech.Core;
 using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Infra.Services.Common;
 
@@ -23,7 +24,7 @@ public sealed class PathService(IConfiguration _configuration) : IPathService
 
     public string GetFileStoragePath()
     {
-        var path = Path.Combine(_configuration.GetValue<string>(ConfigConstants.AppDataPath)!,
+        var path = Path.Combine(_configuration[ConfigConstants.AppDataPath]!,
             AppConstants.AppStorage);
 
         Directory.CreateDirectory(path);
