@@ -114,7 +114,8 @@ export function openMatSelect(fixture: ComponentFixture<HomePage>, selector: str
 
 export function getOverlayOptionTexts(overlayContainer: OverlayContainer): string[] {
   const container: HTMLElement = overlayContainer.getContainerElement();
-  return Array.from(container.querySelectorAll(SELECTOR_MAT_OPTION))
+  const elements = container.querySelectorAll(SELECTOR_MAT_OPTION);
+  return Array.from(elements)
     .map(option => (option.textContent || '').trim())
     .filter(Boolean);
 }
