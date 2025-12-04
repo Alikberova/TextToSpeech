@@ -3,6 +3,7 @@ import { AppShellComponent } from './app-shell.component';
 import { provideRouter, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { getTranslateTestingModule, getZonelessProviders } from '../../testing/spec-test-utils';
+import { describe, it, expect } from 'vitest';
 
 describe('AppShellComponent layout', () => {
   it('centers the footer container', async () => {
