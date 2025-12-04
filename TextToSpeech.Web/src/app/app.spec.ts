@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 import { provideRouter } from '@angular/router';
 import { getTranslateTestingModule, getZonelessProviders } from '../testing/spec-test-utils';
+import { describe, beforeEach, it, expect } from 'vitest';
 
 describe('App', () => {
   beforeEach(async () => {
