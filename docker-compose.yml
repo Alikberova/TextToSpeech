@@ -17,7 +17,7 @@ services:
       ASPNETCORE_URLS: "http://+:80"
     container_name: api
     ports:
-      - "7057:80"
+      - "7058:80"
     networks:
       - proxy_elk
     depends_on:

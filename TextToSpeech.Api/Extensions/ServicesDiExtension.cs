@@ -28,6 +28,7 @@ internal static class ServicesDiExtension
         services.AddScoped<IMetaDataService, MetaDataService>();
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ISmtpClient, SmtpClient>();
+        services.AddScoped<IVoiceService, VoiceService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IPathService, PathService>();
@@ -56,7 +57,6 @@ internal static class ServicesDiExtension
             services.AddScoped<IEmailService, EmailServiceStub>();
             services.AddScoped<SimulatedTtsService>();
             services.AddScoped<ITtsService>(sp => sp.GetRequiredService<SimulatedTtsService>());
-            services.AddScoped<INarakeetService>(sp => sp.GetRequiredService<SimulatedTtsService>());
 
             return;
         }
@@ -70,7 +70,7 @@ internal static class ServicesDiExtension
             return new OpenAIClient(apiKey);
         });
 
-        services.AddHttpClient<INarakeetService, NarakeetService>((provider, client) =>
+        services.AddHttpClient<ITtsService, NarakeetService>((provider, client) =>
         {
             var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
 

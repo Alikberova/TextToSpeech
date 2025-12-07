@@ -1,7 +1,7 @@
 ﻿using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Dto.Narakeet;
+using TextToSpeech.Infra.Dto;
 using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.FileProcessing;
 using static TextToSpeech.Core.Enums;
@@ -68,9 +68,9 @@ public static class TestData
         return audio;
     }
 
-    public static List<VoiceResponse> GetVoicesNarakeet()
+    public static List<NarakeetVoiceResult> GetVoicesNarakeet()
     {
-        var voices = new List<VoiceResponse>
+        var voices = new List<NarakeetVoiceResult>
         {
             new() {
                 Name = "anders",

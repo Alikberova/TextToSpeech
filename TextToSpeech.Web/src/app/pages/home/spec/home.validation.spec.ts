@@ -1,12 +1,12 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NgModel } from '@angular/forms';
-import { createHomeFixture, providerKeyWithModel, providerKeyWithoutModel, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, FORM_ERROR_SELECTOR, DEFAULT_OPENAI_VOICE_KEY, LANGUAGE_CODE_EN_US, SELECTOR_MODEL_SELECT, SELECTOR_FORM_FIELD, ATTR_ARIA_INVALID, getMatErrors, clickSubmit, clickPlayButton, setProviderNarakeet, selectOpenAiMinimal } from './home.page.spec-setup';
+import { createHomeFixture, providerKeyWithModel, providerKeyWithoutModel, FORM_ERROR_SELECTOR, SELECTOR_MODEL_SELECT, SELECTOR_FORM_FIELD, ATTR_ARIA_INVALID, getMatErrors, clickSubmit, clickPlayButton, setProviderNarakeet, selectOpenAiMinimal, fillValidFormForOpenAI, flushVoice } from './home.page.spec-setup';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { ProviderKey } from '../../../constants/tts-constants';
 import { HomePage } from '../home.page';
-import { VOICES_NARAKEET } from '../../../core/http/endpoints';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, LANGUAGE_CODE_EN_US, VOICES_WITH_LANG } from './test-data';
 
 describe('HomePage - Validation UX', () => {
     // ViewChild property keys used to focus fields
@@ -65,8 +65,7 @@ describe('HomePage - Validation UX', () => {
 
         const providerWithoutModel = providerKeyWithoutModel();
         component.onProviderChange(providerWithoutModel);
-        const pendingVoices = httpController.match(req => req.url.endsWith(VOICES_NARAKEET));
-        pendingVoices.forEach(req => req.flush([]));
+        flushVoice(httpController, []);
         fixture.detectChanges();
 
         expect(getMatErrors(fixture).length).toBeLessThan(4);
@@ -76,10 +75,7 @@ describe('HomePage - Validation UX', () => {
         clickSubmit(fixture);
         expect(fixture.debugElement.query(By.css(FORM_ERROR_SELECTOR))).not.toBeNull();
 
-        const providerWithModel = providerKeyWithModel();
-        component.onProviderChange(providerWithModel);
-        component.voice.set(DEFAULT_OPENAI_VOICE_KEY);
-        component.file.set(new File([DEFAULT_FILE_CONTENT], DEFAULT_FILE_NAME));
+        fillValidFormForOpenAI(component);
         fixture.detectChanges();
 
         expect(fixture.debugElement.query(By.css(FORM_ERROR_SELECTOR))).toBeNull();
@@ -132,9 +128,7 @@ describe('HomePage - Validation UX', () => {
     });
 
     it('submit speech in Narakeet flow focuses missing Voice', async () => {
-        setProviderNarakeet(fixture, component, httpController, [
-            { name: 'test-voice', language: 'English', languageCode: LANGUAGE_CODE_EN_US, styles: [] }
-        ]);
+        setProviderNarakeet(fixture, component, httpController, VOICES_WITH_LANG);
         component.onLanguageChange(LANGUAGE_CODE_EN_US);
         component.voice.set('');
         component.file.set(new File([DEFAULT_FILE_CONTENT], DEFAULT_FILE_NAME));

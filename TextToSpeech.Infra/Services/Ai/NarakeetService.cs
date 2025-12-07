@@ -3,10 +3,9 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
-using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Dto.Narakeet;
-using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Infra.Dto;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
@@ -14,8 +13,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <br/> The Narakeet API allows processing documents up to 100 KB for the long content (polling) API, and 1 KB for the streaming API.
 /// <br/> By default, the API allows to make 86,400 requests per day (1 per second)
 /// </summary>
-public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
-    HttpClient _httpClient) : INarakeetService
+public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
     private const int MaxLengthForShortContent = 565;
@@ -46,20 +44,23 @@ public sealed class NarakeetService(IRedisCacheProvider _redisCacheProvider,
         return await RequestShortContent(text, ttsRequest);
     }
 
-    public async Task<List<VoiceResponse>?> GetAvailableVoices() //todo move redis from here
+    public async Task<List<Voice>?> GetVoices()
     {
-        var cachedVoices = await _redisCacheProvider.GetCachedData<List<VoiceResponse>>(CacheKeys.VoicesNarakeet);
+        var voices = await _httpClient.GetFromJsonAsync<List<NarakeetVoiceResult>>("voices");
 
-        if (cachedVoices is not null)
+        if (voices is null || voices.Count == 0)
         {
-            return cachedVoices;
+            return null;
         }
 
-        var voices = await _httpClient.GetFromJsonAsync<List<VoiceResponse>>("voices");
+        var mapped = voices.Select(v => new Voice
+        {
+            Name = v.Name,
+            ProviderVoiceId = v.Name,
+            Language = new Language(v.Language, v.LanguageCode),
+        }).ToList();
 
-        await _redisCacheProvider.SetCachedData(CacheKeys.VoicesNarakeet, voices, TimeSpan.FromDays(7));
-
-        return voices;
+        return mapped;
     }
 
     private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, Guid fileId,

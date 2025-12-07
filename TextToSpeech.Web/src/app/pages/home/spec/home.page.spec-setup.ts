@@ -6,10 +6,11 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { API_URL, SERVER_URL } from '../../../constants/tokens';
-import { ProviderKey, PROVIDERS, PROVIDER_MODELS, OPEN_AI_VOICES } from '../../../constants/tts-constants';
+import { ProviderKey, PROVIDERS, PROVIDER_MODELS } from '../../../constants/tts-constants';
 import { HomePage } from '../home.page';
-import { VOICES_NARAKEET } from '../../../core/http/endpoints';
-import type { NarakeetVoice } from '../../../dto/narakeet-voice';
+import { DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, DEFAULT_OPENAI_VOICE_KEY } from './test-data';
+import { VOICES } from '../../../core/http/endpoints';
+import { Voice } from '../../../dto/voice';
 
 export const SUBMIT_BUTTON_SELECTOR = 'button[type="submit"]';
 export const DOWNLOAD_BUTTON_SELECTOR = 'button[mat-stroked-button]';
@@ -25,23 +26,6 @@ export const SELECTOR_CLEAR_BUTTON = 'button[data-testid="clearBtn"]';
 export const SELECTOR_SAMPLE_PLAY_BUTTON = 'button[data-testid="samplePlayButton"]';
 export const ATTR_ARIA_DISABLED = 'aria-disabled';
 export const ATTR_ARIA_INVALID = 'aria-invalid';
-
-export const DEFAULT_FILE_CONTENT = 'qwerty';
-export const DEFAULT_FILE_NAME = 'any.txt';
-export const DEFAULT_SAMPLE_I18N_KEY = 'home.sample.defaultText';
-export const LOCALE_EN = 'en';
-export const LOCALE_UK = 'uk';
-export const LANGUAGE_CODE_EN_US = 'en-US';
-export const LANGUAGE_CODE_EL_GR = 'el-GR';
-export const LANG_I18N_PREFIX = 'languages.';
-export const DEFAULT_OPENAI_VOICE_KEY = OPEN_AI_VOICES[0].key;
-export const I18N_HOME_PROVIDER_LABEL = 'home.provider.label';
-export const I18N_HOME_VOICE_LABEL = 'home.voice.label';
-export const I18N_HOME_PROVIDER_PLACEHOLDER = 'home.provider.placeholder';
-
-export const PROGRESS_PROCESSING_VALUE = 40;
-export const PROGRESS_VALID_VALUE = 55;
-export const PROGRESS_COMPLETE_VALUE = 100;
 
 export function getBaseProviders(): unknown[] {
   return [
@@ -79,9 +63,7 @@ export function providerKeyWithoutModel(): ProviderKey {
 }
 
 export function fillValidFormForOpenAI(component: HomePage): void {
-  const provider = providerKeyWithModel();
-  component.onProviderChange(provider);
-  component.voice.set(OPEN_AI_VOICES[0].key);
+  selectOpenAiMinimal(component);
   component.file.set(new File([DEFAULT_FILE_CONTENT], DEFAULT_FILE_NAME));
 }
 
@@ -137,32 +119,26 @@ export function selectMatOptionByText(
   fixture.detectChanges();
 }
 
-// Narakeet voices helpers
 export function expectOneEndsWith(http: HttpTestingController, suffix: string): TestRequest {
-  return http.expectOne(request => request.url.endsWith(suffix));
+  return http.expectOne(req => req.url.endsWith(suffix));
 }
 
-export function expectOneNarakeet(http: HttpTestingController): TestRequest {
-  return expectOneEndsWith(http, VOICES_NARAKEET);
-}
-
-export function flushNarakeetVoices(http: HttpTestingController, voices?: NarakeetVoice[]): void {
-  const request = expectOneNarakeet(http);
-  const payload: NarakeetVoice[] = voices ?? [
-    { name: 'Oliver', language: 'English (American)', languageCode: LANGUAGE_CODE_EN_US, styles: [] },
-    { name: 'eleni', language: 'Greek', languageCode: LANGUAGE_CODE_EL_GR, styles: [] },
-  ];
-  request.flush(payload);
+export function flushVoice(http: HttpTestingController, voices: Voice[], requestsCount = 2): void {
+  const requests = http.match(request => request.url.endsWith(VOICES));
+  if (requests.length !== requestsCount) {
+    throw new Error(`Expected ${requestsCount} VOICES requests, but got ${requests.length}.`);
+  }
+  requests.forEach(r => r.flush(voices));
 }
 
 export function setProviderNarakeet(
   fixture: ComponentFixture<HomePage>,
   component: HomePage,
   http: HttpTestingController,
-  voices: NarakeetVoice[] = []
+  voices: Voice[] = []
 ): void {
   const narakeet = providerKeyWithoutModel();
   component.onProviderChange(narakeet);
-  flushNarakeetVoices(http, voices);
+  flushVoice(http, voices);
   fixture.detectChanges();
 }

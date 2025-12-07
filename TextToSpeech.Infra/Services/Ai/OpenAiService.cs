@@ -9,12 +9,13 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// 50 requests/min for model tts-1
 /// </summary>
-public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiService> _logger) : ITtsService
+public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _logger) : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
+    // Limit the number of parallel chunk requests to meet rate limits
     private const int MaxParallelChunks = 20;
 
-    private AudioClient Client { get; set; } = default!;
+    private AudioClient AudioClient { get; set; } = default!;
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
@@ -68,9 +69,29 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default)
     {
-        Client ??= GetClient(ttsRequest.Model!);
+        AudioClient ??= GetClient(ttsRequest.Model!);
 
         return await GenerateSpeech(text, ttsRequest.Voice, ttsRequest.Speed, ttsRequest.ResponseFormat, cancellationToken);
+    }
+
+    public Task<List<Voice>?> GetVoices()
+    {
+        var voices = new List<Voice>
+        {
+            new() { Name = "Alloy",   ProviderVoiceId = "alloy" },
+            new() { Name = "Ash",     ProviderVoiceId = "ash" },
+            new() { Name = "Ballad",  ProviderVoiceId = "ballad" },
+            new() { Name = "Coral",   ProviderVoiceId = "coral" },
+            new() { Name = "Echo",    ProviderVoiceId = "echo" },
+            new() { Name = "Fable",   ProviderVoiceId = "fable" },
+            new() { Name = "Onyx",    ProviderVoiceId = "onyx" },
+            new() { Name = "Nova",    ProviderVoiceId = "nova" },
+            new() { Name = "Sage",    ProviderVoiceId = "sage" },
+            new() { Name = "Shimmer", ProviderVoiceId = "shimmer" },
+            new() { Name = "Verse",   ProviderVoiceId = "verse" }
+        };
+
+        return Task.FromResult<List<Voice>?>(voices);
     }
 
     private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, string voice, double speed,
@@ -83,7 +104,7 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
             ResponseFormat = generatedSpeechFormat.ToString()
         };
 
-        var result = await Client.GenerateSpeechAsync(text, voice, options, cancellationToken);
+        var result = await AudioClient.GenerateSpeechAsync(text, voice, options, cancellationToken);
 
         return result.Value.ToMemory();
     }
@@ -106,5 +127,5 @@ public sealed class OpenAiService(OpenAIClient _openAiClient, ILogger<OpenAiServ
         });
     }
 
-    private AudioClient GetClient(string model) => _openAiClient.GetAudioClient(model);
+    private AudioClient GetClient(string model) => _client.GetAudioClient(model);
 }

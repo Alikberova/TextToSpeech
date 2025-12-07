@@ -15,4 +15,6 @@ public interface ITtsService
     Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default);
+
+    Task<List<Voice>?> GetVoices();
 }

@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Api.Services;
-using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Api.Controllers;
 
 [Route("api/voices")]
 [ApiController]
-public class VoiceController(INarakeetService narraketService) : ControllerBase
+public class VoiceController(IVoiceService voiceService) : ControllerBase
 {
-    [HttpGet("narakeet")]
-    public async Task<IActionResult> Get()
+    [HttpGet]
+    public async Task<IActionResult> Get(string provider)
     {
-        var result = await narraketService.GetAvailableVoices();
+        var result = await voiceService.GetVoices(provider);
 
         if (result is null)
         {

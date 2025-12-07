@@ -1,5 +1,4 @@
 ﻿using TextToSpeech.Infra.Services;
-using TextToSpeech.UnitTests.TestData;
 using Xunit;
 
 namespace TextToSpeech.UnitTests;
@@ -7,8 +6,8 @@ namespace TextToSpeech.UnitTests;
 public sealed class TextProcessingServiceTests
 {
     [Theory]
-    [InlineData(TextProcessingConstants.Text1500chars, 120)]
-    [InlineData(TextProcessingConstants.Text1500chars, 150)]
+    [InlineData(TestData.Text1500chars, 120)]
+    [InlineData(TestData.Text1500chars, 150)]
     internal void SplitTextIfGreaterThan_ShouldSplitTextCorrectly(string text, int maxLength)
     {
         // Arrange
@@ -18,7 +17,7 @@ public sealed class TextProcessingServiceTests
         List<string> chunks = service.SplitTextIfGreaterThan(text, maxLength);
 
         // Assert
-        Assert.Contains(chunks, c => c.Contains(TextProcessingConstants.CheckThatSentenceIsNotSplitByQuestionMark_Text1500chars));
+        Assert.Contains(chunks, c => c.Contains(TestData.CheckThatSentenceIsNotSplitByQuestionMark_Text1500chars));
 
         foreach (var chunk in chunks)
         {

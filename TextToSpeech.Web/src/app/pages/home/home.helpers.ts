@@ -1,5 +1,4 @@
-import { OPEN_AI_KEY, OPEN_AI_VOICES } from '../../constants/tts-constants';
-import type { NarakeetVoice } from '../../dto/narakeet-voice';
+import type { Voice } from '../../dto/voice';
 import { AUDIO_STATUS, type AudioStatus, type SelectOption } from './home.types';
 
 // Capitalize only the first letter, leave the rest intact
@@ -10,12 +9,13 @@ export function capitalizeFirstLetter(text: string): string {
   return text[0].toUpperCase() + text.slice(1);
 }
 
-// Build language select options from Narakeet voices
-export function getLanguagesFromNarakeetVoices(voices: readonly NarakeetVoice[]): SelectOption[] {
+// Build language select options from voices that include language metadata
+export function getLanguagesFromVoices(voices: readonly Voice[]): SelectOption[] {
   const map = new Map<string, string>();
   for (const v of voices) {
-    if (v.languageCode && !map.has(v.languageCode)) {
-      map.set(v.languageCode, `languages.${v.languageCode}`);
+    const code = v.language?.languageCode;
+    if (code && !map.has(code)) {
+      map.set(code, `languages.${code}`);
     }
   }
   return Array.from(map.entries())
@@ -27,16 +27,13 @@ export function getLanguagesFromNarakeetVoices(voices: readonly NarakeetVoice[])
 export function getVoicesForProvider(
   providerKey: string | undefined,
   languageCode: string | undefined,
-  narakeetVoices: readonly NarakeetVoice[],
+  voices: readonly Voice[],
 ): readonly SelectOption[] {
   if (!providerKey) {
     return [] as const;
   }
-  if (providerKey === OPEN_AI_KEY) {
-    return OPEN_AI_VOICES;
-  }
-  const list = narakeetVoices.filter(v => !languageCode || v.languageCode === languageCode);
-  return list.map(v => ({ key: v.name, label: capitalizeFirstLetter(v.name) }));
+  const filtered = voices.filter(v => !languageCode || v.language?.languageCode === languageCode);
+  return filtered.map(v => ({ key: v.providerVoiceId, label: capitalizeFirstLetter(v.name) }));
 }
 
 // Map server status to an appropriate Material icon name
