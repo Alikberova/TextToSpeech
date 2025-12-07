@@ -16,8 +16,8 @@ public sealed class NarakeetServiceTests
         // Arrange
         var apiResult = new List<NarakeetVoiceResult>
         {
-            new() { Name = "voice-a", Language = "en" },
-            new() { Name = "voice-b", Language = "fr" }
+            new() { Name = "voice-a", Language = "English", LanguageCode = "en" },
+            new() { Name = "voice-b", Language = "French", LanguageCode = "fr" }
         };
 
         var (service, _) = CreateNarakeetService(apiResult);
@@ -32,13 +32,15 @@ public sealed class NarakeetServiceTests
             {
                 Assert.Equal("voice-a", v.Name);
                 Assert.Equal("voice-a", v.ProviderVoiceId);
-                Assert.Equal("en", v.Language);
+                Assert.Equal("en", v.Language?.LanguageCode);
+                Assert.Equal("English", v.Language?.Name);
             },
             v =>
             {
                 Assert.Equal("voice-b", v.Name);
                 Assert.Equal("voice-b", v.ProviderVoiceId);
-                Assert.Equal("fr", v.Language);
+                Assert.Equal("fr", v.Language?.LanguageCode);
+                Assert.Equal("French", v.Language?.Name);
             });
     }
 

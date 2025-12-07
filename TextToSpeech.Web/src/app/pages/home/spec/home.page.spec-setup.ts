@@ -120,7 +120,7 @@ export function selectMatOptionByText(
 }
 
 export function expectOneEndsWith(http: HttpTestingController, suffix: string): TestRequest {
-  return http.expectOne(req => req.url.endsWith(suffix));
+  return http.expectOne(request => request.url.endsWith(suffix));
 }
 
 export function flushVoice(http: HttpTestingController, voices: Voice[], requestsCount = 2): void {
