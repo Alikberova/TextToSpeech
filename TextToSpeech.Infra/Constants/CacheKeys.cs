@@ -2,5 +2,5 @@
 
 public static class CacheKeys
 {
-    public const string VoicesNarakeet = "VoicesNarakeet";
+    public static string Voices(string provider) => $"voices:{provider}";
 }

@@ -1,13 +1,14 @@
 import { By } from '@angular/platform-browser';
-import { createHomeFixture, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, DEFAULT_OPENAI_VOICE_KEY, DEFAULT_SAMPLE_I18N_KEY, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED, SELECTOR_PROVIDER_SELECT, SELECTOR_LABELS, SELECTOR_CLEAR_BUTTON, I18N_HOME_PROVIDER_LABEL, I18N_HOME_VOICE_LABEL, I18N_HOME_PROVIDER_PLACEHOLDER, clickSubmit, selectOpenAiMinimal, openMatSelect, getOverlayOptionTexts, expectOneEndsWith } from './home.page.spec-setup';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { SPEECH_BASE } from '../../../core/http/endpoints';
+import { SPEECH_BASE, SPEECH_SAMPLE } from '../../../core/http/endpoints';
 import { SpeechResponseFormat } from '../../../dto/tts-request';
 import { ComponentFixture } from '@angular/core/testing';
 import { HomePage } from '../home.page';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { AUDIO_STATUS } from '../home.types';
 import { describe, beforeEach, it, expect } from 'vitest';
+import { createHomeFixture, clickSubmit, SELECTOR_CLEAR_BUTTON, SELECTOR_LABELS, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED, openMatSelect, SELECTOR_PROVIDER_SELECT, getOverlayOptionTexts, fillValidFormForOpenAI, clickPlayButton, selectOpenAiMinimal, expectOneEndsWith } from './home.page.spec-setup';
+import { DEFAULT_SAMPLE_I18N_KEY, I18N_HOME_PROVIDER_LABEL, I18N_HOME_VOICE_LABEL, I18N_HOME_PROVIDER_PLACEHOLDER } from './test-data';
 
 describe('HomePage - Form submission', () => {
     let fixture: ComponentFixture<HomePage>;
@@ -24,8 +25,7 @@ describe('HomePage - Form submission', () => {
     });
 
     it('includes selected response format in full speech request', async () => {
-        selectOpenAiMinimal(component);
-        component.file.set(new File([DEFAULT_FILE_CONTENT], DEFAULT_FILE_NAME));
+        fillValidFormForOpenAI(component);
         component.responseFormat.set(SpeechResponseFormat.WAV);
         fixture.detectChanges();
 
@@ -37,9 +37,7 @@ describe('HomePage - Form submission', () => {
     });
 
     it('clear button resets all the fields to default', async () => {
-        component.provider.set('openai');
-        component.voice.set(DEFAULT_OPENAI_VOICE_KEY);
-        component.file.set(new File([DEFAULT_FILE_CONTENT], DEFAULT_FILE_NAME));
+        fillValidFormForOpenAI(component);
         component.onSampleTextInput('custom');
         fixture.detectChanges();
 
@@ -77,5 +75,16 @@ describe('HomePage - Form submission', () => {
         openMatSelect(fixture, SELECTOR_PROVIDER_SELECT);
         const providerOptions = getOverlayOptionTexts(overlayContainer);
         expect(providerOptions.some(t => t.includes(I18N_HOME_PROVIDER_PLACEHOLDER))).toBe(true);
+    });
+
+    it('sample play posts to /speech/sample', async () => {
+        selectOpenAiMinimal(component);
+        fixture.detectChanges();
+
+        clickPlayButton(fixture);
+
+        const testRequest = expectOneEndsWith(httpController, SPEECH_SAMPLE);
+        expect(testRequest.request.method).toBe('POST');
+        testRequest.flush(new Blob([new Uint8Array([1])], { type: 'audio/mpeg' }));
     });
 });
