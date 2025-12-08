@@ -21,7 +21,7 @@ public sealed class VoiceService : IVoiceService
     {
         var cacheKey = CacheKeys.Voices(provider);
 
-        var cachedVoices = await _redisCacheProvider.GetCachedData<List<Voice>>(cacheKey + "lala");
+        var cachedVoices = await _redisCacheProvider.GetCachedData<List<Voice>>(cacheKey);
 
         if (cachedVoices is not null)
         {

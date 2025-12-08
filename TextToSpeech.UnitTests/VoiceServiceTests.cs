@@ -1,6 +1,7 @@
 using Moq;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services;
 using Xunit;
@@ -15,7 +16,7 @@ public sealed class VoiceServiceTests
         // Arrange
         var cached = new List<Voice> { new() { Name = "cached", ProviderVoiceId = "cached-id" } };
         var provider = "narakeet";
-        var cacheKey = $"{provider}_voices";
+        var cacheKey = CacheKeys.Voices(provider);
 
         var cache = new Mock<IRedisCacheProvider>();
         cache.Setup(c => c.GetCachedData<List<Voice>>(cacheKey)).ReturnsAsync(cached);
@@ -39,7 +40,7 @@ public sealed class VoiceServiceTests
         // Arrange
         var providerVoices = new List<Voice> { new() { Name = "fresh", ProviderVoiceId = "fresh-id" } };
         var provider = "narakeet";
-        var cacheKey = $"{provider}_voices";
+        var cacheKey = CacheKeys.Voices(provider);
 
         var cache = new Mock<IRedisCacheProvider>();
         cache.Setup(c => c.GetCachedData<List<Voice>>(cacheKey)).ReturnsAsync((List<Voice>?)null);
