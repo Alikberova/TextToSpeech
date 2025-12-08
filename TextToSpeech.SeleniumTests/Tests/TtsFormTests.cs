@@ -29,7 +29,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         var page = CreatePage();
 
-        page.SelectProvider(SharedConstants.OpenAI);
+        page.SelectProvider(Shared.OpenAI.Name);
         await page.SelectVoice(OpenAiVoices.Alloy.Name);
 
         page.TypeSampleText();
@@ -40,8 +40,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         page.ClickPlayButton();
         Assert.True(page.IsIconVisible("play_circle"));
 
-        // todo pre-seeded DB data will not match privider agnostic voice
-        page.SelectProvider(SharedConstants.OpenAI);
+        page.SelectProvider(Shared.OpenAI.Name);
         await page.SelectVoice(OpenAiVoices.Fable.Name);
         page.UploadFile(sourcePath);
         page.ClickSubmit();
@@ -72,7 +71,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 
         var page = CreatePage();
 
-        page.SelectProvider(SharedConstants.Narakeet);
+        page.SelectProvider(Shared.Narakeet.Name);
         page.SelectLanguage(Lang.GermanStandard);
         await page.SelectVoice(NarakeetVoices.Hans.Name);
         

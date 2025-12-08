@@ -49,10 +49,10 @@ public sealed class RedisFixture : IAsyncLifetime
 
         var cacheProvider = new RedisCacheProvider(mux);
 
-        await cacheProvider.SetCachedData(CacheKeys.Voices(SharedConstants.OpenAiKey),
+        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.OpenAI.Key),
             OpenAiVoices.All, TimeSpan.FromDays(1));
 
-        await cacheProvider.SetCachedData(CacheKeys.Voices(SharedConstants.NarakeetKey),
+        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.Narakeet.Key),
             NarakeetVoices.All, TimeSpan.FromDays(1));
     }
 

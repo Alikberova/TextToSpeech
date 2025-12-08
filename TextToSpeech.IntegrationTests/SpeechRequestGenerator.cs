@@ -10,6 +10,8 @@ namespace TextToSpeech.IntegrationTests;
 
 internal static class SpeechRequestGenerator
 {
+    private static readonly string[] voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+
     public static SpeechRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {
         var faker = new Faker();
@@ -17,9 +19,9 @@ internal static class SpeechRequestGenerator
         // build fake TTS options first
         var ttsOptions = new TtsRequestOptions
         {
-            Model = ttsApi == SharedConstants.OpenAI ? "gpt-4o-mini-tts" : null,
-            Voice = ttsApi == SharedConstants.OpenAI
-                ? faker.PickRandom(new[] { "alloy", "echo", "fable", "onyx", "nova", "shimmer" })
+            Model = ttsApi == Shared.OpenAI.Key ? "gpt-4o-mini-tts" : null,
+            Voice = ttsApi == Shared.OpenAI.Key
+                ? faker.PickRandom(voices)
                 : "charles",
             Speed = Math.Round(faker.Random.Double(0.5, 2.0), 1),
             ResponseFormat = SpeechResponseFormat.Mp3

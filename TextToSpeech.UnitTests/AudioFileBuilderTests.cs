@@ -9,7 +9,7 @@ namespace TextToSpeech.UnitTests;
 public class AudioFileBuilderTests
 {
     private readonly byte[] Bytes = [1, 2, 3];
-    private readonly Guid TtsApiId = SharedConstants.TtsApis.First().Value;
+    private readonly Guid TtsApiId = Shared.OpenAI.Id;
     private const string LangCode = "en-US";
     private const AudioType Type = AudioType.Full;
     private const string FileName = "testfile.mp3";
