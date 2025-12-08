@@ -8,6 +8,7 @@ using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Services;
 using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
+using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Repositories;
 using TextToSpeech.Infra.Services;
@@ -55,22 +56,24 @@ internal static class ServicesDiExtension
         {
             // used for selenium tests
             services.AddScoped<IEmailService, EmailServiceStub>();
-            services.AddScoped<SimulatedTtsService>();
-            services.AddScoped<ITtsService>(sp => sp.GetRequiredService<SimulatedTtsService>());
+            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(SharedConstants.OpenAiKey);
+            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(SharedConstants.NarakeetKey);
 
             return;
         }
 
         services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<ITtsService, OpenAiService>();
 
+        services.AddKeyedScoped<ITtsService, OpenAiService>(SharedConstants.OpenAiKey);
         services.AddSingleton(serviceProvider =>
         {
             var apiKey = configuration[ConfigConstants.OpenAiApiKey];
             return new OpenAIClient(apiKey);
         });
 
-        services.AddHttpClient<ITtsService, NarakeetService>((provider, client) =>
+        services.AddKeyedScoped<ITtsService>(SharedConstants.NarakeetKey,
+            (sp, _) => sp.GetRequiredService<NarakeetService>());
+        services.AddHttpClient<NarakeetService>((provider, client) =>
         {
             var options = provider.GetRequiredService<IOptions<NarakeetConfig>>().Value;
 
