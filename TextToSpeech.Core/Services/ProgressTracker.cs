@@ -15,12 +15,17 @@ public sealed class ProgressTracker : IProgressTracker
 
     public int GetOverallProgress(Guid fileId)
     {
-        if (!progressDictionary.TryGetValue(fileId, out var fileProgress) || fileProgress.IsEmpty)
+        if (!progressDictionary.TryGetValue(fileId, out ConcurrentDictionary<int, int>? fileProgress) || fileProgress.IsEmpty)
         {
             return 0;
         }
 
-        int sumProgress = fileProgress.Values.Sum();
-        return sumProgress / fileProgress.Count;
+        // overall = (sum of all the chunk percents) / chunkCount
+        // example for 3 chunks: overall = (20 + 50 + 90) / 3 = 53%
+
+        int chunkPercents = fileProgress.Values.Sum();
+        int chunkCount = fileProgress.Count;
+
+        return chunkPercents / chunkCount;
     }
 }

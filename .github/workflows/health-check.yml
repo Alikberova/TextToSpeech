@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.USER_NAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            curl -f -k https://localhost:7057/health
+            curl -f http://localhost:7058/health
 
       - name: Check Frontend health
         id: frontend-check

@@ -1,23 +1,19 @@
-import { createHomeFixture, DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, DEFAULT_SAMPLE_I18N_KEY, LOCALE_UK, LOCALE_EN, clickPlayButton, selectOpenAiMinimal, expectOneEndsWith } from './home.page.spec-setup';
 import { ComponentFixture } from '@angular/core/testing';
 import { Signal } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { HomePage } from '../home.page';
 import { By } from '@angular/platform-browser';
-import { SPEECH_SAMPLE } from '../../../core/http/endpoints';
-import { HttpTestingController } from '@angular/common/http/testing';
 import { describe, beforeEach, it, expect } from 'vitest';
+import { createHomeFixture } from './home.page.spec-setup';
+import { DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME } from './test-data';
 
-describe('HomePage - Sample text and file interactions', () => {
+describe('HomePage - File interactions', () => {
     let fixture: ComponentFixture<HomePage>;
     let component: HomePage;
-    let httpController: HttpTestingController;
 
     beforeEach(async () => {
         const created = await createHomeFixture();
         fixture = created.fixture;
         component = created.component;
-        httpController = created.httpController;
     });
 
     it('onFileSelected stores single file and marks touched', async () => {
@@ -49,37 +45,6 @@ describe('HomePage - Sample text and file interactions', () => {
         fixture.detectChanges();
         expect(component.file()).toBeNull();
         expectFileTouched(component);
-    });
-
-    it('initializes sampleText from i18n key with FakeLoader and respects user edits on language change', async () => {
-        // With TranslateFakeLoader, translations echo keys
-        expect(component.sampleText()).toBe(DEFAULT_SAMPLE_I18N_KEY);
-
-        const userText = 'My personal sample input';
-        component.onSampleTextInput(userText);
-        fixture.detectChanges();
-        // Trigger language change and ensure it does not overwrite user edits
-        const translate = fixture.debugElement.injector.get(TranslateService) as TranslateService;
-        translate.use(LOCALE_UK);
-        expect(component.sampleText()).toBe(userText);
-
-        // If user clears back to empty (treated as not edited), next language change applies default again
-        component.onSampleTextInput('');
-        fixture.detectChanges();
-        translate.use(LOCALE_EN);
-        fixture.detectChanges();
-        expect(component.sampleText()).toBe(DEFAULT_SAMPLE_I18N_KEY);
-    });
-
-    it('sample play posts to /speech/sample', async () => {
-        selectOpenAiMinimal(component);
-        fixture.detectChanges();
-
-        clickPlayButton(fixture);
-
-        const testRequest = expectOneEndsWith(httpController, SPEECH_SAMPLE);
-        expect(testRequest.request.method).toBe('POST');
-        testRequest.flush(new Blob([new Uint8Array([1])], { type: 'audio/mpeg' }));
     });
 
 });

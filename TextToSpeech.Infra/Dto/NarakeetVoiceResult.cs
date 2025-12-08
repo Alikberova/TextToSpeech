@@ -1,6 +1,6 @@
-﻿namespace TextToSpeech.Infra.Dto.Narakeet;
+﻿namespace TextToSpeech.Infra.Dto;
 
-public sealed record VoiceResponse
+public sealed record NarakeetVoiceResult
 {
     public string Name { get; init; } = string.Empty;
     public string Language { get; init; } = string.Empty;

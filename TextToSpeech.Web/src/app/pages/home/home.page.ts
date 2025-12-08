@@ -1,6 +1,5 @@
 import { Component, Signal, ViewChild, ElementRef, OnDestroy, OnInit, computed, signal, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
@@ -15,11 +14,11 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NARAKEET_KEY, OPEN_AI_KEY, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES } from '../../constants/tts-constants';
 import { TtsService } from '../../core/http/tts/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
-import { VOICES_NARAKEET } from '../../core/http/endpoints';
-import { NarakeetVoice } from '../../dto/narakeet-voice';
+import { VoiceService } from '../../core/http/voice/voice.service';
 import { SpeechResponseFormat } from '../../dto/tts-request';
+import type { Voice } from '../../dto/voice';
 import { SampleAudioPlayer } from './home.sample-audio';
-import { buildDownloadFilename, getLanguagesFromNarakeetVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
+import { buildDownloadFilename, getLanguagesFromVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
 import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
 
 @Component({
@@ -44,10 +43,10 @@ import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleSta
 export class HomePage implements OnInit, OnDestroy {
   // 1) Injected services (readonly)
   private readonly translate = inject(TranslateService);
-  private readonly http = inject(HttpClient);
   private readonly tts = inject(TtsService);
   private readonly snack = inject(MatSnackBar);
   private readonly signalR = inject(SignalRService);
+  private readonly voiceService = inject(VoiceService);
 
   // 2) View references
   @ViewChild('providerEl') private readonly providerEl?: MatSelect;
@@ -74,7 +73,7 @@ export class HomePage implements OnInit, OnDestroy {
   ] as const;
 
   // 4) Internal reactive state
-  private readonly narakeetVoices = signal<NarakeetVoice[]>([]);
+  private readonly voices = signal<Voice[]>([]);
   private readonly langChangeTrigger = signal(0);
   // Tracks if the user has modified the sample text so we avoid auto-translating it.
   private readonly isSampleUserEdited = signal<boolean>(false);
@@ -120,13 +119,13 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.provider() !== NARAKEET_KEY) {
       return [] as const;
     }
-    return getLanguagesFromNarakeetVoices(this.narakeetVoices());
+    return getLanguagesFromVoices(this.voices());
   });
 
   voicesForProvider: Signal<readonly SelectOption[]> = computed(() => {
     const providerKey = this.provider() || undefined;
     const lang = this.language() || undefined;
-    return getVoicesForProvider(providerKey, lang, this.narakeetVoices());
+    return getVoicesForProvider(providerKey, lang, this.voices());
   });
 
   requiresModel: Signal<boolean> = computed(() => {
@@ -198,21 +197,17 @@ export class HomePage implements OnInit, OnDestroy {
     this.model.set('');
     this.voice.set('');
     this.language.set('');
+    this.voices.set([]);
     if (providerKey && Array.isArray(this.providerModels[providerKey]) && this.providerModels[providerKey].length > 0) {
       this.model.set(this.providerModels[providerKey][0]);
     }
-    if (providerKey === NARAKEET_KEY) {
-      this.loadNarakeetVoices('Failed to load Narakeet voices');
+    if (providerKey) {
+      this.loadVoices(providerKey, 'Failed to load voices');
     }
   }
 
   onLanguageChange(lang: string): void {
     this.language.set(lang);
-    if (this.provider() !== NARAKEET_KEY) {
-      return;
-    }
-    // Refresh the list from backend; voicesForProvider filters by selected language
-    this.loadNarakeetVoices('Failed to refresh Narakeet voices');
   }
 
   onFileSelected(input: HTMLInputElement): void {
@@ -384,6 +379,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.status.set(AUDIO_STATUS.Idle);
     this.progress.set(0);
     this.currentFileId.set(null);
+    this.voices.set([]);
   }
 
   download(): void {
@@ -510,12 +506,14 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  private loadNarakeetVoices(errorMessage: string): void {
-    this.http.get<NarakeetVoice[]>(VOICES_NARAKEET).subscribe({
-      next: (voices) => this.narakeetVoices.set(voices ?? []),
+  private loadVoices(providerKey: string, errorMessage: string): void {
+    this.voiceService.getVoices(providerKey).subscribe({
+      next: (voices) => {
+        this.voices.set(voices ?? []);
+      },
       error: (error) => {
         console.error(errorMessage, error);
-        this.narakeetVoices.set([]);
+        this.voices.set([]);
       },
     });
   }

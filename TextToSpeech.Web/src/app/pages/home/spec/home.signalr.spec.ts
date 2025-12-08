@@ -1,10 +1,11 @@
 import { By } from '@angular/platform-browser';
-import { createHomeFixture, fillValidFormForOpenAI, DOWNLOAD_BUTTON_SELECTOR, PROGRESS_PROCESSING_VALUE, PROGRESS_COMPLETE_VALUE, PROGRESS_VALID_VALUE, clickSubmit, expectOneEndsWith } from './home.page.spec-setup';
+import { createHomeFixture, fillValidFormForOpenAI, DOWNLOAD_BUTTON_SELECTOR, clickSubmit, expectOneEndsWith } from './home.page.spec-setup';
 import { SPEECH_BASE } from '../../../core/http/endpoints';
 import { SignalRService } from '../../../core/realtime/signalr.service';
 import { SignalRStub } from '../../../../testing/signalr-test-utils';
 import { AUDIO_STATUS } from '../home.types';
 import { describe, it, expect } from 'vitest';
+import { PROGRESS_PROCESSING_VALUE, PROGRESS_COMPLETE_VALUE, PROGRESS_VALID_VALUE } from './test-data';
 
 describe('HomePage - SignalR and Progress', () => {
     it('enables Download button when SignalR reports Completed', async () => {

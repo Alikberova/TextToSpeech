@@ -1,7 +1,6 @@
 ﻿using TextToSpeech.Core.Entities;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Dto.Narakeet;
 using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.FileProcessing;
 using static TextToSpeech.Core.Enums;
@@ -10,14 +9,10 @@ namespace TextToSpeech.Infra;
 
 public static class TestData
 {
-    public static class TextToSpeechFormConstants
+    public static class Lang
     {
         public const string English = "English";
         public const string GermanStandard = "German (Standard)";
-        public const string NarakeetVoiceHans = "Hans";
-        public const string NarakeetVoiceAmanda = "Amanda";
-        public const string OpenAiVoiceFable = "Fable";
-        public const string OpenAiVoiceAlloy = "Alloy";
     }
 
     public const string TtsSampleRequest =
@@ -32,7 +27,7 @@ public static class TestData
             TtsSampleRequest,
             new TtsRequestOptions()
             {
-                Voice = TextToSpeechFormConstants.OpenAiVoiceAlloy.ToLower(),
+                Voice = OpenAiVoices.Alloy.ProviderVoiceId,
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -54,7 +49,7 @@ public static class TestData
             TtsFullRequest,
             new TtsRequestOptions()
             {
-                Voice = TextToSpeechFormConstants.OpenAiVoiceFable.ToLower(),
+                Voice = OpenAiVoices.Fable.ProviderVoiceId,
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -68,38 +63,53 @@ public static class TestData
         return audio;
     }
 
-    public static List<VoiceResponse> GetVoicesNarakeet()
+    public static class OpenAiVoices
     {
-        var voices = new List<VoiceResponse>
+        public static Voice[] All => [Alloy, Fable];
+
+        public static Voice Alloy => new()
         {
-            new() {
-                Name = "anders",
-                Language = "Danish",
-                LanguageCode = "da-DK",
-                Styles = []
-            },
-            new() {
-                Name = "amanda",
-                Language = TextToSpeechFormConstants.English,
-                LanguageCode = "en-US",
-                Styles = []
-            },
-            new() {
-                Name = "armin",
-                Language = TextToSpeechFormConstants.GermanStandard,
-                LanguageCode = "de-DE",
-                Styles = []
-            },
-            new() {
-                Name = TextToSpeechFormConstants.NarakeetVoiceHans,
-                Language = TextToSpeechFormConstants.GermanStandard,
-                LanguageCode = "de-DE",
-                Styles = []
-            },
+            Name = "Alloy",
+            ProviderVoiceId = "alloy",
         };
 
-        // .ToLowerInvariant() as it comes from api in low case
+        public static Voice Fable => new()
+        {
+            Name = "Fable",
+            ProviderVoiceId = "fable",
+        };
+    }
 
-        return [.. voices.Select(v => v with { Name = v.Name.ToLowerInvariant() })];
+    public static class NarakeetVoices
+    {
+        public static Voice[] All => [Hans, Armin, Amanda, Anders];
+
+        public static Voice Hans => new()
+        {
+            Name = "Hans",
+            ProviderVoiceId = "hans",
+            Language = new Language(Lang.GermanStandard, "de-DE"),
+        };
+
+        public static Voice Armin => new()
+        {
+            Name = "Armin",
+            ProviderVoiceId = "armin",
+            Language = new Language(Lang.GermanStandard, "de-DE"),
+        };
+
+        public static Voice Amanda => new()
+        {
+            Name = "Amanda",
+            ProviderVoiceId = "amanda",
+            Language = new Language(Lang.English, "en-US"),
+        };
+
+        public static Voice Anders => new()
+        {
+            Name = "Anders",
+            ProviderVoiceId = "anders",
+            Language = new Language("Danish", "da-DK"),
+        };
     }
 }

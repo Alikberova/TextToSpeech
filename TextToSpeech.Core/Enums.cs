@@ -17,4 +17,10 @@ public sealed class Enums
         Sample,
         Full
     }
+
+    public enum VoiceQualityTier
+    {
+        Standard,
+        Premium
+    }
 }

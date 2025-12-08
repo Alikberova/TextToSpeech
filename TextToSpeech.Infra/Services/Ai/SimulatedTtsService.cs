@@ -1,6 +1,5 @@
+using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
-using TextToSpeech.Infra.Dto.Narakeet;
-using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services.FileProcessing;
 
 namespace TextToSpeech.Infra.Services.Ai;
@@ -8,7 +7,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// Simulates TTS processing in test mode without calling external APIs.
 /// </summary>
-public sealed class SimulatedTtsService : INarakeetService
+public sealed class SimulatedTtsService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
 
@@ -49,9 +48,8 @@ public sealed class SimulatedTtsService : INarakeetService
         return AudioFileService.GenerateSilentMp3(2);
     }
 
-    // INarakeetService extra method
-    public Task<List<VoiceResponse>?> GetAvailableVoices()
+    public Task<List<Voice>?> GetVoices()
     {
-        return Task.FromResult<List<VoiceResponse>?>(TestData.GetVoicesNarakeet());
+        return Task.FromResult<List<Voice>?>([]);
     }
 }

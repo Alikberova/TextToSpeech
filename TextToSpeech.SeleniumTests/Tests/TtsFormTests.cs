@@ -12,6 +12,7 @@ namespace TextToSpeech.SeleniumTests.Tests;
 /// Uses pre-seeded DB data (Infra.TestData) and SignalR to validate generation,
 /// download, and cancellation scenarios.
 /// </summary>
+[Collection("Redis")]
 public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 {
     private TtsFormPage CreatePage() => new(Driver, Wait);
@@ -29,7 +30,7 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.OpenAI);
-        await page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceAlloy);
+        await page.SelectVoice(OpenAiVoices.Alloy.Name);
 
         page.TypeSampleText();
 
@@ -39,8 +40,9 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         page.ClickPlayButton();
         Assert.True(page.IsIconVisible("play_circle"));
 
+        // todo pre-seeded DB data will not match privider agnostic voice
         page.SelectProvider(SharedConstants.OpenAI);
-        await page.SelectVoice(TextToSpeechFormConstants.OpenAiVoiceFable);
+        await page.SelectVoice(OpenAiVoices.Fable.Name);
         page.UploadFile(sourcePath);
         page.ClickSubmit();
 
@@ -71,8 +73,8 @@ public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
         var page = CreatePage();
 
         page.SelectProvider(SharedConstants.Narakeet);
-        page.SelectLanguage(TextToSpeechFormConstants.GermanStandard);
-        await page.SelectVoice(TextToSpeechFormConstants.NarakeetVoiceHans);
+        page.SelectLanguage(Lang.GermanStandard);
+        await page.SelectVoice(NarakeetVoices.Hans.Name);
         
         page.UploadFile(path1);
         page.RemoveUploadedFile();
