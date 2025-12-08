@@ -43,7 +43,7 @@
     "@vitest/coverage-v8": "^4.0.15",
     "angular-eslint": "20.4.0",
     "eslint": "^9.37.0",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.3.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "8.48.0",
     "vitest": "^4.0.15"
