@@ -14,10 +14,11 @@ public sealed class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsS
             return _serviceProvider.GetRequiredService<SimulatedTtsService>();
         }
 
+        // todo check to improve
         ITtsService service = key switch
         {
             SharedConstants.OpenAiKey => _serviceProvider.GetServices<ITtsService>().OfType<OpenAiService>().Single(),
-            SharedConstants.NarakeetKey => _serviceProvider.GetServices<INarakeetService>().OfType<NarakeetService>().Single(),
+            SharedConstants.NarakeetKey => _serviceProvider.GetServices<ITtsService>().OfType<NarakeetService>().Single(),
             _ => throw new ArgumentException($"Service with key '{key}' is not registered."),
         };
 

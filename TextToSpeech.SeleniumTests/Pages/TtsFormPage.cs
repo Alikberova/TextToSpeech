@@ -114,6 +114,10 @@ public sealed class TtsFormPage
 
     private IWebElement? GetDropdownOption(string buttonText)
     {
-        return _wait.UntilVisibleAndEnabled(By.XPath($"//mat-option/span[contains(text(), '{buttonText}')]"));
+        var lower = buttonText.ToLowerInvariant();
+
+        // translate lowercases the element text 
+        return _wait.UntilVisibleAndEnabled(By.XPath(
+            $"//mat-option/span[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{lower}')]"));
     }
 }

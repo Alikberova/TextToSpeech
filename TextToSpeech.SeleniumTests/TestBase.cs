@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace TextToSpeech.SeleniumTests;
 
-public class TestBase : IDisposable
+public class TestBase : IAsyncLifetime
 {
     private readonly string _testId = Guid.NewGuid().ToString("N");
 
@@ -23,10 +23,9 @@ public class TestBase : IDisposable
     public TestBase(ITestOutputHelper? testOutputHelper = null)
     {
         TestOutputHelper = testOutputHelper;
-        Setup();
     }
 
-    private void Setup()
+    public Task InitializeAsync()
     {
         VerifyTestDirectory();
 
@@ -50,22 +49,17 @@ public class TestBase : IDisposable
         Wait = GetWait(Driver);
 
         Driver.Navigate().GoToUrl($"https://localhost:{AppConstants.ClientPort}");
+
+        return Task.CompletedTask;
     }
 
-    public void Dispose()
+    public Task DisposeAsync()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+        Driver?.Quit();
+        Driver?.Dispose();
+        DeleteTestDirectory();
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            Driver?.Quit();
-            Driver?.Dispose();
-            DeleteTestDirectory();
-        }
+        return Task.CompletedTask;
     }
 
     private static WebDriverWait GetWait(IWebDriver driver)

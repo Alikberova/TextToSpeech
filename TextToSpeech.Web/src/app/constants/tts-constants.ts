@@ -13,18 +13,4 @@ export const PROVIDER_MODELS: Record<ProviderKey, string[] | null> = {
   openai: ['tts-1', 'gpt-4o-mini-tts'],
 } as const;
 
-export const OPEN_AI_VOICES = [
-    { key: 'alloy', label: 'Alloy' },
-    { key: 'ash', label: 'Ash' },
-    { key: 'ballad', label: 'Ballad' },
-    { key: 'coral', label: 'Coral' },
-    { key: 'echo', label: 'Echo' },
-    { key: 'fable', label: 'Fable' },
-    { key: 'onyx', label: 'Onyx' },
-    { key: 'nova', label: 'Nova' },
-    { key: 'sage', label: 'Sage' },
-    { key: 'shimmer', label: 'Shimmer' },
-    { key: 'verse', label: 'Verse' },
-] as const;
-
 export type ProviderKey = typeof PROVIDERS[number]['key'];
