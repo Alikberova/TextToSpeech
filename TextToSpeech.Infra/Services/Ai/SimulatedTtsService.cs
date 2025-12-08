@@ -50,13 +50,6 @@ public sealed class SimulatedTtsService : ITtsService
 
     public Task<List<Voice>?> GetVoices()
     {
-        var voices = TestData.GetVoicesNarakeet().Select(v => new Voice
-        {
-            Name = v.Name,
-            ProviderVoiceId = v.Name,
-            Language = new Language(v.Language, v.LanguageCode),
-        }).ToList();
-
-        return Task.FromResult<List<Voice>?>(voices);
+        return Task.FromResult<List<Voice>?>([]);
     }
 }

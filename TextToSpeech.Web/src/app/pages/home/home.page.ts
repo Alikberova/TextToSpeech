@@ -184,8 +184,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.sampleText.set(initial);
     this.lastAutoSampleText.set(initial);
     this.isSampleUserEdited.set(false);
-    // preload narakeet voices as call takes 9+ sec
-    this.loadVoices(NARAKEET_KEY, 'Failed to preload Narakeet voices');
   }
 
   ngOnDestroy(): void {

@@ -19,9 +19,9 @@ public sealed class VoiceService : IVoiceService
 
     public async Task<List<Voice>?> GetVoices(string provider)
     {
-        var cacheKey = $"{provider}_voices";
+        var cacheKey = CacheKeys.Voices(provider);
 
-        var cachedVoices = await _redisCacheProvider.GetCachedData<List<Voice>>(cacheKey);
+        var cachedVoices = await _redisCacheProvider.GetCachedData<List<Voice>>(cacheKey + "lala");
 
         if (cachedVoices is not null)
         {

@@ -123,12 +123,9 @@ export function expectOneEndsWith(http: HttpTestingController, suffix: string): 
   return http.expectOne(request => request.url.endsWith(suffix));
 }
 
-export function flushVoice(http: HttpTestingController, voices: Voice[], requestsCount = 2): void {
-  const requests = http.match(request => request.url.endsWith(VOICES));
-  if (requests.length !== requestsCount) {
-    throw new Error(`Expected ${requestsCount} VOICES requests, but got ${requests.length}.`);
-  }
-  requests.forEach(r => r.flush(voices));
+export function flushVoice(http: HttpTestingController, voices: Voice[]): void {
+  const request = expectOneEndsWith(http, VOICES);
+  request.flush(voices);
 }
 
 export function setProviderNarakeet(
