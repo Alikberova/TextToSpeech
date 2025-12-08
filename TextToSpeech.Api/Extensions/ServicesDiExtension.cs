@@ -56,22 +56,22 @@ internal static class ServicesDiExtension
         {
             // used for selenium tests
             services.AddScoped<IEmailService, EmailServiceStub>();
-            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(SharedConstants.OpenAiKey);
-            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(SharedConstants.NarakeetKey);
+            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(Shared.OpenAI.Key);
+            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(Shared.Narakeet.Key);
 
             return;
         }
 
         services.AddScoped<IEmailService, EmailService>();
 
-        services.AddKeyedScoped<ITtsService, OpenAiService>(SharedConstants.OpenAiKey);
+        services.AddKeyedScoped<ITtsService, OpenAiService>(Shared.OpenAI.Key);
         services.AddSingleton(serviceProvider =>
         {
             var apiKey = configuration[ConfigConstants.OpenAiApiKey];
             return new OpenAIClient(apiKey);
         });
 
-        services.AddKeyedScoped<ITtsService>(SharedConstants.NarakeetKey,
+        services.AddKeyedScoped<ITtsService>(Shared.Narakeet.Key,
             (sp, _) => sp.GetRequiredService<NarakeetService>());
         services.AddHttpClient<NarakeetService>((provider, client) =>
         {

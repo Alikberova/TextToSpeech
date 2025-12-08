@@ -96,7 +96,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 AudioType.Full,
                 fileText,
                 request,
-                SharedConstants.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
+                Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
                 fileName,
                 fileId
             );
@@ -196,7 +196,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             AudioType.Sample,
             input,
             request,
-            SharedConstants.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
+            Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
             hash: hash);
 
         audioFile.Status = Status.Completed;
@@ -230,7 +230,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             await Task.Delay(delayMs.Value);
         }
 
-        await _hubContext.Clients.All.SendAsync(SharedConstants.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
+        await _hubContext.Clients.All.SendAsync(Shared.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
     }
 
     private bool ShouldTriggerUpdate(Guid fileId, int progress)

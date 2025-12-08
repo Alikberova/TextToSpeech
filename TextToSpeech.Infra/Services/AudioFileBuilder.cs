@@ -28,7 +28,7 @@ public static class AudioFileBuilder
             Description = $"{type}_" +
                 $"{options.Voice}_" +
                 $"{langCode}_" +
-                $"{SharedConstants.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId).Key}_" +
+                $"{Shared.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId).Key}_" +
                 $"{options.Speed}_" +
                 $"{options.Model}",
             Hash = hash ?? GenerateHash(input, langCode, options),

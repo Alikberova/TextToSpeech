@@ -35,8 +35,8 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     }
 
     [Theory]
-    [InlineData(SharedConstants.OpenAI)]
-    [InlineData(SharedConstants.Narakeet)]
+    [InlineData(Shared.OpenAI.Name)]
+    [InlineData(Shared.Narakeet.Name)]
     public async Task GetVoiceSample_ReturnsMp3Sample(string ttsApi)
     {
         // Arrange
@@ -53,8 +53,8 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     }
 
     [Theory]
-    [InlineData(SharedConstants.OpenAI)]
-    [InlineData(SharedConstants.Narakeet)]
+    [InlineData(Shared.OpenAI.Key)]
+    [InlineData(Shared.Narakeet.Key)]
     public async Task CreateSpeech_ReturnsMp3(string ttsApi)
     {
         // Arrange
@@ -67,7 +67,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         Guid? fileId = null;
         var progressReports = new List<int?>();
 
-        hubConnection.On<Guid, string, int?, string?>(SharedConstants.AudioStatusUpdated, (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
+        hubConnection.On<Guid, string, int?, string?>(Shared.AudioStatusUpdated, (fileIdResult, updatedStatus, progressPercentage, errorMessageResult) =>
         {
             status = updatedStatus;
             errorMessage = errorMessageResult;
@@ -137,7 +137,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     private HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory)
     {
         return new HubConnectionBuilder()
-            .WithUrl($"{client.BaseAddress!.OriginalString}{SharedConstants.AudioHubEndpoint}", o =>
+            .WithUrl($"{client.BaseAddress!.OriginalString}{Shared.AudioHubEndpoint}", o =>
             {
                 o.Transports = HttpTransportType.WebSockets;
                 o.SkipNegotiation = true;

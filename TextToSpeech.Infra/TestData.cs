@@ -32,7 +32,7 @@ public static class TestData
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
-            SharedConstants.TtsApis[SharedConstants.OpenAI],
+            Shared.OpenAI.Id,
             "test_sample_audio_alloy.mp3",
             Guid.Parse("32f7811a-0cc5-49d7-b0e1-8417cc08d78f"));
 
@@ -54,7 +54,7 @@ public static class TestData
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
-            SharedConstants.TtsApis[SharedConstants.OpenAI],
+            Shared.OpenAI.Id,
             "test_full_audio_fable.mp3",
             Guid.Parse("c3c54b87-21c4-43a4-a774-2b7646484edd"));
 
