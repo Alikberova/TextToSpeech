@@ -1,27 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TextToSpeech.Core.Interfaces.Ai;
-using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-public sealed class TtsServiceFactory(IServiceProvider _serviceProvider) : ITtsServiceFactory
+public sealed class TtsServiceFactory(IServiceProvider serviceProvider) : ITtsServiceFactory
 {
     public ITtsService Get(string key)
     {
-        if (HostingEnvironment.IsTestMode())
-        {
-            return _serviceProvider.GetRequiredService<SimulatedTtsService>();
-        }
-
-        // todo check to improve
-        ITtsService service = key switch
-        {
-            SharedConstants.OpenAiKey => _serviceProvider.GetServices<ITtsService>().OfType<OpenAiService>().Single(),
-            SharedConstants.NarakeetKey => _serviceProvider.GetServices<ITtsService>().OfType<NarakeetService>().Single(),
-            _ => throw new ArgumentException($"Service with key '{key}' is not registered."),
-        };
-
-        return service;
+        return serviceProvider.GetRequiredKeyedService<ITtsService>(key);
     }
 }
