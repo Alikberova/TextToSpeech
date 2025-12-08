@@ -99,7 +99,7 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapControllers();
-app.MapHub<AudioHub>(SharedConstants.AudioHubEndpoint);
+app.MapHub<AudioHub>(Shared.AudioHubEndpoint);
 
 using var scope = app.Services.CreateScope();
 

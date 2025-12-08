@@ -16,7 +16,7 @@ public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
 
     private async Task Seed()
     {
-        foreach (var keyValue in SharedConstants.TtsApis)
+        foreach (var keyValue in Shared.TtsApis)
         {
             if (!dbContext.TtsApis.Any(s => s.Id == keyValue.Value))
             {
