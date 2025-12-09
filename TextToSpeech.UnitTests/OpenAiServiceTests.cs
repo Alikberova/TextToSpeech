@@ -32,7 +32,8 @@ public sealed class OpenAiServiceTests
         var service = CreateOpenAiService();
 
         // Act
-        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions);
+        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions,
+            Mocks.ProgressCallback, default);
 
         // Assert
         Assert.Empty(result);
@@ -49,14 +50,14 @@ public sealed class OpenAiServiceTests
 
         // Act / Assert
         await Assert.ThrowsAsync<TaskCanceledException>(() =>
-            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, cancellationToken: cts.Token));
+            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, cts.Token));
     }
 
     private static OpenAiService CreateOpenAiService()
     {
         var client = new OpenAIClient("test-key");
         var logger = new Mock<ILogger<OpenAiService>>();
-        var service = new OpenAiService(client, logger.Object);
+        var service = new OpenAiService(client, logger.Object, Mocks.ProgressTracker);
 
         return service;
     }

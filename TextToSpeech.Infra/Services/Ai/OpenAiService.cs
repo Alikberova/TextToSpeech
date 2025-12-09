@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 
@@ -9,24 +10,35 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// 50 requests/min for model tts-1
 /// </summary>
-public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _logger) : ITtsService
+public sealed class OpenAiService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     // Limit the number of parallel chunk requests to meet rate limits
     private const int MaxParallelChunks = 20;
+    private readonly OpenAIClient _client;
+    private readonly ILogger<OpenAiService> _logger;
+    private readonly IProgressTracker _progressTracker;
+
+    public OpenAiService(OpenAIClient client, ILogger<OpenAiService> logger, IProgressTracker progressTracker)
+    {
+        _client = client;
+        _logger = logger;
+        _progressTracker = progressTracker;
+    }
 
     private AudioClient AudioClient { get; set; } = default!;
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
-        IProgress<ProgressReport>? progress = null,
-        CancellationToken cancellationToken = default)
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken)
     {
         var totalChunks = textChunks.Count;
-        var completedChunks = 0;
 
         var results = new ReadOnlyMemory<byte>[totalChunks];
+
+        _progressTracker.InitializeFile(fileId, totalChunks);
 
         using var gate = new SemaphoreSlim(MaxParallelChunks);
 
@@ -48,10 +60,10 @@ public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _
 
                     results[index] = bytes;
 
-                    var done = Interlocked.Increment(ref completedChunks);
+                    var progress = _progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
 
-                    _logger.LogInformation("Done {Done} for {Id}", done, fileId);
-                    ReportProgress(fileId, progress, totalChunks, done);
+                    _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                        index + 1, totalChunks, fileId, progress);
                 }
                 finally
                 {
@@ -107,24 +119,6 @@ public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _
         var result = await AudioClient.GenerateSpeechAsync(text, voice, options, cancellationToken);
 
         return result.Value.ToMemory();
-    }
-
-    private static void ReportProgress(Guid fileId, IProgress<ProgressReport>? progress, int totalChunks, int completedChunks)
-    {
-        if (progress is null)
-        {
-            return;
-        }
-
-        double ratio = (double)completedChunks / totalChunks;
-
-        var progressPercentage = (int)(ratio * 100);
-
-        progress.Report(new ProgressReport()
-        {
-            FileId = fileId,
-            ProgressPercentage = progressPercentage
-        });
     }
 
     private AudioClient GetClient(string model) => _client.GetAudioClient(model);

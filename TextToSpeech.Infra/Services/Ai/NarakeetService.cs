@@ -1,8 +1,10 @@
-﻿using System.Net;
+﻿using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Dto;
@@ -13,10 +15,20 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <br/> The Narakeet API allows processing documents up to 100 KB for the long content (polling) API, and 1 KB for the streaming API.
 /// <br/> By default, the API allows to make 86,400 requests per day (1 per second)
 /// </summary>
-public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
+public sealed class NarakeetService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 13000; //23 kb
     private const int MaxLengthForShortContent = 565;
+    private readonly HttpClient _httpClient;
+    private readonly IProgressTracker _progressTracker;
+    private readonly ILogger<NarakeetService> _logger;
+
+    public NarakeetService(HttpClient httpClient, IProgressTracker progressTracker, ILogger<NarakeetService> logger)
+    {
+        _httpClient = httpClient;
+        _progressTracker = progressTracker;
+        _logger = logger;
+    }
 
     /// <summary>
     /// Requests speech with Narakeet API
@@ -27,11 +39,14 @@ public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
-        IProgress<ProgressReport>? progress = null,
-        CancellationToken cancellationToken = default)
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken)
     {
+        _progressTracker.InitializeFile(fileId, textChunks.Count);
+
         var tasks = textChunks
-            .Select(chunk => RequestLongContent(chunk, fileId, ttsRequest, progress, cancellationToken))
+            .Select((chunk, index) => RequestLongContent(chunk, fileId, ttsRequest, index, textChunks.Count, progressCallback,
+                cancellationToken))
             .ToList();
 
         return await Task.WhenAll(tasks);
@@ -65,14 +80,16 @@ public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
 
     private async Task<ReadOnlyMemory<byte>> RequestLongContent(string text, Guid fileId,
         TtsRequestOptions ttsRequest,
-        IProgress<ProgressReport>? progress = null,
-        CancellationToken cancellationToken = default)
+        int chunkIndex,
+        int totalChunks,
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var buildTask = await RequestAudioTaskAsync(text, ttsRequest, cancellationToken);
 
-        var taskResult = await PollUntilFinishedAsync(buildTask, fileId, progress, cancellationToken);
+        var taskResult = await PollUntilFinishedAsync(buildTask, fileId, chunkIndex, totalChunks, progressCallback, cancellationToken);
 
         if (!taskResult.Succeeded)
         {
@@ -110,8 +127,10 @@ public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
 
     private async Task<BuildTaskStatus> PollUntilFinishedAsync(BuildTask buildTask,
         Guid fileId,
-        IProgress<ProgressReport>? progressCallback = null,
-        CancellationToken cancellationToken = default)
+        int chunkIndex,
+        int totalChunks,
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken)
     {
         while (true)
         {
@@ -133,7 +152,11 @@ public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
                 return buildTaskStatus;
             }
 
-            progressCallback?.Report(new ProgressReport { FileId = fileId, ProgressPercentage = buildTaskStatus.Percent });
+            var progress = _progressTracker.UpdateProgress(fileId, progressCallback, chunkIndex, buildTaskStatus.Percent);
+
+            _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                chunkIndex + 1, totalChunks, fileId, progress);
+
             await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         }
     }
@@ -153,7 +176,8 @@ public sealed class NarakeetService(HttpClient _httpClient) : ITtsService
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
     }
 
-    private static string GetEndpoint(string format, string voice, double speed) => $"/text-to-speech/{format}?voice={voice}&voice-speed={speed}";
+    private static string GetEndpoint(string format, string voice, double speed) =>
+        $"/text-to-speech/{format}?voice={voice}&voice-speed={speed}";
 }
 
 sealed record BuildTask

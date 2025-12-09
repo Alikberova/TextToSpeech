@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;
@@ -66,7 +67,7 @@ public sealed class NarakeetServiceTests
         var (service, handler) = CreateNarakeetService([], MockBehavior.Strict);
 
         // Act
-        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions);
+        var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, default);
 
         // Assert
         Assert.Empty(result);
@@ -88,7 +89,7 @@ public sealed class NarakeetServiceTests
 
         // Act / Assert
         await Assert.ThrowsAsync<OperationCanceledException>(() =>
-            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, cancellationToken: cts.Token));
+            service.RequestSpeechChunksAsync(["text"], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, cts.Token));
 
         handler.Protected().Verify("SendAsync",
             Times.Never(),
@@ -115,7 +116,9 @@ public sealed class NarakeetServiceTests
             BaseAddress = new Uri("https://example.com")
         };
 
-        var service = new NarakeetService(httpClient);
+        var logger = new Mock<ILogger<NarakeetService>>();
+
+        var service = new NarakeetService(httpClient, Mocks.ProgressTracker, logger.Object);
 
         return (service, httpHandler);
     }

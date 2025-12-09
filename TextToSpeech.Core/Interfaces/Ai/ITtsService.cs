@@ -9,8 +9,8 @@ public interface ITtsService
     Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
-        IProgress<ProgressReport>? progress = null,
-        CancellationToken cancellationToken = default);
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken);
 
     Task<ReadOnlyMemory<byte>> RequestSpeechSample(string text,
         TtsRequestOptions ttsRequest,
