@@ -227,6 +227,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         await _hubContext.Clients.All.SendAsync(Shared.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
     }
 
+    // todo move to ProgressUpdater class
     private async Task UpdateStatusAndProgress(Guid fileId, ProgressReport report, Status status)
     {
         var shouldTriggerUpdate = !_lastProgressDictionary.TryGetValue(fileId, out var lastProgress)

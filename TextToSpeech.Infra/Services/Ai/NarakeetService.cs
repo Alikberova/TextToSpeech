@@ -3,11 +3,10 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
-using TextToSpeech.Infra.Dto;
+using TextToSpeech.Infra.Dto.Narakeet;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
@@ -178,34 +177,4 @@ public sealed class NarakeetService : ITtsService
 
     private static string GetEndpoint(string format, string voice, double speed) =>
         $"/text-to-speech/{format}?voice={voice}&voice-speed={speed}";
-}
-
-sealed record BuildTask
-{
-    [JsonPropertyName("statusUrl")]
-    public string StatusUrl { get; init; } = string.Empty;
-
-    [JsonPropertyName("taskId")]
-    public string TaskId { get; init; } = string.Empty;
-
-    [JsonPropertyName("requestId")]
-    public string RequestId { get; init; } = string.Empty;
-}
-
-sealed record BuildTaskStatus
-{
-    [JsonPropertyName("message")]
-    public string Message { get; init; } = string.Empty;
-
-    [JsonPropertyName("percent")]
-    public int Percent { get; init; }
-
-    [JsonPropertyName("succeeded")]
-    public bool Succeeded { get; init; }
-
-    [JsonPropertyName("finished")]
-    public bool Finished { get; init; }
-
-    [JsonPropertyName("result")]
-    public string Result { get; init; } = string.Empty;
 }

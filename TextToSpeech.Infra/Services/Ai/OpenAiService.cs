@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
+using System.ClientModel;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
@@ -10,7 +11,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// 50 requests/min for model tts-1
 /// </summary>
-public sealed class OpenAiService : ITtsService
+public class OpenAiService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     // Limit the number of parallel chunk requests to meet rate limits
@@ -55,8 +56,7 @@ public sealed class OpenAiService : ITtsService
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var bytes = await GenerateSpeech(chunk, ttsRequest.Voice, ttsRequest.Speed,
-                        ttsRequest.ResponseFormat, cancellationToken);
+                    var bytes = await GenerateSpeech(chunk, ttsRequest, cancellationToken);
 
                     results[index] = bytes;
 
@@ -81,9 +81,7 @@ public sealed class OpenAiService : ITtsService
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default)
     {
-        AudioClient ??= GetClient(ttsRequest.Model!);
-
-        return await GenerateSpeech(text, ttsRequest.Voice, ttsRequest.Speed, ttsRequest.ResponseFormat, cancellationToken);
+        return await GenerateSpeech(text, ttsRequest, cancellationToken);
     }
 
     public Task<List<Voice>?> GetVoices()
@@ -106,20 +104,21 @@ public sealed class OpenAiService : ITtsService
         return Task.FromResult<List<Voice>?>(voices);
     }
 
-    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, string voice, double speed,
-        SpeechResponseFormat generatedSpeechFormat,
+    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken)
     {
+        AudioClient ??= GetClient(ttsRequest.Model!);
+
         SpeechGenerationOptions options = new()
         {
-            SpeedRatio = Convert.ToSingle(speed),
-            ResponseFormat = generatedSpeechFormat.ToString()
+            SpeedRatio = Convert.ToSingle(ttsRequest.Speed),
+            ResponseFormat = ttsRequest.ResponseFormat.ToString()
         };
 
-        var result = await AudioClient.GenerateSpeechAsync(text, voice, options, cancellationToken);
+        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(text, ttsRequest.Voice, options, cancellationToken);
 
         return result.Value.ToMemory();
     }
 
-    private AudioClient GetClient(string model) => _client.GetAudioClient(model);
+    public virtual AudioClient GetClient(string model) => _client.GetAudioClient(model);
 }
