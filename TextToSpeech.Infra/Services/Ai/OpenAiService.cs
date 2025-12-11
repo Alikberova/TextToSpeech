@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenAI;
 using OpenAI.Audio;
+using System.ClientModel;
+using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 
@@ -9,24 +11,35 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// 50 requests/min for model tts-1
 /// </summary>
-public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _logger) : ITtsService
+public sealed class OpenAiService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     // Limit the number of parallel chunk requests to meet rate limits
     private const int MaxParallelChunks = 20;
+    private readonly OpenAIClient _client;
+    private readonly ILogger<OpenAiService> _logger;
+    private readonly IProgressTracker _progressTracker;
+
+    public OpenAiService(OpenAIClient client, ILogger<OpenAiService> logger, IProgressTracker progressTracker)
+    {
+        _client = client;
+        _logger = logger;
+        _progressTracker = progressTracker;
+    }
 
     private AudioClient AudioClient { get; set; } = default!;
 
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
-        IProgress<ProgressReport>? progress = null,
-        CancellationToken cancellationToken = default)
+        IProgress<ProgressReport> progressCallback,
+        CancellationToken cancellationToken)
     {
         var totalChunks = textChunks.Count;
-        var completedChunks = 0;
 
         var results = new ReadOnlyMemory<byte>[totalChunks];
+
+        _progressTracker.InitializeFile(fileId, totalChunks);
 
         using var gate = new SemaphoreSlim(MaxParallelChunks);
 
@@ -43,15 +56,14 @@ public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    var bytes = await GenerateSpeech(chunk, ttsRequest.Voice, ttsRequest.Speed,
-                        ttsRequest.ResponseFormat, cancellationToken);
+                    var bytes = await GenerateSpeech(chunk, ttsRequest, cancellationToken);
 
                     results[index] = bytes;
 
-                    var done = Interlocked.Increment(ref completedChunks);
+                    var progress = _progressTracker.UpdateProgress(fileId, progressCallback, index, 100);
 
-                    _logger.LogInformation("Done {Done} for {Id}", done, fileId);
-                    ReportProgress(fileId, progress, totalChunks, done);
+                    _logger.LogInformation("Processed chunk {ChunkIndex}/{TotalChunks} for file {FileId}. Progress: {Progress}%",
+                        index + 1, totalChunks, fileId, progress);
                 }
                 finally
                 {
@@ -69,9 +81,7 @@ public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _
         TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken = default)
     {
-        AudioClient ??= GetClient(ttsRequest.Model!);
-
-        return await GenerateSpeech(text, ttsRequest.Voice, ttsRequest.Speed, ttsRequest.ResponseFormat, cancellationToken);
+        return await GenerateSpeech(text, ttsRequest, cancellationToken);
     }
 
     public Task<List<Voice>?> GetVoices()
@@ -94,37 +104,20 @@ public sealed class OpenAiService(OpenAIClient _client, ILogger<OpenAiService> _
         return Task.FromResult<List<Voice>?>(voices);
     }
 
-    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, string voice, double speed,
-        SpeechResponseFormat generatedSpeechFormat,
+    private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken)
     {
+        AudioClient ??= GetClient(ttsRequest.Model!);
+
         SpeechGenerationOptions options = new()
         {
-            SpeedRatio = Convert.ToSingle(speed),
-            ResponseFormat = generatedSpeechFormat.ToString()
+            SpeedRatio = Convert.ToSingle(ttsRequest.Speed),
+            ResponseFormat = ttsRequest.ResponseFormat.ToString()
         };
 
-        var result = await AudioClient.GenerateSpeechAsync(text, voice, options, cancellationToken);
+        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(text, ttsRequest.Voice, options, cancellationToken);
 
         return result.Value.ToMemory();
-    }
-
-    private static void ReportProgress(Guid fileId, IProgress<ProgressReport>? progress, int totalChunks, int completedChunks)
-    {
-        if (progress is null)
-        {
-            return;
-        }
-
-        double ratio = (double)completedChunks / totalChunks;
-
-        var progressPercentage = (int)(ratio * 100);
-
-        progress.Report(new ProgressReport()
-        {
-            FileId = fileId,
-            ProgressPercentage = progressPercentage
-        });
     }
 
     private AudioClient GetClient(string model) => _client.GetAudioClient(model);
