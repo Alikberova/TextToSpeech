@@ -4,7 +4,6 @@ using OpenAI;
 using OpenAI.Audio;
 using System.ClientModel;
 using System.ClientModel.Primitives;
-using System.Diagnostics.CodeAnalysis;
 using TextToSpeech.Infra.Services.Ai;
 using Xunit;
 
@@ -16,7 +15,7 @@ public sealed class OpenAiServiceTests
     public async Task GetVoices_ReturnsStaticVoiceList()
     {
         // Arrange
-        var service = CreateOpenAiService();
+        var service = CreateSimpleOpenAiService();
 
         // Act
         var voices = await service.GetVoices();
@@ -33,7 +32,7 @@ public sealed class OpenAiServiceTests
     public async Task RequestSpeechChunksAsync_ReturnsEmptyArray_WhenNoTextChunks()
     {
         // Arrange
-        var service = CreateOpenAiService();
+        var service = CreateSimpleOpenAiService();
 
         // Act
         var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions,
@@ -47,7 +46,7 @@ public sealed class OpenAiServiceTests
     public async Task RequestSpeechChunksAsync_ThrowsTaskCanceled_WhenTokenCanceledBeforeWork()
     {
         // Arrange
-        var service = CreateOpenAiService();
+        var service = CreateSimpleOpenAiService();
 
         using var cts = new CancellationTokenSource();
         cts.Cancel();
@@ -62,11 +61,9 @@ public sealed class OpenAiServiceTests
     {
         var fileId = Guid.NewGuid();
         var progressContext = Mocks.CreateProgressContext(fileId);
-        var client = new OpenAIClient("test-key");
         var logger = new Mock<ILogger<OpenAiService>>();
-        var service = new OpenAiService(client, logger.Object, progressContext.TrackerMock.Object);
 
-        SetAudioClient(service, CreateAudioClientMock().Object);
+        var service = new OpenAiService(CreateOpenAIClientMock(), logger.Object, progressContext.TrackerMock.Object);
 
         var textChunks = new List<string> { "first", "second" };
 
@@ -80,7 +77,7 @@ public sealed class OpenAiServiceTests
         progressContext.TrackerMock.Verify(p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100), Times.Exactly(textChunks.Count));
     }
 
-    private static OpenAiService CreateOpenAiService()
+    private static OpenAiService CreateSimpleOpenAiService()
     {
         var client = new OpenAIClient("test-key");
         var logger = new Mock<ILogger<OpenAiService>>();
@@ -89,93 +86,28 @@ public sealed class OpenAiServiceTests
         return service;
     }
 
-    private static Mock<AudioClient> CreateAudioClientMock()
+    private static OpenAIClient CreateOpenAIClientMock()
     {
-        var audioClient = new Mock<AudioClient>("https://example.com", "fake-key");
+        var mockResult = new Mock<ClientResult<BinaryData>>(BinaryData.FromBytes([1, 2, 3]), Mock.Of<PipelineResponse>());
 
-        audioClient.Setup(c => c.GenerateSpeechAsync(
+        mockResult.SetupGet(r => r.Value).Returns(BinaryData.FromBytes([1, 2, 3]));
+
+        var audioClientMock = new Mock<AudioClient>();
+
+        audioClientMock
+            .Setup(c => c.GenerateSpeechAsync(
                 It.IsAny<string>(),
                 It.IsAny<GeneratedSpeechVoice>(),
                 It.IsAny<SpeechGenerationOptions>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new TestClientResult(BinaryData.FromBytes(new byte[] { 1, 2, 3 })));
+            .ReturnsAsync(mockResult.Object);
 
-        return audioClient;
-    }
+        var openAiClientMock = new Mock<OpenAIClient>();
 
-    private static Mock<AudioClient> CreateAudioClientMock1()
-    {
-        var audioClient = new Mock<AudioClient>("https://example.com", "fake-key");
+        openAiClientMock
+            .Setup(c => c.GetAudioClient(It.IsAny<string>()))
+            .Returns(audioClientMock.Object);
 
-        audioClient.Setup(c => c.GenerateSpeechAsync(
-                It.IsAny<string>(),
-                It.IsAny<GeneratedSpeechVoice>(),
-                It.IsAny<SpeechGenerationOptions>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new TestClientResult(BinaryData.FromBytes(new byte[] { 1, 2, 3 })));
-
-        return audioClient;
-    }
-
-    private static void SetAudioClient(OpenAiService service, AudioClient audioClient)
-    {
-        var property = typeof(OpenAiService).GetProperty("AudioClient",
-            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-        property!.SetValue(service, audioClient);
-    }
-
-    private sealed class TestClientResult : ClientResult<BinaryData>
-    {
-        public TestClientResult(BinaryData value) : base(value, new TestPipelineResponse())
-        {
-        }
-    }
-
-    private sealed class TestPipelineResponse : PipelineResponse
-    {
-        private Stream _contentStream = Stream.Null;
-
-        public override int Status => 200;
-        public override string ReasonPhrase => "OK";
-        [AllowNull]
-        public override Stream ContentStream
-        {
-            get => _contentStream;
-            set => _contentStream = value ?? Stream.Null;
-        }
-        public override BinaryData Content => BinaryData.Empty;
-
-        protected override PipelineResponseHeaders HeadersCore { get; } = new TestPipelineResponseHeaders();
-
-        public override BinaryData BufferContent(CancellationToken cancellationToken = default) => Content;
-
-        public override ValueTask<BinaryData> BufferContentAsync(CancellationToken cancellationToken = default) =>
-            ValueTask.FromResult(Content);
-
-        public override void Dispose()
-        {
-        }
-    }
-
-    private sealed class TestPipelineResponseHeaders : PipelineResponseHeaders
-    {
-        private readonly Dictionary<string, string> _headers = new(StringComparer.OrdinalIgnoreCase);
-
-        public override IEnumerator<KeyValuePair<string, string>> GetEnumerator() => _headers.GetEnumerator();
-
-        public override bool TryGetValue(string name, out string? value) => _headers.TryGetValue(name, out value);
-
-        public override bool TryGetValues(string name, out IEnumerable<string>? values)
-        {
-            if (_headers.TryGetValue(name, out var value))
-            {
-                values = new[] { value };
-                return true;
-            }
-
-            values = null;
-            return false;
-        }
+        return openAiClientMock.Object;
     }
 }

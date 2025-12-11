@@ -11,7 +11,7 @@ namespace TextToSpeech.Infra.Services.Ai;
 /// <summary>
 /// 50 requests/min for model tts-1
 /// </summary>
-public class OpenAiService : ITtsService
+public sealed class OpenAiService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
     // Limit the number of parallel chunk requests to meet rate limits
@@ -120,5 +120,5 @@ public class OpenAiService : ITtsService
         return result.Value.ToMemory();
     }
 
-    public virtual AudioClient GetClient(string model) => _client.GetAudioClient(model);
+    private AudioClient GetClient(string model) => _client.GetAudioClient(model);
 }
