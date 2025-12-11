@@ -110,14 +110,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             var textChunks = _textFileService.SplitTextIfGreaterThan(fileText, ttsService.MaxLengthPerApiRequest);
 
             var progress = new Progress<ProgressReport>();
-            progress.ProgressChanged += async (_, report) =>
-            {
-                if (ShouldTriggerUpdate(report.FileId, report.ProgressPercentage))
-                {
-                    await UpdateAudioStatus(report.FileId, finalStatus.ToString(), report.ProgressPercentage).ConfigureAwait(false);
-                    _lastProgressDictionary[fileId] = report.ProgressPercentage;
-                }
-            };
+
+            progress.ProgressChanged += async (_, report) => await UpdateStatusAndProgress(fileId, report, finalStatus);
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks,
                 fileId,
@@ -233,13 +227,19 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         await _hubContext.Clients.All.SendAsync(Shared.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
     }
 
-    private bool ShouldTriggerUpdate(Guid fileId, int progress)
+    // todo move to ProgressUpdater class
+    private async Task UpdateStatusAndProgress(Guid fileId, ProgressReport report, Status status)
     {
-        if (!_lastProgressDictionary.TryGetValue(fileId, out var lastProgress))
+        var shouldTriggerUpdate = !_lastProgressDictionary.TryGetValue(fileId, out var lastProgress)
+            || report.ProgressPercentage > lastProgress;
+
+        if (!shouldTriggerUpdate)
         {
-            return true;
+            return;
         }
 
-        return progress > lastProgress;
+        await UpdateAudioStatus(report.FileId, status.ToString(), report.ProgressPercentage).ConfigureAwait(false);
+
+        _lastProgressDictionary[fileId] = report.ProgressPercentage;
     }
 }
