@@ -15,7 +15,7 @@ public static class Mp3FileUtilities
         return IsMp3Valid(bytes);
     }
 
-    private static bool IsMp3Valid(byte[] bytes)
+    public static bool IsMp3Valid(byte[] bytes)
     {
         if (bytes.Length < MinBufferLength)
         {

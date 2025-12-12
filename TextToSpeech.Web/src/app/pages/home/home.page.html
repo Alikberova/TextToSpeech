@@ -122,11 +122,11 @@
       (ngModelChange)="responseFormat.set($event)"
       name="responseFormat"
       aria-describedby="formatHelp">
-      @for (fmt of responseFormats; track fmt.key) {
-        <mat-chip-option [value]="fmt.key" [selected]="responseFormat() === fmt.key">
-          {{ fmt.label }}
-        </mat-chip-option>
-      }
+      @for (format of availableResponseFormats(); track format) {
+      <mat-chip-option [value]="format">
+        {{ format | uppercase }}
+      </mat-chip-option>
+    }
     </mat-chip-listbox>
     <mat-hint id="formatHelp">{{ 'home.format.help' | translate }}</mat-hint>
   </section>

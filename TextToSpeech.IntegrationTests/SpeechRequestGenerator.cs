@@ -4,25 +4,21 @@ using Moq;
 using System.Text;
 using TextToSpeech.Api;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra;
 using TextToSpeech.Infra.Constants;
 
 namespace TextToSpeech.IntegrationTests;
 
 internal static class SpeechRequestGenerator
 {
-    private static readonly string[] voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+    private static readonly Faker faker = new ();
 
     public static SpeechRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {
-        var faker = new Faker();
-
-        // build fake TTS options first
         var ttsOptions = new TtsRequestOptions
         {
-            Model = ttsApi == Shared.OpenAI.Key ? "gpt-4o-mini-tts" : null,
-            Voice = ttsApi == Shared.OpenAI.Key
-                ? faker.PickRandom(voices)
-                : "charles",
+            Model = GetModelByTtsApi(ttsApi),
+            Voice = GetVoiceByTtsApi(ttsApi),
             Speed = Math.Round(faker.Random.Double(0.5, 2.0), 1),
             ResponseFormat = SpeechResponseFormat.Mp3
         };
@@ -54,5 +50,26 @@ internal static class SpeechRequestGenerator
         fileMock.Setup(f => f.ContentType).Returns("text/plain");
 
         return fileMock.Object;
+    }
+
+    private static Voice GetVoiceByTtsApi(string ttsApi)
+    {
+        return ttsApi switch
+        {
+            Shared.OpenAI.Key => faker.PickRandom(TestData.OpenAiVoices.All),
+            Shared.Narakeet.Key => faker.PickRandom(TestData.NarakeetVoices.All),
+            Shared.ElevenLabs.Key => faker.PickRandom(TestData.ElevenLabsVoices.All),
+            _ => throw new ArgumentException($"Unsupported TTS API: {ttsApi}", nameof(ttsApi)),
+        };
+    }
+
+    private static string? GetModelByTtsApi(string ttsApi)
+    {
+        return ttsApi switch
+        {
+            Shared.OpenAI.Key => "gpt-4o-mini-tts",
+            Shared.ElevenLabs.Key => "eleven_multilingual_v2",
+            _ => null,
+        };
     }
 }

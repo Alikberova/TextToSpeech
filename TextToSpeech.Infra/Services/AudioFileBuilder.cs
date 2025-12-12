@@ -26,13 +26,13 @@ public static class AudioFileBuilder
             Data = bytes,
             CreatedAt = DateTime.UtcNow,
             Description = $"{type}_" +
-                $"{options.Voice}_" +
+                $"{options.Voice.ProviderVoiceId}_" +
                 $"{langCode}_" +
                 $"{Shared.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId).Key}_" +
                 $"{options.Speed}_" +
                 $"{options.Model}",
             Hash = hash ?? GenerateHash(input, langCode, options),
-            Voice = options.Voice,
+            Voice = options.Voice.ProviderVoiceId,
             LanguageCode = langCode,
             Speed = options.Speed,
             Type = type,
@@ -51,7 +51,7 @@ public static class AudioFileBuilder
 
         var bytes = Encoding.UTF8.GetBytes(input);
         var dataHash = Convert.ToBase64String(SHA256.HashData(bytes));
-        var details = $"{dataHash}:{options.Voice}:{languageCode}:{options.Speed}:{options.Model}:" +
+        var details = $"{dataHash}:{options.Voice.ProviderVoiceId}:{languageCode}:{options.Speed}:{options.Model}:" +
             $"{options.ResponseFormat}";
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(details));
 

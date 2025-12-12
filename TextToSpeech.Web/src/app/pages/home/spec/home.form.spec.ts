@@ -1,13 +1,12 @@
 import { By } from '@angular/platform-browser';
 import { HttpTestingController } from '@angular/common/http/testing';
 import { SPEECH_BASE, SPEECH_SAMPLE } from '../../../core/http/endpoints';
-import { SpeechResponseFormat } from '../../../dto/tts-request';
 import { ComponentFixture } from '@angular/core/testing';
 import { HomePage } from '../home.page';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { AUDIO_STATUS } from '../home.types';
 import { describe, beforeEach, it, expect } from 'vitest';
-import { createHomeFixture, clickSubmit, SELECTOR_CLEAR_BUTTON, SELECTOR_LABELS, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED, openMatSelect, SELECTOR_PROVIDER_SELECT, getOverlayOptionTexts, fillValidFormForOpenAI, clickPlayButton, selectOpenAiMinimal, expectOneEndsWith } from './home.page.spec-setup';
+import { createHomeFixture, clickSubmit, SELECTOR_CLEAR_BUTTON, SELECTOR_LABELS, SELECTOR_VOICE_SELECT, ATTR_ARIA_DISABLED, openMatSelect, SELECTOR_PROVIDER_SELECT, getOverlayOptionTexts, fillValidFormForOpenAI, clickPlayButton, selectOpenAiMinimal, expectOneEndsWith, setProviderNarakeet, setProviderElevenLabs } from './home.page.spec-setup';
 import { DEFAULT_SAMPLE_I18N_KEY, I18N_HOME_PROVIDER_LABEL, I18N_HOME_VOICE_LABEL, I18N_HOME_PROVIDER_PLACEHOLDER } from './test-data';
 
 describe('HomePage - Form submission', () => {
@@ -26,7 +25,7 @@ describe('HomePage - Form submission', () => {
 
     it('includes selected response format in full speech request', async () => {
         fillValidFormForOpenAI(component);
-        component.responseFormat.set(SpeechResponseFormat.WAV);
+        component.responseFormat.set('wav');
         fixture.detectChanges();
 
         clickSubmit(fixture);
@@ -86,5 +85,31 @@ describe('HomePage - Form submission', () => {
         const testRequest = expectOneEndsWith(httpController, SPEECH_SAMPLE);
         expect(testRequest.request.method).toBe('POST');
         testRequest.flush(new Blob([new Uint8Array([1])], { type: 'audio/mpeg' }));
+    });
+
+    it('restricts Narakeet response formats', async () => {
+        component.responseFormat.set('flac');
+
+        setProviderNarakeet(fixture, component, httpController);
+        fixture.detectChanges();
+
+        const formatNodes = fixture.nativeElement.querySelectorAll('.format-chips mat-chip-option') as NodeListOf<Element>;
+        const formatLabels = Array.from(formatNodes).map((node: Element) => (node.textContent || '').trim());
+
+        expect(formatLabels).toEqual(['MP3', 'WAV']);
+        expect(component.responseFormat()).toBe('mp3');
+    });
+
+    it('restricts ElevenLabs response formats', async () => {
+        component.responseFormat.set('flac');
+
+        setProviderElevenLabs(fixture, component, httpController);
+        fixture.detectChanges();
+
+        const formatNodes = fixture.nativeElement.querySelectorAll('.format-chips mat-chip-option') as NodeListOf<Element>;
+        const formatLabels = Array.from(formatNodes).map((node: Element) => (node.textContent || '').trim());
+
+        expect(formatLabels).toEqual(['MP3']);
+        expect(component.responseFormat()).toBe('mp3');
     });
 });

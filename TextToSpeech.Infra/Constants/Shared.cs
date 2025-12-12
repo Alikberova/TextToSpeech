@@ -17,10 +17,18 @@ public static class Shared
         public static readonly Guid Id = Guid.Parse("985e59c1-f5d2-4a19-853f-c7ee994ed34b");
     }
 
+    public static class ElevenLabs
+    {
+        public const string Key = "elevenlabs";
+        public const string Name = "ElevenLabs";
+        public static readonly Guid Id = Guid.Parse("70725f60-b457-4519-a1bc-6fb8212eb154");
+    }
+
     public static readonly IReadOnlyDictionary<string, Guid> TtsApis = new Dictionary<string, Guid>()
     {
         [Narakeet.Key] = Narakeet.Id,
         [OpenAI.Key] = OpenAI.Id,
+        [ElevenLabs.Key] = ElevenLabs.Id,
     };
 
     public const string AudioStatusUpdated = "AudioStatusUpdated";

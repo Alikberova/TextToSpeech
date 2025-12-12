@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net10.0": {
+      "ElevenLabs-DotNet": {
+        "type": "Direct",
+        "requested": "[3.7.0, )",
+        "resolved": "3.7.0",
+        "contentHash": "VFaa+4a5baM/gM7NqnfKXnGNo7UsZRyyoORHh7fkcEkaV7d6ZqFwu6CuwEgWUNAJ3RC0pySbXFg3nuowjs3gXQ=="
+      },
       "EpubSharp.dll": {
         "type": "Direct",
         "requested": "[1.1.5, )",

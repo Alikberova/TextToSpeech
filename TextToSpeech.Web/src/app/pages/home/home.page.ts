@@ -11,15 +11,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { NARAKEET_KEY, OPEN_AI_KEY, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES } from '../../constants/tts-constants';
+import { NARAKEET_KEY, OPEN_AI_KEY, ELEVEN_LABS_KEY, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES, PROVIDER_RESPONSE_FORMATS, RESPONSE_FORMATS } from '../../constants/tts-constants';
 import { TtsService } from '../../core/http/tts/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { VoiceService } from '../../core/http/voice/voice.service';
-import { SpeechResponseFormat } from '../../dto/tts-request';
 import type { Voice } from '../../dto/voice';
 import { SampleAudioPlayer } from './home.sample-audio';
 import { buildDownloadFilename, getLanguagesFromVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
 import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
+import { UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home-page',
@@ -36,6 +36,7 @@ import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleSta
     MatSnackBarModule,
     MatChipsModule,
     TranslateModule,
+    UpperCasePipe,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
@@ -63,14 +64,8 @@ export class HomePage implements OnInit, OnDestroy {
   readonly acceptableFileTypes = ACCEPTABLE_FILE_TYPES;
   readonly acceptAttr: string = ACCEPTABLE_FILE_TYPES.join(',');
   readonly acceptableTypesText = computed(() => this.acceptableFileTypes.join(', '));
-  readonly responseFormats = [
-    { key: SpeechResponseFormat.MP3, label: 'MP3' },
-    { key: SpeechResponseFormat.Opus, label: 'OPUS' },
-    { key: SpeechResponseFormat.AAC, label: 'AAC' },
-    { key: SpeechResponseFormat.Flac, label: 'FLAC' },
-    { key: SpeechResponseFormat.WAV, label: 'WAV' },
-    { key: SpeechResponseFormat.PCM, label: 'PCM' },
-  ] as const;
+  readonly responseFormats = RESPONSE_FORMATS;
+  readonly responseFormatsByProvider = PROVIDER_RESPONSE_FORMATS;
 
   // 4) Internal reactive state
   private readonly voices = signal<Voice[]>([]);
@@ -97,7 +92,7 @@ export class HomePage implements OnInit, OnDestroy {
   language = signal<string>('');
   voice = signal<string>('');
   speed = signal<number>(1);
-  responseFormat = signal<SpeechResponseFormat>(SpeechResponseFormat.MP3);
+  responseFormat = signal<string>(this.responseFormats[0]);
   file = signal<File | null>(null);
   statusMessage = signal<string>('');
   submitAttempt = signal(false);
@@ -151,6 +146,20 @@ export class HomePage implements OnInit, OnDestroy {
   selectedVoiceLabel = computed(() => this.voicesForProvider().find(v => v.key === this.voice())?.label ?? '');
   // Selected provider label for displaying placeholder text in trigger when empty
   selectedProviderLabel = computed(() => this.providers.find(p => p.key === this.provider())?.label ?? '');
+  selectedVoiceDetails: Signal<Voice | null> = computed(() => {
+    const voiceId = this.voice();
+    if (!voiceId) {
+      return null;
+    }
+    return this.voices().find(v => v.providerVoiceId === voiceId) ?? null;
+  });
+  availableResponseFormats: Signal<readonly string[]> = computed(() => {
+    const providerKey = this.provider();
+    if (!providerKey) {
+      return this.responseFormats;
+    }
+    return this.responseFormatsByProvider[providerKey] ?? this.responseFormats;
+  });
 
   formatSpeed = (v: number | null) => (v == null ? '' : v.toFixed(1));
 
@@ -192,7 +201,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   // 8) Public event handlers and actions (template-facing)
   onProviderChange(provider: string): void {
-    const providerKey = (provider === OPEN_AI_KEY || provider === NARAKEET_KEY) ? provider : '';
+    const knownProviders = [OPEN_AI_KEY, NARAKEET_KEY, ELEVEN_LABS_KEY] as const;
+    const providerKey = knownProviders.includes(provider as ProviderKey) ? provider as ProviderKey : '';
     this.provider.set(providerKey);
     this.model.set('');
     this.voice.set('');
@@ -204,6 +214,7 @@ export class HomePage implements OnInit, OnDestroy {
     if (providerKey) {
       this.loadVoices(providerKey, 'Failed to load voices');
     }
+    this.syncResponseFormatForProvider(providerKey);
   }
 
   onLanguageChange(lang: string): void {
@@ -273,14 +284,13 @@ export class HomePage implements OnInit, OnDestroy {
     }
     const req = {
       ttsApi: this.provider()!,
-      languageCode: this.provider() === OPEN_AI_KEY ? '' : this.language()!,
+      languageCode: this.getLanguageCodeForRequest(),
       input: this.sampleText(),
       ttsRequestOptions: {
         model: this.requiresModel() ? this.model() || undefined : undefined,
         speed: this.speed(),
-        voice: this.voice()!,
-        // Force MP3 for sample
-        responseFormat: SpeechResponseFormat.MP3,
+        voice: this.resolveVoicePayload(),
+        responseFormat: this.availableResponseFormats()[0],
       },
     } as const;
     this.sampleRequestSub = this.tts.getSpeechSample(req).subscribe({
@@ -332,13 +342,13 @@ export class HomePage implements OnInit, OnDestroy {
     }
     const req = {
       ttsApi: this.provider()!,
-      languageCode: this.provider() === OPEN_AI_KEY ? '' : this.language()!,
+      languageCode: this.getLanguageCodeForRequest(),
       file: this.file()!,
       input: undefined,
       ttsRequestOptions: {
         model: this.requiresModel() ? this.model() || undefined : undefined,
         speed: this.speed(),
-        voice: this.voice()!,
+        voice: this.resolveVoicePayload(),
         responseFormat: this.responseFormat(),
       },
     } as const;
@@ -365,7 +375,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.language.set('');
     this.voice.set('');
     this.speed.set(1);
-    this.responseFormat.set(SpeechResponseFormat.MP3);
+    this.responseFormat.set(this.responseFormats[0]);
     this.file.set(null);
     // Reset sample text back to its default and mark as not user-edited
     const initialSample = this.resolveDefaultSampleText();
@@ -438,6 +448,36 @@ export class HomePage implements OnInit, OnDestroy {
     const key = 'home.sample.defaultText';
     const translated = this.translate.instant(key);
     return translated;
+  }
+
+  private getLanguageCodeForRequest(): string {
+    if (this.provider() === NARAKEET_KEY) {
+      return this.language() || '';
+    }
+    return '';
+  }
+
+  private resolveVoicePayload(): Voice {
+    const voiceId = this.voice();
+    if (!voiceId) {
+      throw new Error('Voice is required for the request');
+    }
+    const voiceDetails = this.selectedVoiceDetails();
+    if (voiceDetails) {
+      return voiceDetails;
+    }
+    console.error(`Voice details not found for id ${voiceId}; sending minimal voice payload`);
+    return {
+      name: this.selectedVoiceLabel() || voiceId,
+      providerVoiceId: voiceId,
+    };
+  }
+
+  private syncResponseFormatForProvider(providerKey: ProviderKey | ''): void {
+    const allowedFormats = providerKey ? this.responseFormatsByProvider[providerKey] ?? this.responseFormats : this.responseFormats;
+    if (!allowedFormats.includes(this.responseFormat())) {
+      this.responseFormat.set(allowedFormats[0]);
+    }
   }
 
   private applyDefaultSampleIfNotEdited(): void {

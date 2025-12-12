@@ -21,8 +21,10 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
 
     - name: Create .env file
+      env:
+        ES_PASS: ${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}
       run: |
-        echo "ElasticsearchConfig__Password=${{ secrets.ELASTICSEARCHCONFIG__PASSWORD}}" > ${{ env.elk-source-path }}/.env
+        echo "ElasticsearchConfig__Password=$ES_PASS" > ${{ env.elk-source-path }}/.env
         echo "STACK_VERSION=9.1.4" >> ${{ env.elk-source-path }}/.env
     
     - name: Copy files to server

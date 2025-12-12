@@ -1,6 +1,8 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Models;
+using TextToSpeech.Infra.Services;
 
 namespace TextToSpeech.UnitTests;
 
@@ -28,6 +30,9 @@ internal static class Mocks
 
         return new ProgressTrackerContext(trackerMock, progress, reportedPercentages);
     }
+
+    public static ParallelExecutionService ParallelExecutionService =>
+        new(Mock.Of<ILogger<ParallelExecutionService>>());
 }
 
 internal sealed record ProgressTrackerContext(Mock<IProgressTracker> TrackerMock, Progress<ProgressReport> Progress, List<int> ReportedPercentages);
