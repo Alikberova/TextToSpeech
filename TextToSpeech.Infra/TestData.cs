@@ -27,7 +27,7 @@ public static class TestData
             TtsSampleRequest,
             new TtsRequestOptions()
             {
-                Voice = OpenAiVoices.Alloy.ProviderVoiceId,
+                Voice = new Voice() { Name = OpenAiVoices.Alloy.Name, ProviderVoiceId = OpenAiVoices.Alloy.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -49,7 +49,7 @@ public static class TestData
             TtsFullRequest,
             new TtsRequestOptions()
             {
-                Voice = OpenAiVoices.Fable.ProviderVoiceId,
+                Voice = new Voice() { Name = OpenAiVoices.Fable.Name, ProviderVoiceId = OpenAiVoices.Fable.ProviderVoiceId },
                 Model = "tts-1",
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
@@ -110,6 +110,23 @@ public static class TestData
             Name = "Anders",
             ProviderVoiceId = "anders",
             Language = new Language("Danish", "da-DK"),
+        };
+    }
+
+    public static class ElevenLabsVoices
+    {
+        public static Voice[] All => [Roger, Sarah];
+
+        public static Voice Roger => new()
+        {
+            Name = "Roger",
+            ProviderVoiceId = "CwhRBWXzGAHq8TQ4Fs17",
+        };
+
+        public static Voice Sarah => new()
+        {
+            Name = "Sarah",
+            ProviderVoiceId = "EXAVITQu4vr4xnSDxMaL",
         };
     }
 }

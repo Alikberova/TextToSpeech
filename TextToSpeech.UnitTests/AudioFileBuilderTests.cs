@@ -17,7 +17,7 @@ public class AudioFileBuilderTests
 
     private static readonly TtsRequestOptions TtsRequest = new()
     {
-        Voice = "TestVoice",
+        Voice = CreateVoice("TestVoice"),
         Speed = 1,
         ResponseFormat = SpeechResponseFormat.Mp3,
         Model = "test-model"
@@ -38,7 +38,7 @@ public class AudioFileBuilderTests
         Assert.Equal(id, audioFile.Id);
         Assert.Equal(FileName, audioFile.FileName);
         Assert.Equal(Bytes, audioFile.Data);
-        Assert.Equal(TtsRequest.Voice, audioFile.Voice);
+        Assert.Equal(TtsRequest.Voice.ProviderVoiceId, audioFile.Voice);
         Assert.Equal(LangCode, audioFile.LanguageCode);
         Assert.Equal(TtsRequest.Speed, audioFile.Speed);
         Assert.Equal(Type, audioFile.Type);
@@ -71,7 +71,7 @@ public class AudioFileBuilderTests
 
         // Assert
         Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { Voice = change }));
+            TtsRequest with { Voice = CreateVoice(change) }));
         Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
             TtsRequest with { Speed = 1.1 }));
         Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
@@ -85,4 +85,10 @@ public class AudioFileBuilderTests
         Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode + change, Type, InputText, TtsRequest));
         Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText + change, TtsRequest));
     }
+
+    private static Voice CreateVoice(string id) => new()
+    {
+        Name = id,
+        ProviderVoiceId = id
+    };
 }

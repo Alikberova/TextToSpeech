@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TtsService } from './tts.service';
-import { SpeechResponseFormat, TtsRequest } from '../../../dto/tts-request';
+import { TtsRequest } from '../../../dto/tts-request';
 import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from '../endpoints';
 import { getZonelessProviders } from '../../../../testing/spec-test-utils';
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
@@ -27,12 +27,17 @@ describe('TtsService', () => {
         http.verify();
     });
 
-    it('posts sample request to /speech/sample with forced mp3 format and expects blob', () => {
+    it('posts sample request to /speech/sample expects blob', () => {
         const inputReq = {
             ttsApi: 'openai',
             languageCode: 'en-US',
             input: 'Hello',
-            ttsRequestOptions: { voice: 'alloy', model: 'tts-1', speed: 1.2, responseFormat: SpeechResponseFormat.WAV },
+            ttsRequestOptions: {
+                voice: { name: 'Alloy', providerVoiceId: 'alloy' },
+                model: 'tts-1',
+                speed: 1.2,
+                responseFormat: 'mp3'
+            },
         } as const;
         let received: Blob | null = null;
         service.getSpeechSample(inputReq as TtsRequest).subscribe(b => received = b);
@@ -40,13 +45,6 @@ describe('TtsService', () => {
         const r = http.expectOne(SPEECH_SAMPLE);
         expect(r.request.method).toBe('POST');
         expect(r.request.responseType).toBe('blob');
-        // Service forces responseFormat to 'mp3' for sample
-        expect(r.request.body).toEqual({
-            ttsApi: inputReq.ttsApi,
-            languageCode: inputReq.languageCode,
-            input: inputReq.input,
-            ttsRequestOptions: { voice: 'alloy', model: 'tts-1', speed: 1.2, responseFormat: 'mp3' },
-        });
         r.flush(new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/mpeg' }));
         expect(received).toBeTruthy();
     });
@@ -56,7 +54,11 @@ describe('TtsService', () => {
         const request: TtsRequest = {
             ttsApi: 'openai',
             languageCode: 'en-US',
-            ttsRequestOptions: { voice: 'alloy' },
+            ttsRequestOptions: {
+                voice: { name: 'Alloy', providerVoiceId: 'alloy' },
+                speed: 1,
+                responseFormat: 'mp3'
+            },
         };
         expect(() => service.createSpeech(request)).toThrow();
     });
@@ -68,12 +70,20 @@ describe('TtsService', () => {
             ttsApi: 'openai',
             languageCode: 'en-US',
             file,
-            ttsRequestOptions: { voice: 'alloy', model: 'tts-1', speed: 1 },
+            ttsRequestOptions: {
+                voice: { name: 'Alloy', providerVoiceId: 'alloy' },
+                model: 'tts-1',
+                speed: 1,
+                responseFormat: 'mp3'
+            },
         }).subscribe(v => id = v);
         const r = http.expectOne(SPEECH_BASE);
         expect(r.request.method).toBe('POST');
         // FormData check: browser serializes multipart; we can assert it is FormData by existence of get
         expect(r.request.body instanceof FormData).toBe(true);
+        const body = r.request.body as FormData;
+        expect(body.get('TtsRequestOptions.Voice.ProviderVoiceId')).toBe('alloy');
+        expect(body.get('TtsRequestOptions.Voice.Name')).toBe('Alloy');
         r.flush('abc-123', { status: 200, statusText: 'OK' });
         expect(id).toBe('abc-123');
     });

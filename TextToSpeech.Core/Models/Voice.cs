@@ -10,8 +10,4 @@ public sealed class Voice
     public VoiceQualityTier QualityTier { get; init; }
 }
 
-public sealed class Language(string name, string languageCode)
-{
-    public string Name { get; init; } = name;
-    public string LanguageCode { get; init; } = languageCode;
-}
+public sealed record Language(string Name, string LanguageCode);

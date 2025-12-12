@@ -1,4 +1,6 @@
-﻿namespace TextToSpeech.Api.Middleware;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace TextToSpeech.Api.Middleware;
 
 internal sealed class ExceptionHandlingMiddleware
 {
@@ -21,8 +23,18 @@ internal sealed class ExceptionHandlingMiddleware
         {
             _logger.LogError(ex, "Unhandled exception.");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(new { Error = "An error occurred processing your request." }.ToString()!);
+
+            var problem = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An error occurred processing your request.",
+                Extensions =
+                {
+                    ["traceId"] = context.TraceIdentifier
+                }
+            };
+
+            await context.Response.WriteAsJsonAsync(problem);
         }
     }
 }
