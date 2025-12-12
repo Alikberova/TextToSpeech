@@ -4,6 +4,8 @@ using OpenAI;
 using OpenAI.Audio;
 using System.ClientModel;
 using System.ClientModel.Primitives;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services.Ai;
 using Xunit;
 
@@ -15,7 +17,7 @@ public sealed class OpenAiServiceTests
     public async Task GetVoices_ReturnsStaticVoiceList()
     {
         // Arrange
-        var service = CreateSimpleOpenAiService();
+        var service = CreateService();
 
         // Act
         var voices = await service.GetVoices();
@@ -32,7 +34,7 @@ public sealed class OpenAiServiceTests
     public async Task RequestSpeechChunksAsync_ReturnsEmptyArray_WhenNoTextChunks()
     {
         // Arrange
-        var service = CreateSimpleOpenAiService();
+        var service = CreateService();
 
         // Act
         var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions,
@@ -46,7 +48,7 @@ public sealed class OpenAiServiceTests
     public async Task RequestSpeechChunksAsync_ThrowsTaskCanceled_WhenTokenCanceledBeforeWork()
     {
         // Arrange
-        var service = CreateSimpleOpenAiService();
+        var service = CreateService();
 
         using var cts = new CancellationTokenSource();
         cts.Cancel();
@@ -60,14 +62,15 @@ public sealed class OpenAiServiceTests
     public async Task RequestSpeechChunksAsync_Reports100PercentPerChunk()
     {
         var fileId = Guid.NewGuid();
-        var progressContext = Mocks.CreateProgressContext(fileId);
-        var logger = new Mock<ILogger<OpenAiService>>();
 
-        var service = new OpenAiService(CreateOpenAIClientMock(), logger.Object, progressContext.TrackerMock.Object);
+        var progressContext = Mocks.CreateProgressContext(fileId);
+
+        var service = CreateService(CreateOpenAIClientMock(), progressContext.TrackerMock.Object);
 
         var textChunks = new List<string> { "first", "second" };
 
-        var result = await service.RequestSpeechChunksAsync(textChunks, fileId, TestData.TtsRequestOptions, progressContext.Progress, CancellationToken.None);
+        var result = await service.RequestSpeechChunksAsync(textChunks, fileId, TestData.TtsRequestOptions,
+            progressContext.Progress, CancellationToken.None);
 
         Assert.Equal(textChunks.Count, result.Length);
         Assert.All(result, bytes => Assert.False(bytes.IsEmpty));
@@ -77,18 +80,65 @@ public sealed class OpenAiServiceTests
         progressContext.TrackerMock.Verify(p => p.UpdateProgress(fileId, progressContext.Progress, It.IsAny<int>(), 100), Times.Exactly(textChunks.Count));
     }
 
-    private static OpenAiService CreateSimpleOpenAiService()
+    [Fact]
+    public async Task RequestSpeechChunksAsync_UsesParallelExecution()
     {
-        var client = new OpenAIClient("test-key");
-        var logger = new Mock<ILogger<OpenAiService>>();
-        var service = new OpenAiService(client, logger.Object, Mocks.ProgressTracker);
+        var chunks = new List<string> { "chunk-1", "chunk-2", "chunk-3" };
+        var fileId = Guid.NewGuid();
 
-        return service;
+        IReadOnlyList<string>? capturedItems = null;
+        int capturedMaxParallel = -1;
+        Func<string, int, Task>? capturedAction = null;
+        CancellationToken capturedToken = default;
+
+        var parallelExecutionServiceMock = new Mock<IParallelExecutionService>();
+
+        parallelExecutionServiceMock
+            .Setup(x => x.RunTasksFromItems(
+                It.IsAny<IReadOnlyList<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Func<string, int, Task>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback((IReadOnlyList<string> items,
+                    int maxParallel,
+                    Func<string, int, Task> action,
+                    CancellationToken token) =>
+            {
+                capturedItems = items;
+                capturedMaxParallel = maxParallel;
+                capturedAction = action;
+                capturedToken = token;
+            })
+            .Returns(Task.CompletedTask);
+
+        var service = CreateService(parallelExecutionServiceMock: parallelExecutionServiceMock);
+
+        var result = await service.RequestSpeechChunksAsync(chunks, fileId, TestData.TtsRequestOptions,
+            Mocks.ProgressCallback, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(chunks.Count, result.Length);
+        Assert.Same(chunks, capturedItems);
+        Assert.Equal(20, capturedMaxParallel);
+        Assert.NotNull(capturedAction);
+        Assert.Equal(CancellationToken.None, capturedToken);
+    }
+
+    private static OpenAiService CreateService(OpenAIClient? openAIClient = null,
+        IProgressTracker? progressTracker = null,
+        Mock<IParallelExecutionService>? parallelExecutionServiceMock = null)
+    {
+        return new OpenAiService(openAIClient ?? new OpenAIClient("test-key"),
+            Mock.Of<ILogger<OpenAiService>>(),
+            progressTracker ?? Mocks.ProgressTracker,
+            parallelExecutionServiceMock?.Object ?? Mocks.ParallelExecutionService);
     }
 
     private static OpenAIClient CreateOpenAIClientMock()
     {
-        var mockResult = new Mock<ClientResult<BinaryData>>(BinaryData.FromBytes([1, 2, 3]), Mock.Of<PipelineResponse>());
+        var mockResult = new Mock<ClientResult<BinaryData>>(
+            BinaryData.FromBytes([1, 2, 3]),
+            Mock.Of<PipelineResponse>());
 
         mockResult.SetupGet(r => r.Value).Returns(BinaryData.FromBytes([1, 2, 3]));
 

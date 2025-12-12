@@ -10,7 +10,11 @@ internal static class TestData
     public static TtsRequestOptions TtsRequestOptions =>
         new()
         {
-            Voice = "any",
+            Voice = new Voice
+            {
+                Name = "Any",
+                ProviderVoiceId = "any"
+            },
             Speed = 1,
             ResponseFormat = SpeechResponseFormat.Mp3
         };

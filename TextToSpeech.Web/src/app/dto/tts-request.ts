@@ -1,17 +1,10 @@
-export enum SpeechResponseFormat {
-  MP3 = 'mp3',
-  Opus = 'opus',
-  AAC = 'aac',
-  Flac = 'flac',
-  WAV = 'wav',
-  PCM = 'pcm',
-}
+import type { Voice } from './voice';
 
 export interface TtsRequestOptions {
   model?: string;
-  voice: string;
-  speed?: number;
-  responseFormat?: SpeechResponseFormat;
+  voice: Voice;
+  speed: number;
+  responseFormat: string;
 }
 
 export interface TtsRequest {

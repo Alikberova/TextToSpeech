@@ -6,7 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, TestRequest, provideHttpClientTesting } from '@angular/common/http/testing';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { API_URL, SERVER_URL } from '../../../constants/tokens';
-import { ProviderKey, PROVIDERS, PROVIDER_MODELS } from '../../../constants/tts-constants';
+import { ELEVEN_LABS_KEY, ProviderKey, PROVIDERS, PROVIDER_MODELS } from '../../../constants/tts-constants';
 import { HomePage } from '../home.page';
 import { DEFAULT_FILE_CONTENT, DEFAULT_FILE_NAME, DEFAULT_OPENAI_VOICE_KEY } from './test-data';
 import { VOICES } from '../../../core/http/endpoints';
@@ -136,6 +136,18 @@ export function setProviderNarakeet(
 ): void {
   const narakeet = providerKeyWithoutModel();
   component.onProviderChange(narakeet);
+  flushVoice(http, voices);
+  fixture.detectChanges();
+}
+
+export function setProviderElevenLabs(
+  fixture: ComponentFixture<HomePage>,
+  component: HomePage,
+  http: HttpTestingController,
+  voices: Voice[] = []
+): void {
+  const elevenLabsKey = PROVIDERS.find(p => p.key === ELEVEN_LABS_KEY)?.key as ProviderKey;
+  component.onProviderChange(elevenLabsKey);
   flushVoice(http, voices);
   fixture.detectChanges();
 }

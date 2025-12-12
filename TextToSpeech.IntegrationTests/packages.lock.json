@@ -132,6 +132,11 @@
         "resolved": "0.10.0",
         "contentHash": "xtEahhp8ZWj5T/uWbiHcodQrz3P/n1il/CFLzbpfk6ygKQTHn6RxDF16G4LiDqr3GrAleU6urOIdbWJ6+YDjpA=="
       },
+      "ElevenLabs-DotNet": {
+        "type": "Transitive",
+        "resolved": "3.7.0",
+        "contentHash": "VFaa+4a5baM/gM7NqnfKXnGNo7UsZRyyoORHh7fkcEkaV7d6ZqFwu6CuwEgWUNAJ3RC0pySbXFg3nuowjs3gXQ=="
+      },
       "EpubSharp.dll": {
         "type": "Transitive",
         "resolved": "1.1.5",
@@ -931,6 +936,7 @@
       "texttospeech.infra": {
         "type": "Project",
         "dependencies": {
+          "ElevenLabs-DotNet": "[3.7.0, )",
           "EpubSharp.dll": "[1.1.5, )",
           "MailKit": "[4.14.1, )",
           "Microsoft.AspNetCore.SignalR.Core": "[1.2.0, )",

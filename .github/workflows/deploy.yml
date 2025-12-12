@@ -36,6 +36,7 @@ jobs:
         ES_PASS: ${{ secrets.ELASTICSEARCHCONFIG__PASSWORD }}
         NARAKEET_KEY: ${{ secrets.NARAKEETCONFIG__APIKEY }}
         OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         EMAIL_FROM: ${{ secrets.EMAILCONFIG__EMAILFROM }}
         EMAIL_PASS: ${{ secrets.EMAILCONFIG__EMAILFROMPASSWORD }}
@@ -60,6 +61,7 @@ jobs:
         echo "ELASTICSEARCHCONFIG__PASSWORD=$ES_PASS" >> .env
         echo "NARAKEETCONFIG__APIKEY=$NARAKEET_KEY" >> .env
         echo "OPENAI_API_KEY=$OPENAI_KEY" >> .env
+        echo "ELEVENLABS_API_KEY=$ELEVENLABS_API_KEY" >> .env
         echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
         echo "EMAILCONFIG__EMAILFROM=$EMAIL_FROM" >> .env
         echo "EMAILCONFIG__EMAILFROMPASSWORD=$EMAIL_PASS" >> .env

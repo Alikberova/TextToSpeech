@@ -41,6 +41,8 @@ public sealed class NarakeetService : ITtsService
         IProgress<ProgressReport> progressCallback,
         CancellationToken cancellationToken)
     {
+        ValidateResponseFormat(ttsRequest.ResponseFormat);
+
         _progressTracker.InitializeFile(fileId, textChunks.Count);
 
         var tasks = textChunks
@@ -107,7 +109,7 @@ public sealed class NarakeetService : ITtsService
         StringContent requestBody = new(text, Encoding.UTF8, "text/plain");
 
         using HttpResponseMessage response = await _httpClient.PostAsync(
-            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice, ttsRequest.Speed),
+            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed),
             requestBody, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -168,7 +170,7 @@ public sealed class NarakeetService : ITtsService
         _httpClient.DefaultRequestHeaders.Add("accept", "application/octet-stream");
 
         using HttpResponseMessage response = await _httpClient.PostAsync(
-            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice, ttsRequest.Speed), requestBody);
+            GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed), requestBody);
 
         response.EnsureSuccessStatusCode();
 
@@ -177,4 +179,14 @@ public sealed class NarakeetService : ITtsService
 
     private static string GetEndpoint(string format, string voice, double speed) =>
         $"/text-to-speech/{format}?voice={voice}&voice-speed={speed}";
+
+    private static void ValidateResponseFormat(SpeechResponseFormat responseFormat)
+    {
+        var str = responseFormat.ToString();
+
+        if (str != "mp3" && str != "wav")
+        {
+            throw new NotSupportedException($"Narakeet does not support the '{str}' format.");
+        }
+    }
 }

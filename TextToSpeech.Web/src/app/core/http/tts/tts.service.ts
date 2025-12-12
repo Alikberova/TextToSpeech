@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SPEECH_BASE, SPEECH_SAMPLE, AUDIO_DOWNLOAD } from '../endpoints';
-import { SpeechResponseFormat, TtsRequest } from '../../../dto/tts-request';
+import { TtsRequest } from '../../../dto/tts-request';
+import type { Voice } from '../../../dto/voice';
 
 /**
  * TTS API client.
@@ -20,7 +21,7 @@ export class TtsService {
       options['model'] = request.ttsRequestOptions.model;
     }
     // Force MP3 for sample regardless of UI choice
-    options['responseFormat'] = SpeechResponseFormat.MP3;
+    options['responseFormat'] = request.ttsRequestOptions.responseFormat;
     options['speed'] = request.ttsRequestOptions.speed;
 
     const payload: Record<string, unknown> = {};
@@ -44,7 +45,7 @@ export class TtsService {
 
     const opts = request.ttsRequestOptions;
     if (opts.model) form.append('TtsRequestOptions.Model', opts.model);
-    form.append('TtsRequestOptions.Voice', opts.voice);
+    this.appendVoice(form, opts.voice);
     form.append('TtsRequestOptions.Speed', String(opts.speed));
     form.append('TtsRequestOptions.ResponseFormat', String(opts.responseFormat));
 
@@ -53,5 +54,17 @@ export class TtsService {
 
   downloadById(fileId: string): Observable<Blob> {
     return this.http.get(`${AUDIO_DOWNLOAD}/${fileId}`, { responseType: 'blob' });
+  }
+
+  private appendVoice(form: FormData, voice: Voice): void {
+    form.append('TtsRequestOptions.Voice.Name', voice.name);
+    form.append('TtsRequestOptions.Voice.ProviderVoiceId', voice.providerVoiceId);
+    if (voice.language) {
+      form.append('TtsRequestOptions.Voice.Language.Name', voice.language.name);
+      form.append('TtsRequestOptions.Voice.Language.LanguageCode', voice.language.languageCode);
+    }
+    if (voice.qualityTier) {
+      form.append('TtsRequestOptions.Voice.QualityTier', voice.qualityTier);
+    }
   }
 }

@@ -9,13 +9,13 @@ internal static class ITtsServiceMock
 {
     public static Mock<ITtsService> Get()
     {
-        var mockOpenAiService = new Mock<ITtsService>();
+        var ttsService = new Mock<ITtsService>();
 
-        mockOpenAiService.SetupGet(service =>
+        ttsService.SetupGet(service =>
             service.MaxLengthPerApiRequest)
                 .Returns(150);
 
-        mockOpenAiService
+        ttsService
             .Setup(service =>
                 service.RequestSpeechChunksAsync(
                     It.IsAny<List<string>>(),
@@ -45,14 +45,14 @@ internal static class ITtsServiceMock
                     });
                 });
 
-        mockOpenAiService
+        ttsService
             .Setup(s => s.RequestSpeechSample(
                 It.IsAny<string>(),
                 It.IsAny<TtsRequestOptions>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(AudioFileService.GenerateSilentMp3(2));
 
-        return mockOpenAiService;
+        return ttsService;
     }
 
     private static ReadOnlyMemory<byte>[] GetAudioBytesArray()

@@ -1,28 +1,26 @@
-﻿using Microsoft.Extensions.Logging;
-using OpenAI;
-using OpenAI.Audio;
-using System.ClientModel;
+﻿using ElevenLabs;
+using ElevenLabs.Models;
+using ElevenLabs.TextToSpeech;
+using ElevenLabs.Voices;
+using Microsoft.Extensions.Logging;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Interfaces;
+using Voice = TextToSpeech.Core.Models.Voice;
 
 namespace TextToSpeech.Infra.Services.Ai;
 
-/// <summary>
-/// 50 requests/min for model tts-1
-/// </summary>
-public sealed class OpenAiService : ITtsService
+public sealed class ElevenLabsService : ITtsService
 {
     public int MaxLengthPerApiRequest { get; init; } = 4096;
-    // Limit the number of parallel chunk requests to meet rate limits
     private const int MaxParallelChunks = 20;
-    private readonly OpenAIClient _client;
-    private readonly ILogger<OpenAiService> _logger;
+    private readonly ElevenLabsClient _client;
+    private readonly ILogger<ElevenLabsService> _logger;
     private readonly IProgressTracker _progressTracker;
     private readonly IParallelExecutionService _parallelExecutionService;
 
-    public OpenAiService(OpenAIClient client, ILogger<OpenAiService> logger, IProgressTracker progressTracker,
+    public ElevenLabsService(ElevenLabsClient client, ILogger<ElevenLabsService> logger, IProgressTracker progressTracker,
         IParallelExecutionService parallelExecutionService)
     {
         _client = client;
@@ -31,8 +29,6 @@ public sealed class OpenAiService : ITtsService
         _parallelExecutionService = parallelExecutionService;
     }
 
-    private AudioClient AudioClient { get; set; } = default!;
-
     public async Task<ReadOnlyMemory<byte>[]> RequestSpeechChunksAsync(List<string> textChunks,
         Guid fileId,
         TtsRequestOptions ttsRequest,
@@ -40,7 +36,6 @@ public sealed class OpenAiService : ITtsService
         CancellationToken cancellationToken)
     {
         var totalChunks = textChunks.Count;
-
         var results = new ReadOnlyMemory<byte>[totalChunks];
 
         _progressTracker.InitializeFile(fileId, totalChunks);
@@ -71,41 +66,52 @@ public sealed class OpenAiService : ITtsService
         return await GenerateSpeech(text, ttsRequest, cancellationToken);
     }
 
-    public Task<List<Voice>?> GetVoices()
+    public async Task<List<Voice>?> GetVoices()
     {
-        var voices = new List<Voice>
-        {
-            new() { Name = "Alloy",   ProviderVoiceId = "alloy" },
-            new() { Name = "Ash",     ProviderVoiceId = "ash" },
-            new() { Name = "Ballad",  ProviderVoiceId = "ballad" },
-            new() { Name = "Coral",   ProviderVoiceId = "coral" },
-            new() { Name = "Echo",    ProviderVoiceId = "echo" },
-            new() { Name = "Fable",   ProviderVoiceId = "fable" },
-            new() { Name = "Onyx",    ProviderVoiceId = "onyx" },
-            new() { Name = "Nova",    ProviderVoiceId = "nova" },
-            new() { Name = "Sage",    ProviderVoiceId = "sage" },
-            new() { Name = "Shimmer", ProviderVoiceId = "shimmer" },
-            new() { Name = "Verse",   ProviderVoiceId = "verse" }
-        };
+        IReadOnlyList<ElevenLabs.Voices.Voice>? voices = await _client.VoicesEndpoint.GetAllVoicesAsync();
 
-        return Task.FromResult<List<Voice>?>(voices);
+        if (voices is null || voices.Count == 0)
+        {
+            return null;
+        }
+
+        var mapped = voices.Select(v => new Voice
+        {
+            Name = v.Name,
+            ProviderVoiceId = v.Id
+        }).ToList();
+
+        return mapped;
     }
 
     private async Task<ReadOnlyMemory<byte>> GenerateSpeech(string text, TtsRequestOptions ttsRequest,
         CancellationToken cancellationToken)
     {
-        AudioClient ??= GetClient(ttsRequest.Model!);
-
-        SpeechGenerationOptions options = new()
+        VoiceSettings voiceSettings = new()
         {
-            SpeedRatio = Convert.ToSingle(ttsRequest.Speed),
-            ResponseFormat = ttsRequest.ResponseFormat.ToString()
+            Speed = Convert.ToSingle(ttsRequest.Speed)
         };
 
-        ClientResult<BinaryData> result = await AudioClient.GenerateSpeechAsync(text, ttsRequest.Voice.ProviderVoiceId, options, cancellationToken);
+        var elevenLabsVoice = new ElevenLabs.Voices.Voice(ttsRequest.Voice.ProviderVoiceId, ttsRequest.Voice.Name);
 
-        return result.Value.ToMemory();
+        TextToSpeechRequest textToSpeechRequest = new(elevenLabsVoice, text,
+            voiceSettings: voiceSettings,
+            outputFormat: MapOutputFormat(ttsRequest.ResponseFormat),
+            model: new Model(ttsRequest.Model));
+
+        VoiceClip result = await _client.TextToSpeechEndpoint.TextToSpeechAsync(textToSpeechRequest,
+            cancellationToken: cancellationToken);
+
+        return result.ClipData;
     }
 
-    private AudioClient GetClient(string model) => _client.GetAudioClient(model);
+    private static OutputFormat MapOutputFormat(SpeechResponseFormat format)
+    {
+        return format.ToString() switch
+        {
+            "mp3" => OutputFormat.MP3_44100_128,
+            "pcm" => OutputFormat.PCM_44100, // pro tier and above
+            _ => throw new NotSupportedException($"ElevenLabs does not support the '{format}' format.")
+        };
+    }
 }

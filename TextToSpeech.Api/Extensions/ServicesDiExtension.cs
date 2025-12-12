@@ -1,4 +1,5 @@
-﻿using MailKit.Net.Smtp;
+﻿using ElevenLabs;
+using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using OpenAI;
 using TextToSpeech.Api.Services;
@@ -30,6 +31,7 @@ internal static class ServicesDiExtension
         services.AddScoped<ITtsServiceFactory, TtsServiceFactory>();
         services.AddScoped<ISmtpClient, SmtpClient>();
         services.AddScoped<IVoiceService, VoiceService>();
+        services.AddScoped<IParallelExecutionService, ParallelExecutionService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IPathService, PathService>();
@@ -63,6 +65,13 @@ internal static class ServicesDiExtension
         }
 
         services.AddScoped<IEmailService, EmailService>();
+
+        services.AddKeyedScoped<ITtsService, ElevenLabsService>(Shared.ElevenLabs.Key);
+        services.AddSingleton(serviceProvider =>
+        {
+            var apiKey = configuration[ConfigConstants.ElevenLabsApiKey];
+            return new ElevenLabsClient(apiKey);
+        });
 
         services.AddKeyedScoped<ITtsService, OpenAiService>(Shared.OpenAI.Key);
         services.AddSingleton(serviceProvider =>
