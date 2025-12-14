@@ -250,7 +250,9 @@
           </button>
         }
       </div>
-      <mat-progress-bar class="pretty-bar" mode="determinate" [value]="progress()"></mat-progress-bar>
+      @if (status() === 'Processing') {
+        <mat-progress-bar class="pretty-bar" mode="determinate" [value]="progress()"></mat-progress-bar>
+      }
     </section>
   }
 
