@@ -20,8 +20,7 @@ public sealed class JwtTokenService(IOptions<JwtConfig> jwtOptions) : IJwtTokenS
     {
         var lifetimeMinutes = _jwt.GuestLifetimeMinutes > 0 ? _jwt.GuestLifetimeMinutes : 30;
 
-        var guestId = Guid.NewGuid();
-        var subject = $"guest:{guestId}";
+        var subject = $"guest:{Guid.NewGuid()}";
 
         var now = DateTimeOffset.UtcNow;
         var expires = now.AddMinutes(lifetimeMinutes);

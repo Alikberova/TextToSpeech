@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     { provide: SERVER_URL, useValue: environment.serverUrl },
     provideAppInitializer(() =>  {
       const guest = inject(GuestTokenService);
-      return guest.ensureToken(true);
+      return guest.ensureValidToken(true);
     }),
     provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor ])),
     // Configure ngx-translate to load JSON files from /i18n/* via the public folder.
