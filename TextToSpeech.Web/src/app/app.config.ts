@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -7,6 +7,8 @@ import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { API_URL, SERVER_URL } from './constants/tokens';
 import { baseUrlInterceptor } from './core/http/api-url-interceptor/api-url-interceptor';
+import { authInterceptor } from './core/auth/interceptor/auth-interceptor';
+import { GuestTokenService } from './core/auth/guest/guest-token.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,7 +17,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     { provide: API_URL, useValue: `${environment.serverUrl}/api` },
     { provide: SERVER_URL, useValue: environment.serverUrl },
-    provideHttpClient(withInterceptors([baseUrlInterceptor])),
+    provideAppInitializer(() =>  {
+      const guest = inject(GuestTokenService);
+      return guest.ensureToken(true);
+    }),
+    provideHttpClient(withInterceptors([baseUrlInterceptor, authInterceptor ])),
     // Configure ngx-translate to load JSON files from /i18n/* via the public folder.
     importProvidersFrom(
       TranslateModule.forRoot({

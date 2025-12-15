@@ -44,6 +44,7 @@ internal static class ServicesDiExtension
         services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
         services.AddHostedService<QueuedHostedService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         RegisterServicesBasedOnTestMode(services, configuration);
 

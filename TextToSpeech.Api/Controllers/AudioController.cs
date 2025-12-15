@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Repositories;
 
 namespace TextToSpeech.Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public sealed class AudioController : ControllerBase
