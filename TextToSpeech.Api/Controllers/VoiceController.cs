@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TextToSpeech.Api.Services;
 using TextToSpeech.Core.Interfaces;
 
 namespace TextToSpeech.Api.Controllers;
 
+[Authorize]
 [Route("api/voices")]
 [ApiController]
 public class VoiceController(IVoiceService voiceService) : ControllerBase

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
@@ -39,6 +40,8 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     [InlineData(Shared.ElevenLabs.Key)]
     public async Task GetVoiceSample_ReturnsMp3Sample(string ttsApi)
     {
+        await Authenticate();
+
         // Arrange
         var httpContent = new StringContent(JsonConvert.SerializeObject(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
             Encoding.UTF8, "application/json");
@@ -59,6 +62,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     public async Task CreateSpeech_ReturnsMp3(string ttsApi)
     {
         // Arrange
+        await Authenticate();
         var hubConnection = BuildHubConnection(_client, _factory);
 
         var spechStatusUpdated = new TaskCompletionSource<bool>();
@@ -92,12 +96,9 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         // Act
         var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
 
-        var responseString = await response.Content.ReadAsStringAsync();
+        response.EnsureSuccessStatusCode();
 
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception(responseString);
-        }
+        var responseString = await response.Content.ReadAsStringAsync();
 
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
@@ -198,5 +199,19 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         }
 
         return formData;
+    }
+
+    private async Task Authenticate()
+    {
+        var resp = await _client.PostAsync("/api/auth/guest", new StringContent(string.Empty));
+        resp.EnsureSuccessStatusCode();
+
+        var json = await resp.Content.ReadAsStringAsync();
+        var token = JObject.Parse(json)["accessToken"]?.ToString();
+
+        Assert.False(string.IsNullOrWhiteSpace(token), "Guest token missing");
+
+        _client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
     }
 }
