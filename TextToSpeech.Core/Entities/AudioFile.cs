@@ -5,6 +5,10 @@ namespace TextToSpeech.Core.Entities;
 public sealed class AudioFile
 {
     public Guid Id { get; init; }
+    /// <summary>
+    /// ClaimTypes.NameIdentifier
+    /// </summary>
+    public string? OwnerId { get; set; }
     public string FileName { get; init; } = string.Empty;
     public byte[] Data { get; set; } = [];
     public DateTime CreatedAt { get; init; }
