@@ -359,6 +359,7 @@ export class HomePage implements OnInit, OnDestroy {
       },
       error: (e) => {
         this.status.set(AUDIO_STATUS.Failed);
+        this.progress.set(0);
         console.error(e);
         this.openErrorSnackbar('home.errors.failed');
       },
