@@ -3,7 +3,6 @@ using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
 using Elastic.Transport;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -73,10 +72,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-var jwt = builder.Configuration.GetSection("Jwt");
-var issuer = jwt["Issuer"]!;
-var audience = jwt["Audience"]!;
-var signingKey = jwt["SigningKey"]!;
+var jwt = builder.Configuration.GetSection(SectionNames.JwtConfig).Get<JwtConfig>()
+    ?? throw new InvalidOperationException("Jwt configuration is missing or invalid.");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,13 +82,13 @@ builder.Services
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = issuer,
+            ValidIssuer = jwt.Issuer,
 
             ValidateAudience = true,
-            ValidAudience = audience,
+            ValidAudience = jwt.Audience,
 
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
 
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(30) // small skew; keep it tight
@@ -101,8 +98,8 @@ builder.Services
 builder.Services.AddAuthorization();
 
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(SectionNames.EmailConfig));
-
 builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(SectionNames.JwtConfig));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));

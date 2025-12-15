@@ -1,7 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Api.Services;
 
@@ -10,15 +12,13 @@ public interface IJwtTokenService
     (DateTimeOffset expires, string jwtString) CreateGuestToken();
 }
 
-public sealed class JwtTokenService(IConfiguration config) : IJwtTokenService
+public sealed class JwtTokenService(IOptions<JwtConfig> jwtOptions) : IJwtTokenService
 {
+    private readonly JwtConfig _jwt = jwtOptions.Value;
+
     public (DateTimeOffset expires, string jwtString) CreateGuestToken()
     {
-        var jwt = config.GetSection("Jwt");
-        var issuer = jwt["Issuer"]!;
-        var audience = jwt["Audience"]!;
-        var signingKey = jwt["SigningKey"]!;
-        var lifetimeMinutes = int.TryParse(jwt["GuestLifetimeMinutes"], out var m) ? m : 30;
+        var lifetimeMinutes = _jwt.GuestLifetimeMinutes > 0 ? _jwt.GuestLifetimeMinutes : 30;
 
         var guestId = Guid.NewGuid();
         var subject = $"guest:{guestId}";
@@ -37,12 +37,12 @@ public sealed class JwtTokenService(IConfiguration config) : IJwtTokenService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N"))
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.SigningKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
+            issuer: _jwt.Issuer,
+            audience: _jwt.Audience,
             claims: claims,
             notBefore: now.UtcDateTime,
             expires: expires.UtcDateTime,
