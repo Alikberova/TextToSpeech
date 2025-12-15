@@ -29,6 +29,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     IRedisCacheProvider _redisCacheProvider) : ISpeechService
 {
     private readonly ConcurrentDictionary<Guid, int> _lastProgressDictionary = new();
+    private const int StatusUpdateDelayMs = 200;
 
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
@@ -48,7 +49,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         if (audioFileId is not null)
         {
-            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: 100);
+            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: StatusUpdateDelayMs);
             _logger.LogInformation("Found existing audio for {AudioFileId}", audioFileId);
 
             return audioFileId.Value;
@@ -59,7 +60,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         var cts = new CancellationTokenSource();
         _taskManager.AddTask(audioFileId.Value, cts);
 
-        _ = UpdateAudioStatus(audioFileId.Value, Status.Created.ToString(), delayMs: 100);
+        _ = UpdateAudioStatus(audioFileId.Value, Status.Created.ToString(), delayMs: StatusUpdateDelayMs);
 
         _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
         {
@@ -131,7 +132,10 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = finalStatus;
             audioFile.Data = bytes;
 
-            _metaDataService.AddMetaData(localFilePath, title: fileName);
+            if (request.ResponseFormat.ToString() != SpeechResponseFormat.Pcm.ToString())
+            {
+                _metaDataService.AddMetaData(localFilePath, title: fileName);
+            }
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);
@@ -150,7 +154,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         {
             try
             {
-                await UpdateAudioStatus(fileId, finalStatus.ToString(), errorMessage: errorMessage);
+                await UpdateAudioStatus(fileId, finalStatus.ToString(), errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
             }
             catch (Exception e)
             {
