@@ -21,5 +21,12 @@ public sealed class AppDbContext : DbContext
             .WithOne(af => af.TtsApi)
             .HasForeignKey(af => af.TtsApiId)
             .OnDelete(DeleteBehavior.SetNull); // Prevent cascading delete
+
+        modelBuilder.Entity<AudioFile>()
+            .Property(x => x.OwnerId)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<AudioFile>()
+            .HasIndex(x => x.OwnerId);
     }
 }

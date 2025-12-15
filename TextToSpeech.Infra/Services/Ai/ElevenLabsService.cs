@@ -77,7 +77,7 @@ public sealed class ElevenLabsService : ITtsService
 
         var mapped = voices.Select(v => new Voice
         {
-            Name = v.Name,
+            Name = v.Name.Split(" - ", 2)[0], // remove description
             ProviderVoiceId = v.Id
         }).ToList();
 
