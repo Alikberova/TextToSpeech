@@ -30,7 +30,7 @@ public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
             }
         }
 
-        if (!HostingEnvironment.IsDevelopment())
+        if (!HostingEnvironment.IsTestMode())
         {
             await dbContext.SaveChangesAsync();
             return;

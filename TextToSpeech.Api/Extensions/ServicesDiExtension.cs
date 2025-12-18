@@ -16,6 +16,7 @@ using TextToSpeech.Infra.Services;
 using TextToSpeech.Infra.Services.Ai;
 using TextToSpeech.Infra.Services.Common;
 using TextToSpeech.Infra.Services.FileProcessing;
+using TextToSpeech.Infra.Stubs;
 
 namespace TextToSpeech.Api.Extensions;
 
@@ -45,6 +46,7 @@ internal static class ServicesDiExtension
 
         services.AddHostedService<QueuedHostedService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IOwnerContext, HttpOwnerContext>();
 
         RegisterServicesBasedOnTestMode(services, configuration);
 
@@ -55,30 +57,24 @@ internal static class ServicesDiExtension
 
     private static void RegisterServicesBasedOnTestMode(IServiceCollection services, IConfiguration configuration)
     {
-        if (HostingEnvironment.IsTestMode())
-        {
-            // used for selenium tests
-            services.AddScoped<IEmailService, EmailServiceStub>();
-            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(Shared.OpenAI.Key);
-            services.AddKeyedScoped<ITtsService, SimulatedTtsService>(Shared.Narakeet.Key);
-
-            return;
-        }
+        var isTestMode = HostingEnvironment.IsTestMode();
 
         services.AddScoped<IEmailService, EmailService>();
 
         services.AddKeyedScoped<ITtsService, ElevenLabsService>(Shared.ElevenLabs.Key);
         services.AddSingleton(serviceProvider =>
         {
-            var apiKey = configuration[ConfigConstants.ElevenLabsApiKey];
-            return new ElevenLabsClient(apiKey);
+            return isTestMode
+                ? FakeElevenLabsClient.Create()
+                : new ElevenLabsClient(configuration[ConfigConstants.ElevenLabsApiKey]);
         });
 
         services.AddKeyedScoped<ITtsService, OpenAiService>(Shared.OpenAI.Key);
         services.AddSingleton(serviceProvider =>
         {
-            var apiKey = configuration[ConfigConstants.OpenAiApiKey];
-            return new OpenAIClient(apiKey);
+            return isTestMode
+                ? FakeOpenAIClient.Create()
+                : new OpenAIClient(configuration[ConfigConstants.OpenAiApiKey]);
         });
 
         services.AddKeyedScoped<ITtsService>(Shared.Narakeet.Key,
@@ -89,6 +85,8 @@ internal static class ServicesDiExtension
 
             client.BaseAddress = new Uri(options.ApiUrl);
             client.DefaultRequestHeaders.Add("x-api-key", options.ApiKey);
-        });
+        })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+                isTestMode ? new FakeNarakeetHandler() : new HttpClientHandler());
     }
 }

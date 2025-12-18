@@ -7,18 +7,17 @@ public interface ISpeechService
     Task<Guid> GetOrInitiateSpeech(TtsRequestOptions request,
         byte[] fileBytes,
         string fileName,
-        string langCode,
-        string ttsApi);
+        string ttsApi,
+        string ownerId);
     Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request,
         string input,
-        string langCode,
-        string ttsApi);
+        string ttsApi,
+        string ownerId);
     Task ProcessSpeechAsync(TtsRequestOptions request,
         string fileText,
         string fileName,
-        string langCode,
         string ttsApi,
         Guid fileId,
-        string hash,
+        string ownerId,
         CancellationToken cancellationToken);
 }

@@ -2,5 +2,5 @@
 
 public interface IMetaDataService
 {
-    void AddMetaData(string pathFile, string title);
+    Task<byte[]> AddMetaData(byte[] data, string ext, string title);
 }

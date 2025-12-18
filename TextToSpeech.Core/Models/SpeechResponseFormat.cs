@@ -64,4 +64,29 @@ public struct SpeechResponseFormat
 
     public static string UnsupportedFormatError(string? value) =>
         $"Unsupported Response Format: \"{value}\". Allowed: {string.Join(", ", _valid)}.";
+
+    public readonly bool Equals(SpeechResponseFormat other)
+    {
+        return string.Equals(_value, other._value, StringComparison.Ordinal);
+    }
+
+    public override readonly bool Equals(object? obj)
+    {
+        return obj is SpeechResponseFormat other && Equals(other);
+    }
+
+    public override readonly int GetHashCode()
+    {
+        return _value.GetHashCode(StringComparison.Ordinal);
+    }
+
+    public static bool operator ==(SpeechResponseFormat left, SpeechResponseFormat right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(SpeechResponseFormat left, SpeechResponseFormat right)
+    {
+        return !left.Equals(right);
+    }
 }

@@ -10,13 +10,13 @@ namespace TextToSpeech.Api.Controllers;
 [ApiController]
 public sealed class AudioController : ControllerBase
 {
-    private readonly IPathService _pathService;
     private readonly IAudioFileRepository _audioFileRepository;
+    private readonly IOwnerContext _ownerContext;
 
-    public AudioController(IPathService pathService, IAudioFileRepository audioFileRepository)
+    public AudioController(IAudioFileRepository audioFileRepository, IOwnerContext ownerContext)
     {
-        _pathService = pathService;
         _audioFileRepository = audioFileRepository;
+        _ownerContext = ownerContext;
     }
 
     [HttpGet("download/{fileId}")]
@@ -27,20 +27,20 @@ public sealed class AudioController : ControllerBase
             return BadRequest("Invalid file ID.");
         }
 
-        string filePath = _pathService.ResolveFilePathForStorage(parsedFileId);
+        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
 
-        if (!System.IO.File.Exists(filePath))
+        if (dbAudioFile is null)
         {
-            var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
-
-            if (dbAudioFile is not null)
-            {
-                return File(dbAudioFile.Data, "audio/mpeg");
-            }
-
             return NotFound("File not found.");
         }
 
-        return File(await System.IO.File.ReadAllBytesAsync(filePath), "audio/mpeg");
+        var ownerId = _ownerContext.GetOwnerId();
+
+        if (dbAudioFile.OwnerId != ownerId)
+        {
+            return Forbid();
+        }
+
+        return File(dbAudioFile.Data, "audio/mpeg");
     }
 }
