@@ -12,7 +12,6 @@ namespace TextToSpeech.SeleniumTests.Tests;
 /// Uses pre-seeded DB data (Infra.TestData) and SignalR to validate generation,
 /// download, and cancellation scenarios.
 /// </summary>
-[Collection("Redis")]
 public sealed class TtsFormTests(ITestOutputHelper output) : TestBase(output)
 {
     private TtsFormPage CreatePage() => new(Driver, Wait);
