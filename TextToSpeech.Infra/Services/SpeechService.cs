@@ -17,7 +17,6 @@ namespace TextToSpeech.Infra.Services;
 
 public sealed class SpeechService(ITextProcessingService _textFileService,
     ITtsServiceFactory _ttsServiceFactory,
-    IPathService _pathService,
     IFileProcessorFactory _fileProcessorFactory,
     IHubContext<AudioHub> _hubContext,
     ILogger<SpeechService> _logger,
@@ -29,7 +28,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     IRedisCacheProvider _redisCacheProvider) : ISpeechService
 {
     private readonly ConcurrentDictionary<Guid, int> _lastProgressDictionary = new();
-    private const int StatusUpdateDelayMs = 200;
+    private const int StatusUpdateDelayMs = 200; // todo not stable
 
     /// <summary>
     /// Process the speech asynchronously without waiting for it to complete to return the ID immediately to the client
@@ -38,18 +37,18 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     /// <returns>ID of the newly created audio file</returns>
     /// <exception cref="ArgumentException"></exception>
     public async Task<Guid> GetOrInitiateSpeech(TtsRequestOptions request, byte[] fileBytes, string fileName,
-        string langCode, string ttsApi)
+        string ttsApi, string ownerId)
     {
         var fileText = await ExtractText(fileBytes, fileName);
 
-        var hash = AudioFileBuilder.GenerateHash(fileText, langCode, request);
+        var hash = AudioFileBuilder.GenerateHash(fileText, request);
 
         var audioFileId = await _redisCacheProvider.GetCachedData<Guid?>(hash)
             ?? (await _audioFileRepository.GetAudioFileByHashAsync(hash))?.Id;
 
         if (audioFileId is not null)
         {
-            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), delayMs: StatusUpdateDelayMs);
+            _ = UpdateAudioStatus(audioFileId.Value, Status.Completed.ToString(), ownerId, delayMs: StatusUpdateDelayMs);
             _logger.LogInformation("Found existing audio for {AudioFileId}", audioFileId);
 
             return audioFileId.Value;
@@ -60,15 +59,15 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         var cts = new CancellationTokenSource();
         _taskManager.AddTask(audioFileId.Value, cts);
 
-        _ = UpdateAudioStatus(audioFileId.Value, Status.Created.ToString(), delayMs: StatusUpdateDelayMs);
+        _ = UpdateAudioStatus(audioFileId.Value, Status.Created.ToString(), ownerId, delayMs: StatusUpdateDelayMs);
 
         _backgroundTaskQueue.QueueBackgroundWorkItem(async token =>
         {
             token = cts.Token;
             using var scope = _serviceScopeFactory.CreateScope();
             var speechService = scope.ServiceProvider.GetRequiredService<ISpeechService>();
-            await speechService.ProcessSpeechAsync(request, fileText, fileName, langCode, ttsApi,
-                audioFileId.Value, hash, token);
+            await speechService.ProcessSpeechAsync(request, fileText, fileName, ttsApi,
+                audioFileId.Value, ownerId, token);
         });
 
         _logger.LogInformation("Initializing TTS for {AudioFileId}", audioFileId);
@@ -79,10 +78,9 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     public async Task ProcessSpeechAsync(TtsRequestOptions request,
         string fileText,
         string fileName,
-        string langCode,
         string ttsApi,
         Guid fileId,
-        string hash,
+        string ownerId,
         CancellationToken cancellationToken)
     {
         AudioFile? audioFile = null;
@@ -93,10 +91,10 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             _logger.LogInformation("Processing speech for {FileId}", fileId);
 
             audioFile = AudioFileBuilder.Create([],
-                langCode,
                 AudioType.Full,
                 fileText,
                 request,
+                ownerId,
                 Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
                 fileName,
                 fileId
@@ -104,7 +102,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             finalStatus = Status.Processing;
 
-            await UpdateAudioStatus(fileId, finalStatus.ToString());
+            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId);
 
             var ttsService = _ttsServiceFactory.Get(ttsApi);
 
@@ -112,7 +110,8 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
             var progress = new Progress<ProgressReport>();
 
-            progress.ProgressChanged += async (_, report) => await UpdateStatusAndProgress(fileId, report, finalStatus);
+            progress.ProgressChanged += async (_, report) =>
+                await UpdateStatusAndProgress(fileId, report, finalStatus, ownerId);
 
             var bytesCollection = await ttsService.RequestSpeechChunksAsync(textChunks,
                 fileId,
@@ -120,22 +119,17 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
                 progress,
                 cancellationToken);
 
-            var bytes = AudioFileService.ConcatenateMp3Files(bytesCollection);
+            var bytes = AudioFileService.ConcatenateRawAudioChunks(bytesCollection, request.ResponseFormat.ToString());
 
-            var localFilePath = _pathService.ResolveFilePathForStorage(audioFile.Id,
-                request.ResponseFormat.ToString());
-
-            await File.WriteAllBytesAsync(localFilePath, bytes, cancellationToken);
+            if (request.ResponseFormat != SpeechResponseFormat.Pcm)
+            {
+                bytes = await _metaDataService.AddMetaData(bytes, request.ResponseFormat.ToString(), fileName);
+            }
 
             finalStatus = Status.Completed;
 
             audioFile.Status = finalStatus;
-            audioFile.Data = bytes;
-
-            if (request.ResponseFormat.ToString() != SpeechResponseFormat.Pcm.ToString())
-            {
-                _metaDataService.AddMetaData(localFilePath, title: fileName);
-            }
+            audioFile.SetDataOnce(bytes);
 
             await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
             await _audioFileRepository.AddAudioFileAsync(audioFile);
@@ -152,22 +146,14 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
         }
         finally
         {
-            try
-            {
-                await UpdateAudioStatus(fileId, finalStatus.ToString(), errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning(e, "Failed to update status for {FileId}", fileId);
-            }
-
-            _logger.LogInformation("Speech processing is {Status} for {FileId}", finalStatus, fileId);
+            await UpdateAudioStatus(fileId, finalStatus.ToString(), ownerId, errorMessage: errorMessage, delayMs: StatusUpdateDelayMs);
         }
     }
 
-    public async Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request, string input, string langCode, string ttsApi)
+    public async Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request, string input, string ttsApi,
+        string ownerId)
     {
-        var hash = AudioFileBuilder.GenerateHash(input, langCode, request);
+        var hash = AudioFileBuilder.GenerateHash(input, request);
 
         var audioFile = await _redisCacheProvider.GetCachedData<AudioFile>(hash);
 
@@ -190,12 +176,11 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             .RequestSpeechSample(input, request);
 
         audioFile = AudioFileBuilder.Create(bytesCollection.ToArray(),
-            langCode,
             AudioType.Sample,
             input,
             request,
-            Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value,
-            hash: hash);
+            ownerId,
+            Shared.TtsApis.Single(kv => kv.Key.Equals(ttsApi, StringComparison.OrdinalIgnoreCase)).Value);
 
         audioFile.Status = Status.Completed;
 
@@ -219,6 +204,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     /// </summary>
     private async Task UpdateAudioStatus(Guid audioFileId,
         string status,
+        string ownerId,
         int? progressPercentage = null,
         string? errorMessage = null,
         int? delayMs = null)
@@ -228,11 +214,24 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             await Task.Delay(delayMs.Value);
         }
 
-        await _hubContext.Clients.All.SendAsync(Shared.AudioStatusUpdated, audioFileId.ToString(), status, progressPercentage, errorMessage);
+        string fileId = audioFileId.ToString();
+
+        try
+        {
+            _logger.LogInformation("Audio is {Status}. ID: {FileId} ", status, fileId);
+
+            await _hubContext.Clients.Group(ownerId)
+                .SendAsync(Shared.AudioStatusUpdated, fileId, status, progressPercentage, errorMessage);
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to update status for {FileId}", fileId);
+        }
     }
 
     // todo move to ProgressUpdater class
-    private async Task UpdateStatusAndProgress(Guid fileId, ProgressReport report, Status status)
+    private async Task UpdateStatusAndProgress(Guid fileId, ProgressReport report, Status status, string ownerId)
     {
         var shouldTriggerUpdate = !_lastProgressDictionary.TryGetValue(fileId, out var lastProgress)
             || report.ProgressPercentage > lastProgress;
@@ -242,7 +241,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             return;
         }
 
-        await UpdateAudioStatus(report.FileId, status.ToString(), report.ProgressPercentage).ConfigureAwait(false);
+        await UpdateAudioStatus(report.FileId, status.ToString(), ownerId, report.ProgressPercentage).ConfigureAwait(false);
 
         _lastProgressDictionary[fileId] = report.ProgressPercentage;
     }

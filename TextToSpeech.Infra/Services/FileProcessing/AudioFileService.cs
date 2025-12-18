@@ -2,8 +2,13 @@
 
 public static class AudioFileService
 {
-    public static byte[] ConcatenateMp3Files(ReadOnlyMemory<byte>[] audioFiles)
+    public static byte[] ConcatenateRawAudioChunks(ReadOnlyMemory<byte>[] audioFiles, string format)
     {
+        if (format is not "mp3" && format is not "pcm")
+        {
+            throw new NotSupportedException($"Concatenation not supported for {format}");
+        }
+
         using var memoryStream = new MemoryStream();
 
         foreach (var file in audioFiles)

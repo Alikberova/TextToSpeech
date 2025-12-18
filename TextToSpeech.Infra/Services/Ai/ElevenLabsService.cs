@@ -89,7 +89,7 @@ public sealed class ElevenLabsService : ITtsService
     {
         VoiceSettings voiceSettings = new()
         {
-            Speed = Convert.ToSingle(ttsRequest.Speed)
+            Speed = Convert.ToSingle(ttsRequest.Speed) // 0.7-1.2
         };
 
         var elevenLabsVoice = new ElevenLabs.Voices.Voice(ttsRequest.Voice.ProviderVoiceId, ttsRequest.Voice.Name);
