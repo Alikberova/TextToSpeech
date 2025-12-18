@@ -1,9 +1,10 @@
+using ElevenLabs;
 using Microsoft.Extensions.Logging;
 using Moq;
-using TextToSpeech.Core.Models;
+using System.Net;
+using System.Text;
 using TextToSpeech.Infra.Interfaces;
 using TextToSpeech.Infra.Services.Ai;
-using TextToSpeech.Infra.Stubs;
 using Xunit;
 
 namespace TextToSpeech.UnitTests;
@@ -13,13 +14,7 @@ public sealed class ElevenLabsServiceTests
     [Fact]
     public async Task GetVoices_ReturnsMappedVoices()
     {
-        var voices = new Voice[]
-        {
-            new() { Name = "Voice A", ProviderVoiceId = "v-1"},
-            new() { Name = "Voice B", ProviderVoiceId = "v-2"}
-        };
-
-        var service = CreateService(voicesResponse: voices);
+        var service = CreateService();
 
         var result = await service.GetVoices();
 
@@ -125,15 +120,79 @@ public sealed class ElevenLabsServiceTests
     }
 
     private static ElevenLabsService CreateService(ProgressTrackerContext? progressContext = null,
-        Mock<IParallelExecutionService>? parallelExecutionServiceMock = null,
-        Voice[]? voicesResponse = null)
+        Mock<IParallelExecutionService>? parallelExecutionServiceMock = null)
     {
+        var handler = FakeElevenLabsHandler.WithResponses();
+
+        var httpClient = new HttpClient(handler)
+        {
+            BaseAddress = handler.BaseAddress
+        };
+
+        var elevenLabsClient = new ElevenLabsClient(
+            new ElevenLabsAuthentication("test-key"),
+            new ElevenLabsClientSettings(handler.BaseAddress.ToString()),
+            httpClient);
+
         progressContext ??= Mocks.CreateProgressContext(Guid.NewGuid());
 
         return new ElevenLabsService(
-            FakeElevenLabsClient.Create(voicesResponse: voicesResponse),
+            elevenLabsClient,
             Mock.Of<ILogger<ElevenLabsService>>(),
             progressContext.TrackerMock.Object,
             parallelExecutionServiceMock?.Object ?? Mocks.ParallelExecutionService);
+    }
+
+    private sealed class FakeElevenLabsHandler : HttpMessageHandler
+    {
+        private readonly byte[] _audioBytes;
+        private readonly string _voicesResponse;
+
+        public Uri BaseAddress { get; } = new("https://fake.elevenlabs.local/");
+
+        private FakeElevenLabsHandler(string voicesResponse, byte[] audioBytes)
+        {
+            _voicesResponse = voicesResponse;
+            _audioBytes = audioBytes;
+        }
+
+        public static FakeElevenLabsHandler WithResponses(byte[]? audioBytes = null)
+        {
+            const string defaultVoicesResponse = """
+            {
+              "voices": [
+                { "voice_id": "v-1", "name": "Voice A" },
+                { "voice_id": "v-2", "name": "Voice B" }
+              ]
+            }
+            """;
+
+            return new FakeElevenLabsHandler(defaultVoicesResponse, audioBytes ?? [1, 2, 3]);
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (request.Method == HttpMethod.Get && request.RequestUri!.AbsolutePath.Contains("voices", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(_voicesResponse, Encoding.UTF8, "application/json")
+                });
+            }
+
+            if (request.Method == HttpMethod.Post && request.RequestUri!.AbsolutePath.Contains("text-to-speech", StringComparison.OrdinalIgnoreCase))
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new ByteArrayContent(_audioBytes)
+                };
+
+                response.Headers.TryAddWithoutValidation("history-item-id", "history-item-id-1");
+
+                return Task.FromResult(response);
+            }
+
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+        }
     }
 }

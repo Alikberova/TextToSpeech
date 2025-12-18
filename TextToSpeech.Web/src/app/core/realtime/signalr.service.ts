@@ -2,27 +2,16 @@ import { inject, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { SERVER_URL } from '../../constants/tokens';
 import { AudioStatusCallback } from './audio-status-callback';
-import { GuestTokenService } from '../auth/guest/guest-token.service';
-import { environment } from '../../../environments/environment';
 
 /** Wrapper around SignalR hub for audio generation status updates. */
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
   private hub?: signalR.HubConnection;
-  private guestTokenService = inject(GuestTokenService);
 
   startConnection() {
     if (this.hub && this.hub.state === signalR.HubConnectionState.Connected) return;
     const audioHubUrl = `${inject(SERVER_URL)}/audioHub`;
-    this.hub = new signalR.HubConnectionBuilder()
-      .withUrl(audioHubUrl, {
-          accessTokenFactory: () => this.guestTokenService.getToken() ?? '',
-        })
-      .configureLogging(environment.name === 'development'
-        ? signalR.LogLevel.Information
-        : signalR.LogLevel.Error)
-      .withAutomaticReconnect()
-      .build();
+    this.hub = new signalR.HubConnectionBuilder().withUrl(audioHubUrl).build();
     this.hub.start().catch((err: unknown) => console.error('SignalR start error', err));
   }
 

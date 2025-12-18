@@ -1,12 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
+using TextToSpeech.Core.Interfaces;
+using TextToSpeech.Core.Interfaces.Repositories;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Interfaces;
+using TextToSpeech.IntegrationTests.Mocks;
+using TextToSpeech.IntegrationTests.Utils;
 using Xunit.Abstractions;
 using static TextToSpeech.Core.Enums;
 
@@ -20,11 +27,11 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     private readonly HttpClient _client;
     private readonly ITestOutputHelper _output;
 
-    public SpeechControllerTests(TestWebApplicationFactory<Program> factory, ITestOutputHelper output)
+    public SpeechControllerTests(ITestOutputHelper output)
     {
-        _factory = factory;
+        _factory = CreateFactory();
+        _client = _factory.CreateClient();
         _output = output;
-        _client = factory.HttpClient;
     }
 
     [Theory]
@@ -55,8 +62,8 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
     public async Task CreateSpeech_ReturnsMp3(string ttsApi)
     {
         // Arrange
-        var token = await Authenticate();
-        var hubConnection = BuildHubConnection(_client, _factory, token);
+        await Authenticate();
+        var hubConnection = BuildHubConnection(_client, _factory);
 
         var spechStatusUpdated = new TaskCompletionSource<bool>();
 
@@ -88,13 +95,17 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
 
         // Act
         var response = await _client.PostAsync("/api/speech", GetFormData(ttsApi));
+
         response.EnsureSuccessStatusCode();
+
         var responseString = await response.Content.ReadAsStringAsync();
 
         var completedTask = await Task.WhenAny(spechStatusUpdated.Task, Task.Delay(TimeSpan.FromSeconds(10)));
 
+        var audioFilePath = _factory.Services.GetRequiredService<IPathService>()
+            .ResolveFilePathForStorage(fileId!.Value);
+
         var downloadResp = await _client.GetAsync($"/api/audio/download/{fileId}");
-        downloadResp.EnsureSuccessStatusCode();
         var downloadBytes = await downloadResp.Content.ReadAsByteArrayAsync();
 
         //Assert 
@@ -103,28 +114,57 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         Assert.Equal(Status.Completed.ToString(), status);
         Assert.True(Guid.TryParse(responseString.Trim('"'), out var respStringFileId), "Response string file ID is not a valid guid");
         Assert.Equal(respStringFileId, fileId);
+        Assert.True(Mp3FileUtilities.IsMp3Valid(audioFilePath), "Invalid MP3 file.");
         Assert.Null(errorMessage);
         Assert.NotEmpty(progressReports);
 
+        Assert.True(downloadResp.IsSuccessStatusCode);
         Assert.Equal(AudioMpeg, downloadResp.Content.Headers.ContentType?.MediaType);
         Assert.NotEmpty(downloadBytes);
+        Assert.True(Mp3FileUtilities.IsMp3Valid(downloadBytes), "Bytes are not valid MP3 file.");
 
         // Cleanup
+
         await hubConnection.DisposeAsync();
+        File.Delete(audioFilePath);
     }
 
-    private static HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory, string? token)
+    private static TestWebApplicationFactory<Program> CreateFactory()
+    {
+        var factory = new TestWebApplicationFactory<Program>();
+
+        factory.ConfigureTestServices(services =>
+        {
+            services.AddScoped(_ => ITtsServiceFactoryMock.Get().Object);
+            services.AddScoped(_ => new Mock<IAudioFileRepository>().Object);
+            services.AddTransient(_ => new Mock<IDbInitializer>().Object);
+            services.AddScoped(_ => new Mock<IRedisCacheProvider>().Object);
+        });
+
+        return factory;
+    }
+
+    private HubConnection BuildHubConnection(HttpClient client, TestWebApplicationFactory<Program> factory)
     {
         return new HubConnectionBuilder()
-            .WithUrl($"{client.BaseAddress!.OriginalString}{Shared.AudioHubEndpoint}", options =>
+            .WithUrl($"{client.BaseAddress!.OriginalString}{Shared.AudioHubEndpoint}", o =>
             {
-                options.Transports = HttpTransportType.LongPolling;
+                o.Transports = HttpTransportType.WebSockets;
+                o.SkipNegotiation = true;
+                o.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
+                o.WebSocketFactory = async (context, cancellationToken) =>
+                {
+                    var wsClient = factory.Server.CreateWebSocketClient();
 
-                options.AccessTokenProvider = () => Task.FromResult(token);
+                    var uri = context.Uri;
 
-                options.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
-            })
-            .Build();
+                    _output.WriteLine($"Connecting websocket to: {uri}");
+
+                    var res = await wsClient.ConnectAsync(uri, cancellationToken);
+
+                    return res;
+                };
+            }).Build();
     }
 
     private static MultipartFormDataContent GetFormData(string ttsApi)
@@ -161,7 +201,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         return formData;
     }
 
-    private async Task<string> Authenticate()
+    private async Task Authenticate()
     {
         var resp = await _client.PostAsync("/api/auth/guest", new StringContent(string.Empty));
         resp.EnsureSuccessStatusCode();
@@ -173,7 +213,5 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
 
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
-
-        return token;
     }
 }

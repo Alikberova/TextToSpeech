@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using TextToSpeech.Core.Entities;
+using static TextToSpeech.Core.Enums;
 using TextToSpeech.Core.Interfaces;
 using TextToSpeech.Core.Interfaces.Ai;
 using TextToSpeech.Core.Interfaces.Repositories;
@@ -17,90 +17,92 @@ namespace TextToSpeech.UnitTests;
 
 public sealed class SpeechServiceTests
 {
-    private const string FileName = "file.txt";
-    private const string FileText = "hello world";
-    private const string OwnerId = "owner-1";
-    private const string TtsApi = Shared.Narakeet.Key;
-
-    private static readonly Guid AudioFileId = Guid.NewGuid();
-    private static readonly byte[] FileBytes = [1, 2, 3];
-    private static readonly TtsRequestOptions Request = new()
-    {
-        Model = "m1",
-        Speed = 1,
-        ResponseFormat = SpeechResponseFormat.Mp3,
-        Voice = new Voice { ProviderVoiceId = "voice-1", Name = "v" }
-    };
-
     [Fact]
-    public async Task GetOrInitiateSpeech_WhenRedisHasId_ReturnsId_AndDoesNotEnqueue()
+    public async Task UpdateAudioStatus_SendsStatusToHub()
     {
-        // Arrange
-        var repo = new Mock<IAudioFileRepository>();
-        var backgroundQueue = new Mock<IBackgroundTaskQueue>();
-        var taskManager = new Mock<ITaskManager>();
+        var fileId = Guid.NewGuid();
+        var (service, clientProxy) = CreateSpeechService();
 
-        var service = Createservice(repo.Object, backgroundQueue.Object, taskManager.Object);
+        var method = typeof(SpeechService).GetMethod("UpdateAudioStatus",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
-        // Act
-        var resultId = await service.GetOrInitiateSpeech(
-            Request,
-            FileBytes,
-            FileName,
-            TtsApi,
-            OwnerId);
+        await (Task)method!.Invoke(service, new object?[] { fileId, Status.Processing.ToString(), 25, null, null })!;
 
-        // Assert
-        Assert.Equal(AudioFileId, resultId);
-
-        backgroundQueue.Verify(
-            q => q.QueueBackgroundWorkItem(It.IsAny<Func<CancellationToken, Task>>()),
-            Times.Never);
-
-        taskManager.Verify(
-            m => m.AddTask(It.IsAny<Guid>(), It.IsAny<CancellationTokenSource>()),
-            Times.Never);
-
-        repo.Verify(
-            r => r.AddAudioFileAsync(It.IsAny<AudioFile>()),
-            Times.Never);
+        clientProxy.Verify(c => c.SendCoreAsync(
+                Shared.AudioStatusUpdated,
+                It.Is<object?[]>(args =>
+                    (string?)args[0] == fileId.ToString()
+                    && (string?)args[1] == Status.Processing.ToString()
+                    && (int?)args[2] == 25
+                    && args[3] == null),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
-    private static SpeechService Createservice(IAudioFileRepository? repo = null,
-        IBackgroundTaskQueue? backgroundQueue = null,
-        ITaskManager? taskManager = null)
+    [Fact]
+    public async Task UpdateStatusAndProgress_OnlyEmitsWhenProgressIncreases()
     {
-        var fileProcessor = new Mock<IFileProcessor>();
-        fileProcessor
-            .Setup(p => p.ExtractTextAsync(FileBytes))
-            .ReturnsAsync(FileText);
+        var fileId = Guid.NewGuid();
+        var (service, clientProxy) = CreateSpeechService();
+        var method = typeof(SpeechService).GetMethod("UpdateStatusAndProgress",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
-        var fileProcessorFactory = new Mock<IFileProcessorFactory>();
-        fileProcessorFactory
-            .Setup(f => f.GetProcessor(".txt"))
-            .Returns(fileProcessor.Object);
+        await (Task)method!.Invoke(service,
+            new object?[] { fileId, new ProgressReport { FileId = fileId, ProgressPercentage = 10 }, Status.Processing })!;
 
-        var redis = new Mock<IRedisCacheProvider>();
-        redis
-            .Setup(r => r.GetCachedData<Guid?>(It.IsAny<string>()))
-            .ReturnsAsync(AudioFileId);
+        await (Task)method.Invoke(service,
+            new object?[] { fileId, new ProgressReport { FileId = fileId, ProgressPercentage = 10 }, Status.Processing })!;
 
-        var textProcessingService = new Mock<ITextProcessingService>();
-        textProcessingService
-            .Setup(s => s.SplitTextIfGreaterThan(It.IsAny<string>(), It.IsAny<int>()))
-            .Returns(["chunk-1"]);
+        await (Task)method.Invoke(service,
+            new object?[] { fileId, new ProgressReport { FileId = fileId, ProgressPercentage = 20 }, Status.Processing })!;
 
-        return new SpeechService(
-            textProcessingService.Object,
-            Mock.Of<ITtsServiceFactory>(),
-            fileProcessorFactory.Object,
-            Mock.Of<IHubContext<AudioHub>>(),
-            Mock.Of<ILogger<SpeechService>>(),
-            Mock.Of<IMetaDataService>(),
-            repo ?? Mock.Of<IAudioFileRepository>(),
-            taskManager ?? Mock.Of<ITaskManager>(),
-            backgroundQueue ?? Mock.Of<IBackgroundTaskQueue>(),
-            Mock.Of<IServiceScopeFactory>(),
-            redis.Object);
+        var invocations = clientProxy.Invocations
+            .Where(i => i.Method.Name == nameof(IClientProxy.SendCoreAsync))
+            .Select(inv => (object?[])inv.Arguments[1])
+            .ToList();
+
+        Assert.Equal(2, invocations.Count);
+        Assert.Equal(10, invocations[0][2]);
+        Assert.Equal(20, invocations[1][2]);
+    }
+
+    private static (SpeechService service, Mock<IClientProxy> clientProxy) CreateSpeechService()
+    {
+        var textProcessingService = Mock.Of<ITextProcessingService>();
+        var ttsServiceFactory = Mock.Of<ITtsServiceFactory>();
+        var pathService = Mock.Of<IPathService>();
+        var fileProcessorFactory = Mock.Of<IFileProcessorFactory>();
+        var logger = Mock.Of<ILogger<SpeechService>>();
+        var metaDataService = Mock.Of<IMetaDataService>();
+        var audioFileRepository = Mock.Of<IAudioFileRepository>();
+        var taskManager = Mock.Of<ITaskManager>();
+        var backgroundTaskQueue = Mock.Of<IBackgroundTaskQueue>();
+        var serviceScopeFactory = Mock.Of<IServiceScopeFactory>();
+        var redisCacheProvider = Mock.Of<IRedisCacheProvider>();
+        var hubClients = new Mock<IHubClients>();
+        var clientProxy = new Mock<IClientProxy>();
+
+        clientProxy.Setup(c => c.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        hubClients.SetupGet(c => c.All).Returns(clientProxy.Object);
+
+        var hubContext = new Mock<IHubContext<AudioHub>>();
+        hubContext.SetupGet(h => h.Clients).Returns(hubClients.Object);
+
+        var service = new SpeechService(textProcessingService,
+            ttsServiceFactory,
+            pathService,
+            fileProcessorFactory,
+            hubContext.Object,
+            logger,
+            metaDataService,
+            audioFileRepository,
+            taskManager,
+            backgroundTaskQueue,
+            serviceScopeFactory,
+            redisCacheProvider);
+
+        return (service, clientProxy);
     }
 }
