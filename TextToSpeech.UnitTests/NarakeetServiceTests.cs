@@ -3,10 +3,9 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http.Json;
-using TextToSpeech.Core.Interfaces;
+using System.Text.Json;
 using TextToSpeech.Infra.Dto.Narakeet;
 using TextToSpeech.Infra.Services.Ai;
-using TextToSpeech.Infra.Stubs;
 using Xunit;
 
 namespace TextToSpeech.UnitTests;
@@ -23,7 +22,7 @@ public sealed class NarakeetServiceTests
             new() { Name = "voice-b", Language = "French", LanguageCode = "fr" }
         };
 
-        var (service, _) = CreateService(apiResult);
+        var (service, _) = CreateNarakeetService(apiResult);
 
         // Act
         var voices = await service.GetVoices();
@@ -53,7 +52,7 @@ public sealed class NarakeetServiceTests
         // Arrange
         var apiResult = new List<NarakeetVoiceResult>();
 
-        var (service, _) = CreateService(apiResult);
+        var (service, _) = CreateNarakeetService(apiResult);
 
         // Act
         var voices = await service.GetVoices();
@@ -66,7 +65,7 @@ public sealed class NarakeetServiceTests
     public async Task RequestSpeechChunksAsync_ReturnsEmptyArray_WhenNoTextChunks()
     {
         // Arrange
-        var (service, handler) = CreateService([], MockBehavior.Strict);
+        var (service, handler) = CreateNarakeetService([], MockBehavior.Strict);
 
         // Act
         var result = await service.RequestSpeechChunksAsync([], Guid.NewGuid(), TestData.TtsRequestOptions, Mocks.ProgressCallback, default);
@@ -84,7 +83,7 @@ public sealed class NarakeetServiceTests
     public async Task RequestSpeechChunksAsync_ThrowsOperationCanceled_WhenTokenCanceledBeforeRequests()
     {
         // Arrange
-        var (service, handler) = CreateService([], MockBehavior.Strict);
+        var (service, handler) = CreateNarakeetService([], MockBehavior.Strict);
 
         using var cts = new CancellationTokenSource();
         cts.Cancel();
@@ -104,9 +103,53 @@ public sealed class NarakeetServiceTests
     {
         var fileId = Guid.NewGuid();
         var progressContext = Mocks.CreateProgressContext(fileId);
-        var inProgressPercent = FakeNarakeetHandler.BuildTaskStatusPercentInProgress;
+        var buildTaskResponse = new BuildTask { StatusUrl = "https://example.com/status", TaskId = "task-id", RequestId = "request-id" };
+        var inProgressPercent = 45;
+        var inProgressStatus = new BuildTaskStatus { Finished = false, Percent = inProgressPercent, Result = string.Empty, Message = "working", Succeeded = false };
+        var finishedStatus = new BuildTaskStatus { Finished = true, Percent = 100, Result = "https://example.com/result", Message = "done", Succeeded = true };
 
-        NarakeetService service = CreateService(progressContext.TrackerMock.Object, new FakeNarakeetHandler());
+        var handler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+
+        handler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(buildTaskResponse))
+            });
+
+        handler.Protected()
+            .SetupSequence<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri!.ToString() == buildTaskResponse.StatusUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(inProgressStatus))
+            })
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(finishedStatus))
+            });
+
+        handler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri!.ToString() == finishedStatus.Result),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new ByteArrayContent([1, 2, 3])
+            });
+
+        var httpClient = new HttpClient(handler.Object)
+        {
+            BaseAddress = new Uri("https://example.com")
+        };
+
+        var logger = new Mock<ILogger<NarakeetService>>();
+        var service = new NarakeetService(httpClient, progressContext.TrackerMock.Object, logger.Object);
 
         var result = await service.RequestSpeechChunksAsync(["chunk"], fileId, TestData.TtsRequestOptions, progressContext.Progress, default);
 
@@ -117,7 +160,7 @@ public sealed class NarakeetServiceTests
         Assert.Contains(inProgressPercent, progressContext.ReportedPercentages);
     }
 
-    private static (NarakeetService service, Mock<HttpMessageHandler> handler) CreateService(
+    private static (NarakeetService service, Mock<HttpMessageHandler> handler) CreateNarakeetService(
         List<NarakeetVoiceResult> apiResult,
         MockBehavior behavior = MockBehavior.Loose)
     {
@@ -131,22 +174,15 @@ public sealed class NarakeetServiceTests
                 Content = JsonContent.Create(apiResult)
             });
 
-        var service = CreateService(Mocks.ProgressTracker, httpHandler.Object);
-
-        return (service, httpHandler);
-    }
-
-    private static NarakeetService CreateService(IProgressTracker progressTracker, HttpMessageHandler httpMessageHandler)
-    {
-        var httpClient = new HttpClient(httpMessageHandler)
+        var httpClient = new HttpClient(httpHandler.Object)
         {
             BaseAddress = new Uri("https://example.com")
         };
 
-        var service = new NarakeetService(httpClient,
-            progressTracker,
-            Mock.Of<ILogger<NarakeetService>>());
+        var logger = new Mock<ILogger<NarakeetService>>();
 
-        return service;
-    } 
+        var service = new NarakeetService(httpClient, Mocks.ProgressTracker, logger.Object);
+
+        return (service, httpHandler);
+    }
 }

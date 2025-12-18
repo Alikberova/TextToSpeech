@@ -48,10 +48,10 @@ namespace TextToSpeech.Infra.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LanguageCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("OwnerId")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 

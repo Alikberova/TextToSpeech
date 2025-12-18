@@ -9,24 +9,10 @@ public static class ConfigurationExtension
     {
         if (string.IsNullOrWhiteSpace(configurationBuilder[ConfigConstants.AppDataPath]))
         {
-            configurationBuilder[ConfigConstants.AppDataPath] =
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            configurationBuilder[ConfigConstants.AppDataPath] = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         }
 
-        var config = configurationBuilder
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
+        return configurationBuilder.AddUserSecrets(Assembly.GetExecutingAssembly(), optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
-
-        if (Infra.HostingEnvironment.IsTestMode())
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                [ConfigConstants.ElevenLabsApiKey] = string.Empty,
-                [ConfigConstants.OpenAiApiKey] = string.Empty,
-                [$"{nameof(NarakeetConfig)}:{nameof(NarakeetConfig.ApiKey)}"] = string.Empty,
-            });
-        }
-
-        return config;
     }
 }

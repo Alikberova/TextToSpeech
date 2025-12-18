@@ -96,7 +96,7 @@ describe('HomePage - Form submission', () => {
         const formatNodes = fixture.nativeElement.querySelectorAll('.format-chips mat-chip-option') as NodeListOf<Element>;
         const formatLabels = Array.from(formatNodes).map((node: Element) => (node.textContent || '').trim());
 
-        expect(formatLabels).toEqual(['MP3']);
+        expect(formatLabels).toEqual(['MP3', 'WAV']);
         expect(component.responseFormat()).toBe('mp3');
     });
 

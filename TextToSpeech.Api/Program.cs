@@ -31,8 +31,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddServices(builder.Configuration);
 
 builder.Services.AddCors(options =>
@@ -74,7 +72,29 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-AddAuthentication(builder);
+var jwt = builder.Configuration.GetSection(SectionNames.JwtConfig).Get<JwtConfig>()
+    ?? throw new InvalidOperationException("Jwt configuration is missing or invalid.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30) // small skew; keep it tight
+        };
+    });
+
 builder.Services.AddAuthorization();
 
 builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(SectionNames.EmailConfig));
@@ -141,43 +161,4 @@ static void ConfigureLogging(WebApplicationBuilder builder)
             transport.Authentication(new BasicAuthentication(elasticConfig.Username, elasticConfig.Password));
         });
     });
-}
-
-static void AddAuthentication(WebApplicationBuilder builder)
-{
-    var jwt = builder.Configuration.GetSection(SectionNames.JwtConfig).Get<JwtConfig>()
-        ?? throw new InvalidOperationException("Jwt configuration is missing or invalid.");
-
-    builder.Services
-        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwt.Issuer,
-
-                ValidateAudience = true,
-                ValidAudience = jwt.Audience,
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
-
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromSeconds(30)
-            };
-
-            options.Events.OnMessageReceived = context =>
-            {
-                var accessToken = context.Request.Query["access_token"];
-                var path = context.HttpContext.Request.Path;
-
-                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/audioHub"))
-                {
-                    context.Token = accessToken;
-                }
-
-                return Task.CompletedTask;
-            };
-        });
 }
