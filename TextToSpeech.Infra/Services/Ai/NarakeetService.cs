@@ -99,7 +99,7 @@ public sealed class NarakeetService : ITtsService
 
         var response = await _httpClient.GetAsync(taskResult.Result, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessStatusCode(response);
 
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync(cancellationToken));
     }
@@ -112,7 +112,7 @@ public sealed class NarakeetService : ITtsService
             GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed),
             requestBody, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessStatusCode(response);
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -138,7 +138,7 @@ public sealed class NarakeetService : ITtsService
             cancellationToken.ThrowIfCancellationRequested();
 
             var response = await _httpClient.GetAsync(buildTask.StatusUrl, cancellationToken);
-            response.EnsureSuccessStatusCode();
+            await EnsureSuccessStatusCode(response);
             var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
             var buildTaskStatus = JsonSerializer.Deserialize<BuildTaskStatus>(responseContent);
 
@@ -172,7 +172,7 @@ public sealed class NarakeetService : ITtsService
         using HttpResponseMessage response = await _httpClient.PostAsync(
             GetEndpoint(ttsRequest.ResponseFormat.ToString(), ttsRequest.Voice.ProviderVoiceId, ttsRequest.Speed), requestBody);
 
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessStatusCode(response);
 
         return new ReadOnlyMemory<byte>(await response.Content.ReadAsByteArrayAsync());
     }
@@ -188,5 +188,19 @@ public sealed class NarakeetService : ITtsService
         {
             throw new NotSupportedException($"Narakeet does not support the '{str}' format.");
         }
+    }
+
+    private async Task EnsureSuccessStatusCode(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        var error = await response.Content.ReadAsStringAsync();
+
+        _logger.LogError("An error on from Narraket API. \n{Error}", error);
+
+        response.EnsureSuccessStatusCode();
     }
 }

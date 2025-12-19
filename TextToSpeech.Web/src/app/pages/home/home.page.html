@@ -80,7 +80,7 @@
       >
         <mat-option [value]="''" disabled>{{ 'home.language.placeholder' | translate }}</mat-option>
         @for (lang of languages(); track lang.key) {
-          <mat-option [value]="lang.key">{{ lang.label | translate }}</mat-option>
+          <mat-option [value]="lang.key">{{ lang.displayText }}</mat-option>
         }
       </mat-select>
       @if ((languageCtrl.touched || submitAttempt() || sampleAttempt()) && !language()) {

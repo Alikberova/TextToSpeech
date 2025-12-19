@@ -25,4 +25,8 @@ export interface SelectOption {
   label: string;
 }
 
+export interface LangSelectOption extends SelectOption {
+  displayText: string; // resolved, human-readable language name
+}
+
 export type FieldKey = 'provider' | 'model' | 'language' | 'voice' | 'file';
