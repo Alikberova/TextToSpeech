@@ -42,7 +42,7 @@ jobs:
           echo "AppDataPath=$RUNNER_TEMP/tts-app" >> .env
           cat .env.test >> .env
 
-      - name: Export environment variables from an env file 
+      - name: Export environment variables from an env file
         uses: falti/dotenv-action@v1.1
         with:
           export-variables: true

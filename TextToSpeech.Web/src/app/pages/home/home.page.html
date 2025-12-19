@@ -185,10 +185,10 @@
   <!-- Speed slider -->
   <div class="field slider-field">
     <label [attr.for]="speedInputId">{{ 'home.speed.label' | translate }}</label>
-    <mat-slider min="0.5" max="2.0" step="0.1" [displayWith]="formatSpeed">
+    <mat-slider min="0.7" max="1.2" step="0.1" [displayWith]="formatSpeed">
       <input matSliderThumb [id]="speedInputId" [value]="speed()" (valueChange)="speed.set($event)" />
     </mat-slider>
-    <div class="hint">{{ 'home.speed.help' | translate:{ min: '0.5', max: '2.0', value: speed().toFixed(1) } }}</div>
+    <div class="hint">{{ 'home.speed.help' | translate:{ min: '0.7', max: '1.2', value: speed().toFixed(1) } }}</div>
   </div>
 
   <!-- Sample text and play -->

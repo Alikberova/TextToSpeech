@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TextToSpeech.Infra;
 using TextToSpeech.Infra.Config;
 
 namespace TextToSpeech.Api.Services;
@@ -20,7 +21,9 @@ public sealed class JwtTokenService(IOptions<JwtConfig> jwtOptions) : IJwtTokenS
     {
         var lifetimeMinutes = _jwt.GuestLifetimeMinutes > 0 ? _jwt.GuestLifetimeMinutes : 30;
 
-        var subject = $"guest:{Guid.NewGuid()}";
+        var subject = HostingEnvironment.IsTestMode()
+            ? TestData.AudioOwnerId
+            : $"guest:{Guid.NewGuid()}";
 
         var now = DateTimeOffset.UtcNow;
         var expires = now.AddMinutes(lifetimeMinutes);

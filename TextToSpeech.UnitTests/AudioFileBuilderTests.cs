@@ -10,17 +10,27 @@ public class AudioFileBuilderTests
 {
     private readonly byte[] Bytes = [1, 2, 3];
     private readonly Guid TtsApiId = Shared.OpenAI.Id;
-    private const string LangCode = "en-US";
     private const AudioType Type = AudioType.Full;
     private const string FileName = "testfile.mp3";
     private const string InputText = "This is a test.";
+    private const string OwnerId = "guest:test-owner";
+    private const string ProviderVoiceId = "TestVoice";
 
-    private static readonly TtsRequestOptions TtsRequest = new()
+    private static Language Language => new("TestLang", "en-US");
+
+    private static TtsRequestOptions TtsRequest => new()
     {
-        Voice = CreateVoice("TestVoice"),
+        Voice = CreateVoice(ProviderVoiceId),
         Speed = 1,
         ResponseFormat = SpeechResponseFormat.Mp3,
         Model = "test-model"
+    };
+
+    private static Voice CreateVoice(string id, Language? lang = null) => new()
+    {
+        Name = id,
+        ProviderVoiceId = id,
+        Language = lang
     };
 
     [Fact]
@@ -28,21 +38,22 @@ public class AudioFileBuilderTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var hash = AudioFileBuilder.GenerateHash(InputText, LangCode, TtsRequest);
+        var hash = AudioFileBuilder.GenerateHash(InputText, TtsRequest);
 
         // Act
-        var audioFile = AudioFileBuilder.Create(Bytes, LangCode, Type, InputText, TtsRequest, TtsApiId,
-            FileName, id);
+        var audioFile = AudioFileBuilder.Create(Bytes, Type, InputText, TtsRequest, OwnerId,
+            TtsApiId, FileName, id);
 
         // Assert
         Assert.Equal(id, audioFile.Id);
         Assert.Equal(FileName, audioFile.FileName);
         Assert.Equal(Bytes, audioFile.Data);
-        Assert.Equal(TtsRequest.Voice.ProviderVoiceId, audioFile.Voice);
-        Assert.Equal(LangCode, audioFile.LanguageCode);
+        Assert.Equal(ProviderVoiceId, audioFile.Voice);
+        Assert.Null(audioFile.LanguageCode);
         Assert.Equal(TtsRequest.Speed, audioFile.Speed);
         Assert.Equal(Type, audioFile.Type);
         Assert.Equal(TtsApiId, audioFile.TtsApiId);
+        Assert.Equal(OwnerId, audioFile.OwnerId);
         Assert.NotEqual(DateTime.MinValue, audioFile.CreatedAt);
         Assert.NotEmpty(audioFile.Description);
         Assert.Equal(hash, audioFile.Hash);
@@ -52,8 +63,8 @@ public class AudioFileBuilderTests
     public void Create_AudioFilesShouldBeEqual()
     {
         // Arrange, Act
-        var audioFile1 = AudioFileBuilder.Create(Bytes, LangCode, Type, InputText, TtsRequest);
-        var audioFile2 = AudioFileBuilder.Create(Bytes, LangCode, Type, InputText, TtsRequest);
+        var audioFile1 = AudioFileBuilder.Create(Bytes, Type, InputText, TtsRequest, OwnerId);
+        var audioFile2 = AudioFileBuilder.Create(Bytes, Type, InputText, TtsRequest, OwnerId);
 
         // Assert
         Assert.True(audioFile1 == audioFile2);
@@ -61,34 +72,93 @@ public class AudioFileBuilderTests
     }
 
     [Fact]
+    public void Create_WhenLanguageIsProvided_AffectsEquality()
+    {
+        var request = TtsRequest with { Voice = CreateVoice(ProviderVoiceId, Language) };
+        var requestWithOtherLang = request with
+        {
+            Voice = CreateVoice(ProviderVoiceId, new Language("fr", "fr"))
+        };
+        var audioFile1 = AudioFileBuilder.Create(Bytes, Type, InputText, request, OwnerId);
+        var audioFile2 = AudioFileBuilder.Create(Bytes, Type, InputText, request, OwnerId);
+        var audioFile3 = AudioFileBuilder.Create(Bytes, Type, InputText, requestWithOtherLang, OwnerId);
+
+        Assert.Equal(Language.LanguageCode, audioFile1.LanguageCode);
+
+        Assert.True(audioFile1 == audioFile2);
+        Assert.Equal(audioFile1, audioFile2);
+
+        Assert.False(audioFile1 == audioFile3);
+        Assert.NotEqual(audioFile1, audioFile3);
+    }
+
+    [Fact]
     public void Create_AudioFilesShouldNotBeEqual()
     {
-        //  Arrange
+        // Arrange
         const string change = "change";
 
         // Act
-        var audioFile = AudioFileBuilder.Create(Bytes, LangCode, Type, InputText, TtsRequest);
+        var audioFile = AudioFileBuilder.Create(Bytes, Type, InputText, TtsRequest, OwnerId);
 
         // Assert
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { Voice = CreateVoice(change) }));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { Speed = 1.1 }));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { ResponseFormat = SpeechResponseFormat.Wav }));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { Model = change }));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText,
-            TtsRequest with { Model = null }));
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with { Voice = CreateVoice(change) },
+            OwnerId));
 
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create([1, 2], LangCode, Type, InputText, TtsRequest));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode + change, Type, InputText, TtsRequest));
-        Assert.NotEqual(audioFile, AudioFileBuilder.Create(Bytes, LangCode, Type, InputText + change, TtsRequest));
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with { Speed = 1.1 },
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with { ResponseFormat = SpeechResponseFormat.Wav },
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with { Model = change },
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with { Model = null },
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            [1, 2],
+            Type,
+            InputText,
+            TtsRequest,
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText,
+            TtsRequest with
+            {
+                Voice = CreateVoice(ProviderVoiceId, Language with { LanguageCode = change })
+            },
+            OwnerId));
+
+        Assert.NotEqual(audioFile, AudioFileBuilder.Create(
+            Bytes,
+            Type,
+            InputText + change,
+            TtsRequest,
+            OwnerId));
     }
-
-    private static Voice CreateVoice(string id) => new()
-    {
-        Name = id,
-        ProviderVoiceId = id
-    };
 }

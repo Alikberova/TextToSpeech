@@ -1,21 +1,30 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using StackExchange.Redis;
+using Testcontainers.Redis;
 using TextToSpeech.Core;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Constants;
+using TextToSpeech.Infra.Services;
 using Xunit.Abstractions;
+using static TextToSpeech.Infra.TestData;
 
 namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IAsyncLifetime
 {
+    private const string CacheConnectionEnv = "ConnectionStrings__Redis";
+
     private readonly string _testId = Guid.NewGuid().ToString("N");
+    private readonly RedisContainer? _cacheContainer;
+    private readonly bool _hasExternalCacheContainer =
+        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(CacheConnectionEnv));
 
     protected string TestDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"TtsTest_{_testId}");
     protected string DownloadDirectory =>
         Path.Combine(TestDirectory, "Downloads");
-
     protected ITestOutputHelper? TestOutputHelper { get; init; }
     protected IWebDriver Driver { get; private set; } = default!;
     protected WebDriverWait Wait { get; private set; } = default!;
@@ -23,10 +32,26 @@ public class TestBase : IAsyncLifetime
     public TestBase(ITestOutputHelper? testOutputHelper = null)
     {
         TestOutputHelper = testOutputHelper;
+
+        if (!_hasExternalCacheContainer)
+        {
+            _cacheContainer = new RedisBuilder()
+                .WithCleanUp(true)
+                .Build();
+        }
     }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
+        if (!_hasExternalCacheContainer)
+        {
+            await _cacheContainer!.StartAsync();
+
+            Environment.SetEnvironmentVariable(CacheConnectionEnv, _cacheContainer.GetConnectionString());
+        }
+
+        await SeedCache();
+
         VerifyTestDirectory();
 
         var options = new ChromeOptions();
@@ -49,17 +74,18 @@ public class TestBase : IAsyncLifetime
         Wait = GetWait(Driver);
 
         Driver.Navigate().GoToUrl($"https://localhost:{AppConstants.ClientPort}");
-
-        return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
         Driver?.Quit();
         Driver?.Dispose();
         DeleteTestDirectory();
 
-        return Task.CompletedTask;
+        if (_cacheContainer is not null)
+        {
+            await _cacheContainer.DisposeAsync();
+        }
     }
 
     private static WebDriverWait GetWait(IWebDriver driver)
@@ -90,5 +116,18 @@ public class TestBase : IAsyncLifetime
             TestOutputHelper?.WriteLine($"Deleting directory {TestDirectory}");
             Directory.Delete(TestDirectory, true);
         }
+    }
+
+    private static async Task SeedCache()
+    {
+        var mux = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable(CacheConnectionEnv)!);
+
+        var cacheProvider = new RedisCacheProvider(mux);
+
+        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.OpenAI.Key),
+            OpenAiVoices.All, TimeSpan.FromDays(1));
+
+        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.Narakeet.Key),
+            NarakeetVoices.All, TimeSpan.FromDays(1));
     }
 }
