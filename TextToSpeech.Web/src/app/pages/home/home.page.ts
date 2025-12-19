@@ -18,7 +18,7 @@ import { VoiceService } from '../../core/http/voice/voice.service';
 import type { Voice } from '../../dto/voice';
 import { SampleAudioPlayer } from './home.sample-audio';
 import { buildDownloadFilename, getLanguagesFromVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
-import { AUDIO_STATUS, FieldKey, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
+import { AUDIO_STATUS, FieldKey, LangSelectOption, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
 import { UpperCasePipe } from '@angular/common';
 
 @Component({
@@ -109,12 +109,23 @@ export class HomePage implements OnInit, OnDestroy {
   errorMessage = signal<string | undefined>(undefined);
 
   // 5) Derived computed values
-  // Narakeet languages derived from loaded voices; OpenAI does not need language
-  readonly languages = computed<readonly SelectOption[]>(() => {
+  readonly languages = computed<readonly LangSelectOption[]>(() => {
+    this.langChangeTrigger();
     if (this.provider() !== NARAKEET_KEY) {
       return [] as const;
     }
-    return getLanguagesFromVoices(this.voices());
+    const items = getLanguagesFromVoices(this.voices());
+    // Compares strings using the current UI language rules
+    const collator = new Intl.Collator(
+      this.translate.currentLang,
+      { sensitivity: 'base' }
+    );
+    return items
+      .map((langOption) => ({
+        ...langOption, // copy all props into new object
+        displayText: this.translate.instant(langOption.label),
+      }))
+      .sort((a, b) => collator.compare(a.displayText, b.displayText));
   });
 
   voicesForProvider: Signal<readonly SelectOption[]> = computed(() => {

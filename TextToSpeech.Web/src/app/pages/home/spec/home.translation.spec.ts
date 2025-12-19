@@ -22,7 +22,7 @@ describe('HomePage - Translation behavior', () => {
         overlayContainer = created.overlayContainer;
     });
 
-    it('renders i18n keys for language options', async () => {
+    it('falls back to i18n keys for language options when translations are missing', async () => {
         const optionTexts = act(component, httpController, fixture, overlayContainer);
 
         // With TranslateFakeLoader, translation returns the i18n key, not actual localized text
@@ -66,6 +66,30 @@ describe('HomePage - Translation behavior', () => {
         fixture.detectChanges();
         expect(component.sampleText()).toBe(DEFAULT_SAMPLE_I18N_KEY);
     });
+
+    it('sorts language options by translated display text', () => {
+        const translate = TestBed.inject(TranslateService);
+
+        translate.setTranslation(LOCALE_EN, {
+            languages: {
+            [LANGUAGE_CODE_EN_US]: 'Zulu',
+            [LANGUAGE_CODE_EL_GR]: 'Alpha'
+            },
+            home: { language: { placeholder: 'Pick', label: 'Language' } }
+        }, true);
+
+        translate.use(LOCALE_EN);
+
+        const optionTexts = act(component, httpController, fixture, overlayContainer);
+
+        const alphaIndex = optionTexts.findIndex(t => t.includes('Alpha'));
+        const zuluIndex = optionTexts.findIndex(t => t.includes('Zulu'));
+
+        expect(alphaIndex).toBeGreaterThan(-1);
+        expect(zuluIndex).toBeGreaterThan(-1);
+        expect(alphaIndex).toBeLessThan(zuluIndex);
+    });
+
 });
 
 function act(component: HomePage, httpController: HttpTestingController, fixture: ComponentFixture<HomePage>, overlayContainer: OverlayContainer): string[] {
