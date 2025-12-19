@@ -18,11 +18,11 @@ public static class TestData
     public const string TtsSampleRequest =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed 11a47387-8d4a-4956-9a1e-352628301dab";
     public const string TtsFullRequest = "Test content for audio file full type";
+    public const string AudioOwnerId = "guest:test";
 
     public static AudioFile CreateAudioSampleAlloy()
     {
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(5),
-            string.Empty,
             AudioType.Sample,
             TtsSampleRequest,
             new TtsRequestOptions()
@@ -32,6 +32,7 @@ public static class TestData
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
+            ownerId: AudioOwnerId,
             Shared.OpenAI.Id,
             "test_sample_audio_alloy.mp3",
             Guid.Parse("32f7811a-0cc5-49d7-b0e1-8417cc08d78f"));
@@ -44,7 +45,6 @@ public static class TestData
     public static AudioFile CreateAudioFullFable()
     {
         var audio = AudioFileBuilder.Create(AudioFileService.GenerateSilentMp3(3),
-            string.Empty,
             AudioType.Full,
             TtsFullRequest,
             new TtsRequestOptions()
@@ -54,6 +54,7 @@ public static class TestData
                 Speed = 1,
                 ResponseFormat = SpeechResponseFormat.Mp3
             },
+            ownerId: AudioOwnerId,
             Shared.OpenAI.Id,
             "test_full_audio_fable.mp3",
             Guid.Parse("c3c54b87-21c4-43a4-a774-2b7646484edd"));
