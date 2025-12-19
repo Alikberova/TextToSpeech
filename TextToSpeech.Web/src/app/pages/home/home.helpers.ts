@@ -1,5 +1,5 @@
 import type { Voice } from '../../dto/voice';
-import { AUDIO_STATUS, type AudioStatus, type SelectOption } from './home.types';
+import { AUDIO_STATUS, LangSelectOption, type AudioStatus, type SelectOption } from './home.types';
 
 // Capitalize only the first letter, leave the rest intact
 export function capitalizeFirstLetter(text: string): string {
@@ -10,7 +10,7 @@ export function capitalizeFirstLetter(text: string): string {
 }
 
 // Build language select options from voices that include language metadata
-export function getLanguagesFromVoices(voices: readonly Voice[]): SelectOption[] {
+export function getLanguagesFromVoices(voices: readonly Voice[]): LangSelectOption[] {
   const map = new Map<string, string>();
   for (const v of voices) {
     const code = v.language?.languageCode;
@@ -19,8 +19,7 @@ export function getLanguagesFromVoices(voices: readonly Voice[]): SelectOption[]
     }
   }
   return Array.from(map.entries())
-    .map(([key, label]) => ({ key, label }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+    .map(([key, label]) => ({ key, label, displayText: '' }))
 }
 
 // Build voices options based on provider and optional language
