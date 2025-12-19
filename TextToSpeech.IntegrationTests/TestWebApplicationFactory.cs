@@ -15,38 +15,27 @@ public class TestWebApplicationFactory<TProgram>
 {
     private const string DbConnectionEnv = "ConnectionStrings__DefaultConnection";
 
-    private readonly PostgreSqlContainer? _dbContainer;
-    private readonly bool _hasExternalDbContainer =
-        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(DbConnectionEnv));
+    private readonly PostgreSqlContainer _dbContainer;
 
     public HttpClient HttpClient { get; private set; } = null!;
 
     public TestWebApplicationFactory()
     {
-        if (!_hasExternalDbContainer)
-        {
-            _dbContainer = new PostgreSqlBuilder()
-                .WithCleanUp(true)
-                .Build();
-        }
+        _dbContainer = new PostgreSqlBuilder()
+            .WithCleanUp(true)
+            .Build();
     }
 
     public async Task InitializeAsync()
     {
-        if (!_hasExternalDbContainer)
-        {
-            await _dbContainer!.StartAsync();
-        }
+        await _dbContainer.StartAsync();
 
         HttpClient = CreateClient();
     }
 
     public new async Task DisposeAsync()
     {
-        if (_dbContainer is not null)
-        {
-            await _dbContainer.DisposeAsync();
-        }
+        await _dbContainer.DisposeAsync();
 
         HttpClient.Dispose();
     }
@@ -59,11 +48,7 @@ public class TestWebApplicationFactory<TProgram>
         }
 
         Environment.SetEnvironmentVariable(ConfigConstants.IsTestMode, "true");
-
-        if (!_hasExternalDbContainer)
-        {
-            Environment.SetEnvironmentVariable(DbConnectionEnv , _dbContainer!.GetConnectionString());
-        }
+        Environment.SetEnvironmentVariable(DbConnectionEnv, _dbContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>
         {
