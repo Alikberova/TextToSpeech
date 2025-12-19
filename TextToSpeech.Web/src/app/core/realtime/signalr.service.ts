@@ -8,8 +8,8 @@ import { environment } from '../../../environments/environment';
 /** Wrapper around SignalR hub for audio generation status updates. */
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
+  private readonly guestTokenService = inject(GuestTokenService);
   private hub?: signalR.HubConnection;
-  private guestTokenService = inject(GuestTokenService);
 
   startConnection() {
     if (this.hub && this.hub.state === signalR.HubConnectionState.Connected) return;

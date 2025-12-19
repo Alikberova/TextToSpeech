@@ -6,7 +6,7 @@ using TextToSpeech.Infra.Services.FileProcessing;
 
 namespace TextToSpeech.Infra.Stubs;
 
-public sealed class FakeOpenAIClient
+public static class FakeOpenAIClient
 {
     public static OpenAIClient Create()
     {
