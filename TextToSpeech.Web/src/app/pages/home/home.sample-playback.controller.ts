@@ -54,7 +54,7 @@ export class SamplePlaybackController {
       error: (e) => {
         console.error('Sample request failed', e);
         this.error.set('request');
-        this.uiNotify.error('home.voice.sampleError');
+        this.uiNotify.error('home.sample.error');
       },
       complete: () => { this.requestSub = undefined; },
     });

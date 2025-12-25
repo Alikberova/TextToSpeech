@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using TextToSpeech.Infra.Config;
@@ -44,13 +43,6 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Console.WriteLine($"ASPNETCORE_ENVIRONMENT before value update: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
-
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
-        }
-
         Environment.SetEnvironmentVariable(ConfigConstants.IsTestMode, "true");
         Environment.SetEnvironmentVariable(ConfigConstants.DbConnectionEnv, _dbContainer.GetConnectionString());
         Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());

@@ -35,7 +35,7 @@ describe('HomePage - Error UI behavior (snackbar + state)', () => {
 
         expect(snack.open).toHaveBeenCalled();
         const [message] = vi.mocked((snack.open as Mock)).mock.lastCall!;
-        expect(message).toBe('home.voice.sampleError');
+        expect(message).toBe('home.sample.error');
     });
 
     it('shows snackbar and sets Failed when full speech create fails', async () => {
