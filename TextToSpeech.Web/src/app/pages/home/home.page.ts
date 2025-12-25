@@ -289,7 +289,7 @@ export class HomePage implements OnInit, OnDestroy {
         voice: this.resolveVoicePayload(),
         responseFormat: this.availableResponseFormats()[0],
       },
-    } as const);
+    });
     this.sampleController.toggle(validateFields, buildRequest);
   }
 

@@ -49,6 +49,6 @@ class JsonTranslateLoader implements TranslateLoader {
   }
 }
 
-export function jsonLoaderFactory(http: HttpClient) {
+function jsonLoaderFactory(http: HttpClient) {
   return new JsonTranslateLoader(http);
 }

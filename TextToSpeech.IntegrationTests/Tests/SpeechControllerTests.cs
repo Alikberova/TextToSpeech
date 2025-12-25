@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using TextToSpeech.Core.Models;
 using TextToSpeech.Infra.Constants;
 using Xunit.Abstractions;
@@ -36,7 +35,7 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         await Authenticate();
 
         // Arrange
-        var httpContent = new StringContent(JsonConvert.SerializeObject(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
+        var httpContent = new StringContent(JsonSerializer.Serialize(SpeechRequestGenerator.GenerateFakeSpeechRequest(ttsApi)),
             Encoding.UTF8, "application/json");
 
         // Act
@@ -167,7 +166,11 @@ public class SpeechControllerTests : IClassFixture<TestWebApplicationFactory<Pro
         resp.EnsureSuccessStatusCode();
 
         var json = await resp.Content.ReadAsStringAsync();
-        var token = JObject.Parse(json)["accessToken"]?.ToString();
+
+        var token = JsonDocument.Parse(json)
+            .RootElement
+            .GetProperty("accessToken")
+            .GetString();
 
         Assert.False(string.IsNullOrWhiteSpace(token), "Guest token missing");
 

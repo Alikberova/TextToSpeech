@@ -16,28 +16,28 @@ export const I18N_HOME_PROVIDER_LABEL = 'home.provider.label';
 export const I18N_HOME_VOICE_LABEL = 'home.voice.label';
 export const I18N_HOME_PROVIDER_PLACEHOLDER = 'home.provider.placeholder';
 
-export const VOICE_1: Voice = {
+const VOICE_1: Voice = {
   name: 'Harry',
   providerVoiceId: 'harry',
   language: null,
   qualityTier: 'Standard'
 };
 
-export const VOICE_2: Voice = {
+const VOICE_2: Voice = {
   name: 'Ben',
   providerVoiceId: 'ben',
   language: null,
   qualityTier: 'Standard'
 };
 
-export const VOICE_WITH_LANG_1: Voice = {
+const VOICE_WITH_LANG_1: Voice = {
   name: 'Melissa',
   providerVoiceId: 'melissa',
   language: { name: 'English', languageCode: LANGUAGE_CODE_EN_US },
   qualityTier: 'Standard'
 };
 
-export const VOICE_WITH_LANG_2: Voice = {
+const VOICE_WITH_LANG_2: Voice = {
   name: 'Eleni',
   providerVoiceId: 'eleni',
   language: { name: 'Greek', languageCode: LANGUAGE_CODE_EL_GR },

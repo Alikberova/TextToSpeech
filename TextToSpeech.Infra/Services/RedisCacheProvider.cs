@@ -8,10 +8,11 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
 {
     private static readonly TimeSpan DefaultExpiry = TimeSpan.FromDays(7);
 
+    private readonly IDatabase _db = redisConnection.GetDatabase();
+
     public async Task<byte[]?> GetBytes(string key)
     {
-        var db = redisConnection.GetDatabase();
-        var value = await db.StringGetAsync(key);
+        var value = await _db.StringGetAsync(key);
 
         if (value.IsNullOrEmpty)
         {
@@ -23,8 +24,7 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
 
     public async Task<T?> GetCachedData<T>(string key)
     {
-        var db = redisConnection.GetDatabase();
-        var cachedData = await db.StringGetAsync(key);
+        var cachedData = await _db.StringGetAsync(key);
 
         if (!cachedData.IsNullOrEmpty)
         {
@@ -36,15 +36,13 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
 
     public Task SetBytes(string key, byte[] data, TimeSpan? expiry = null)
     {
-        var db = redisConnection.GetDatabase();
-        return db.StringSetAsync(key, data, expiry ?? DefaultExpiry);
+        return _db.StringSetAsync(key, data, expiry ?? DefaultExpiry);
     }
 
     public Task SetCachedData<T>(string key, T data, TimeSpan? expiry = null)
     {
-        var db = redisConnection.GetDatabase();
         var serializedData = JsonSerializer.Serialize(data);
 
-        return db.StringSetAsync(key, serializedData, expiry ?? DefaultExpiry);
+        return _db.StringSetAsync(key, serializedData, expiry ?? DefaultExpiry);
     }
 }
