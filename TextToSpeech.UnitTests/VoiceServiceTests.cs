@@ -60,8 +60,7 @@ public sealed class VoiceServiceTests
         Assert.Same(providerVoices, result);
         factory.Verify(f => f.Get(provider), Times.Once);
         ttsService.Verify(s => s.GetVoices(), Times.Once);
-        cache.Verify(c => c.SetCachedData(cacheKey, providerVoices,
-            It.Is<TimeSpan>(ts => Math.Abs(ts.TotalDays - 7) < 0.001)),
+        cache.Verify(c => c.SetCachedData(cacheKey, providerVoices),
             Times.Once);
     }
 }
