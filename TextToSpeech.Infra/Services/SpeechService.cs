@@ -43,7 +43,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         var hash = AudioFileBuilder.GenerateHash(fileText, request, AudioType.Full);
 
-        var audioFileId = await _redisCacheProvider.GetCachedData<Guid?>(hash)
+        var audioFileId = await _redisCacheProvider.Get<Guid?>(hash)
             ?? (await _audioFileRepository.GetAudioFileByHashAsync(hash))?.Id;
 
         if (audioFileId is not null)
@@ -131,7 +131,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = finalStatus;
             audioFile.SetDataOnce(bytes);
 
-            await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id);
+            await _redisCacheProvider.Set(audioFile.Hash, audioFile.Id);
             await _audioFileRepository.AddAudioFileAsync(audioFile);
         }
         catch (OperationCanceledException)

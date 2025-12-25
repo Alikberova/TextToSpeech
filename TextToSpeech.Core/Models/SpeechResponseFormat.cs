@@ -1,10 +1,8 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using TextToSpeech.Core.Converters;
 
 namespace TextToSpeech.Core.Models;
 
-[TypeConverter(typeof(SpeechResponseTypeConverter))]
 [JsonConverter(typeof(SpeechResponseJsonConverter))]
 public struct SpeechResponseFormat
 {

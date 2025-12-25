@@ -123,10 +123,10 @@ public class TestBase : IAsyncLifetime
 
         var cacheProvider = new RedisCacheProvider(mux);
 
-        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.OpenAI.Key),
+        await cacheProvider.Set(CacheKeys.Voices(Shared.OpenAI.Key),
             OpenAiVoices.All, TimeSpan.FromDays(1));
 
-        await cacheProvider.SetCachedData(CacheKeys.Voices(Shared.Narakeet.Key),
+        await cacheProvider.Set(CacheKeys.Voices(Shared.Narakeet.Key),
             NarakeetVoices.All, TimeSpan.FromDays(1));
     }
 }

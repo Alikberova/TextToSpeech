@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using TextToSpeech.Core.Models;
 
@@ -25,23 +23,5 @@ public sealed class SpeechResponseJsonConverter : JsonConverter<SpeechResponseFo
         JsonSerializerOptions options)
     {
         writer.WriteStringValue(value.ToString());
-    }
-}
-
-public sealed class SpeechResponseTypeConverter : TypeConverter
-{
-    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
-    {
-        return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-    }
-
-    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
-    {
-        if (value is string str && SpeechResponseFormat.TryParse(str, out var valueResult))
-        {
-            return valueResult;
-        }
-
-        throw new NotSupportedException(SpeechResponseFormat.UnsupportedFormatError(value.ToString()));
     }
 }

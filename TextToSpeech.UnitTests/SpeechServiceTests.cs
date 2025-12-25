@@ -82,7 +82,7 @@ public sealed class SpeechServiceTests
 
         var redis = new Mock<IRedisCacheProvider>();
         redis
-            .Setup(r => r.GetCachedData<Guid?>(It.IsAny<string>()))
+            .Setup(r => r.Get<Guid?>(It.IsAny<string>()))
             .ReturnsAsync(AudioFileId);
 
         var textProcessingService = new Mock<ITextProcessingService>();
