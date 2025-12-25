@@ -3,7 +3,7 @@ using TextToSpeech.Core.Interfaces.Ai;
 
 namespace TextToSpeech.IntegrationTests.Mocks;
 
-public static class ITtsServiceFactoryMock
+public static class ITtsServiceFactoryMock // todo rm
 {
     public static Mock<ITtsServiceFactory> Get()
     {

@@ -212,7 +212,7 @@
       (click)="playOrToggleSample()"
       data-testid="samplePlayButton">
       <mat-icon>
-        {{ sampleStatus() === 'playing' ? 'pause_circle' : 'play_circle' }}
+        {{ sampleIconName }}
       </mat-icon>
     </button>
     <mat-hint>{{ 'home.sample.help' | translate }}</mat-hint>

@@ -31,7 +31,7 @@ public static class AudioFileBuilder
                 $"{Shared.TtsApis.FirstOrDefault(kv => kv.Value == ttsApiId).Key}_" +
                 $"{options.Speed}_" +
                 $"{options.Model}",
-            Hash = GenerateHash(input, options),
+            Hash = GenerateHash(input, options, type),
             Voice = options.Voice.ProviderVoiceId,
             LanguageCode = langCode,
             Speed = options.Speed,
@@ -45,7 +45,7 @@ public static class AudioFileBuilder
         return audio;
     }
 
-    public static string GenerateHash(string input, TtsRequestOptions options)
+    public static string GenerateHash(string input, TtsRequestOptions options, AudioType type)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -61,7 +61,8 @@ public static class AudioFileBuilder
             $":{options.Voice.Language?.LanguageCode}" +
             $":{options.Speed}" +
             $":{options.Model}" +
-            $":{options.ResponseFormat}";
+            $":{options.ResponseFormat}" +
+            $"{type}";
 
         var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(details));
 

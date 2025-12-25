@@ -1,5 +1,4 @@
 import { Component, Signal, ViewChild, ElementRef, OnDestroy, OnInit, computed, signal, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
@@ -9,17 +8,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NARAKEET_KEY, OPEN_AI_KEY, ELEVEN_LABS_KEY, PROVIDER_MODELS, ProviderKey, PROVIDERS, ACCEPTABLE_FILE_TYPES, PROVIDER_RESPONSE_FORMATS, RESPONSE_FORMATS } from '../../constants/tts-constants';
 import { TtsService } from '../../core/http/tts/tts.service';
 import { SignalRService } from '../../core/realtime/signalr.service';
 import { VoiceService } from '../../core/http/voice/voice.service';
 import type { Voice } from '../../dto/voice';
-import { SampleAudioPlayer } from './home.sample-audio';
 import { buildDownloadFilename, getLanguagesFromVoices, getVoicesForProvider, mapStatusToIcon } from './home.helpers';
-import { AUDIO_STATUS, FieldKey, LangSelectOption, SAMPLE_STATUS, type AudioStatus, type SampleStatus, type SelectOption } from './home.types';
+import { AUDIO_STATUS, FieldKey, LangSelectOption, SamplePlaybackIcon, SampleValidationResult, type AudioStatus, type SelectOption } from './home.types';
 import { UpperCasePipe } from '@angular/common';
+import { TtsRequest } from '../../dto/tts-request';
+import { SamplePlaybackController } from './home.sample-playback.controller';
+import { UiNotifyService } from '../../core/ui/ui-notify.service';
 
 @Component({
   selector: 'app-home-page',
@@ -33,7 +33,6 @@ import { UpperCasePipe } from '@angular/common';
     MatIconModule,
     MatSliderModule,
     MatProgressBarModule,
-    MatSnackBarModule,
     MatChipsModule,
     TranslateModule,
     UpperCasePipe,
@@ -45,9 +44,9 @@ export class HomePage implements OnInit, OnDestroy {
   // 1) Injected services (readonly)
   private readonly translate = inject(TranslateService);
   private readonly tts = inject(TtsService);
-  private readonly snack = inject(MatSnackBar);
   private readonly signalR = inject(SignalRService);
   private readonly voiceService = inject(VoiceService);
+  private readonly uiNotify = inject(UiNotifyService);
 
   // 2) View references
   @ViewChild('providerEl') private readonly providerEl?: MatSelect;
@@ -74,15 +73,11 @@ export class HomePage implements OnInit, OnDestroy {
   private readonly isSampleUserEdited = signal<boolean>(false);
   // Stores the last auto-applied sample text so we can detect divergence.
   private readonly lastAutoSampleText = signal<string>('');
-  private readonly samplePlayer = new SampleAudioPlayer(
-    () => this.stopSample(),
-    () => {
-      this.sampleError.set('playback');
-      this.stopSample();
-    }
+  private readonly sampleController = new SamplePlaybackController(
+    this.tts,
+    this.uiNotify
   );
 
-  private sampleRequestSub?: Subscription;
   // Generation state
   private readonly currentFileId = signal<string | null>(null);
 
@@ -97,13 +92,15 @@ export class HomePage implements OnInit, OnDestroy {
   statusMessage = signal<string>('');
   submitAttempt = signal(false);
   // Marks a failed attempt to play a sample, to highlight missing fields
-  sampleAttempt = signal(false);
+  sampleAttempt = this.sampleController.sampleAttempt;
   fileTouched = signal(false);
   // Sample playback state
   sampleText = signal<string>('');
   // Playback status for the sample audio
-  sampleStatus = signal<SampleStatus>(SAMPLE_STATUS.Stopped);
-  sampleError = signal<string | null>(null);
+  sampleStatus = this.sampleController.sampleStatus;
+  get sampleIconName(): SamplePlaybackIcon {
+    return this.sampleController.getIconName();
+  }
   status = signal<AudioStatus>(AUDIO_STATUS.Idle);
   progress = signal<number>(0);
   errorMessage = signal<string | undefined>(undefined);
@@ -193,7 +190,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.errorMessage.set(errorMessage);
       console.log(`Progress update for ${fileId}: status=${status}, progress=${progress}, error=${errorMessage}`);
       if (status === AUDIO_STATUS.Failed) {
-        this.openErrorSnackbar('home.progress.failed');
+        this.uiNotify.error('home.progress.failed');
       }
     });
   }
@@ -272,28 +269,17 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   playOrToggleSample(): void {
-    // Toggle between play/pause/resume based on current state
-    const state = this.sampleStatus();
-    if (state === SAMPLE_STATUS.Playing) {
-      this.pauseSample();
-      return;
-    }
-    if (state === SAMPLE_STATUS.Paused) {
-      this.resumeSample();
-      return;
-    }
-    this.sampleError.set(null);
-    this.cancelSampleRequest();
-    const missingField = this.findFirstMissingField({ includeModel: false, includeFile: false });
-    if (missingField) {
-      // Flag sample attempt for field highlighting (but do not mark upload/file errors)
-      this.sampleAttempt.set(true);
-      // Focus first missing field for better UX
-      this.focusSampleMissing(missingField);
-      this.openErrorSnackbar('home.errors.required');
-      return;
-    }
-    const req = {
+    const validateFields = (): SampleValidationResult => {
+      const missingField = this.findFirstMissingField({ includeModel: false, includeFile: false });
+      if (missingField) {
+        // Focus first missing field for better UX
+        this.focusSampleMissing(missingField);
+        return { ok: false };
+      }
+      return { ok: true };
+    };
+
+    const buildRequest = (): TtsRequest => ({
       ttsApi: this.provider()!,
       languageCode: this.getLanguageCodeForRequest(),
       input: this.sampleText(),
@@ -303,46 +289,20 @@ export class HomePage implements OnInit, OnDestroy {
         voice: this.resolveVoicePayload(),
         responseFormat: this.availableResponseFormats()[0],
       },
-    } as const;
-    this.sampleRequestSub = this.tts.getSpeechSample(req).subscribe({
-      next: (blob: Blob) => {
-        this.sampleAttempt.set(false);
-        this.samplePlayer.setBlob(blob);
-        this.samplePlayer.play()
-          .then(() => this.sampleStatus.set(SAMPLE_STATUS.Playing))
-          .catch((e) => {
-            console.error(e);
-            this.sampleError.set('permission');
-            this.sampleStatus.set(SAMPLE_STATUS.Stopped);
-          });
-      },
-      error: (e) => {
-        console.error('Sample request failed', e);
-        this.sampleError.set('request');
-        this.openErrorSnackbar('home.voice.sampleError');
-      },
-      complete: () => { this.sampleRequestSub = undefined; },
-    });
+    } as const);
+    this.sampleController.toggle(validateFields, buildRequest);
   }
 
   pauseSample(): void {
-    this.samplePlayer.pause();
-    this.sampleStatus.set(SAMPLE_STATUS.Paused);
+    this.sampleController.pause();
   }
 
   resumeSample(): void {
-    this.samplePlayer.resume()
-      .then(() => this.sampleStatus.set(SAMPLE_STATUS.Playing))
-      .catch((e) => {
-        console.error(e);
-        this.sampleStatus.set(SAMPLE_STATUS.Stopped);
-      });
+    this.sampleController.resume();
   }
 
   stopSample(): void {
-    this.cancelSampleRequest();
-    this.samplePlayer.stop();
-    this.sampleStatus.set(SAMPLE_STATUS.Stopped);
+    this.sampleController.stop();
   }
 
   submit(): void {
@@ -351,7 +311,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.focusFirstInvalid();
       return;
     }
-    const req = {
+    const req: TtsRequest = {
       ttsApi: this.provider()!,
       languageCode: this.getLanguageCodeForRequest(),
       file: this.file()!,
@@ -372,7 +332,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.status.set(AUDIO_STATUS.Failed);
         this.progress.set(0);
         console.error(e);
-        this.openErrorSnackbar('home.errors.failed');
+        this.uiNotify.error('home.errors.failed');
       },
     });
   }
@@ -380,7 +340,7 @@ export class HomePage implements OnInit, OnDestroy {
   clear(formEl?: HTMLFormElement): void {
     // Stop any ongoing sample playback and clear errors
     this.stopSample();
-    this.sampleError.set(null);
+    this.sampleController.setError(null);
 
     this.provider.set('');
     this.model.set('');
@@ -421,7 +381,7 @@ export class HomePage implements OnInit, OnDestroy {
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 0);
       },
-      error: () => this.openErrorSnackbar('home.progress.failed'),
+      error: () => this.uiNotify.error('home.progress.failed'),
     });
   }
 
@@ -449,11 +409,6 @@ export class HomePage implements OnInit, OnDestroy {
       const missingField = this.findFirstMissingField({ includeModel: true, includeFile: true });
       this.focusField(missingField);
     });
-  }
-
-  private openErrorSnackbar(messageKey: string): void {
-    const message = this.translate.instant(messageKey);
-    this.snack.open(message, undefined, { duration: 4000 });
   }
 
   private resolveDefaultSampleText(): string {
@@ -545,17 +500,6 @@ export class HomePage implements OnInit, OnDestroy {
       const missingField = field ?? this.findFirstMissingField({ includeModel: false, includeFile: false });
       this.focusField(missingField);
     });
-  }
-
-  private cancelSampleRequest(): void {
-    if (this.sampleRequestSub) {
-      try {
-        this.sampleRequestSub.unsubscribe();
-      } catch {
-        // no-op
-      }
-      this.sampleRequestSub = undefined;
-    }
   }
 
   private loadVoices(providerKey: string, errorMessage: string): void {

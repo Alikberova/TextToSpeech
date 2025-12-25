@@ -5,6 +5,7 @@ using StackExchange.Redis;
 using Testcontainers.Redis;
 using TextToSpeech.Core;
 using TextToSpeech.Infra;
+using TextToSpeech.Infra.Config;
 using TextToSpeech.Infra.Constants;
 using TextToSpeech.Infra.Services;
 using Xunit.Abstractions;
@@ -14,12 +15,10 @@ namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IAsyncLifetime
 {
-    private const string CacheConnectionEnv = "ConnectionStrings__Redis";
-
     private readonly string _testId = Guid.NewGuid().ToString("N");
     private readonly RedisContainer? _cacheContainer;
     private readonly bool _hasExternalCacheContainer =
-        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(CacheConnectionEnv));
+        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv));
 
     protected string TestDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"TtsTest_{_testId}");
@@ -47,7 +46,7 @@ public class TestBase : IAsyncLifetime
         {
             await _cacheContainer!.StartAsync();
 
-            Environment.SetEnvironmentVariable(CacheConnectionEnv, _cacheContainer.GetConnectionString());
+            Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());
         }
 
         await SeedCache();
@@ -120,7 +119,7 @@ public class TestBase : IAsyncLifetime
 
     private static async Task SeedCache()
     {
-        var mux = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable(CacheConnectionEnv)!);
+        var mux = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv)!);
 
         var cacheProvider = new RedisCacheProvider(mux);
 

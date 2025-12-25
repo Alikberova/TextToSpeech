@@ -41,7 +41,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     {
         var fileText = await ExtractText(fileBytes, fileName);
 
-        var hash = AudioFileBuilder.GenerateHash(fileText, request);
+        var hash = AudioFileBuilder.GenerateHash(fileText, request, AudioType.Full);
 
         var audioFileId = await _redisCacheProvider.GetCachedData<Guid?>(hash)
             ?? (await _audioFileRepository.GetAudioFileByHashAsync(hash))?.Id;
@@ -153,22 +153,20 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
     public async Task<MemoryStream> CreateSpeechSample(TtsRequestOptions request, string input, string ttsApi,
         string ownerId)
     {
-        var hash = AudioFileBuilder.GenerateHash(input, request);
+        var hash = AudioFileBuilder.GenerateHash(input, request, AudioType.Sample);
 
-        var audioFile = await _redisCacheProvider.GetCachedData<AudioFile>(hash);
+        var bytes = await _redisCacheProvider.GetBytes(hash);
 
-        if (audioFile is null)
+        if (bytes is not null)
         {
-            audioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
-
-            if (audioFile is not null)
-            {
-                await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
-            }
+            return new MemoryStream(bytes);
         }
+
+        var audioFile = await _audioFileRepository.GetAudioFileByHashAsync(hash);
 
         if (audioFile is not null)
         {
+            await _redisCacheProvider.SetBytes(hash, audioFile.Data, TimeSpan.FromDays(7));
             return new MemoryStream(audioFile.Data);
         }
 
@@ -184,7 +182,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         audioFile.Status = Status.Completed;
 
-        await _redisCacheProvider.SetCachedData(hash, audioFile, TimeSpan.FromDays(365));
+        await _redisCacheProvider.SetBytes(hash, audioFile.Data, TimeSpan.FromDays(365));
         await _audioFileRepository.AddAudioFileAsync(audioFile);
 
         return new MemoryStream(audioFile.Data);

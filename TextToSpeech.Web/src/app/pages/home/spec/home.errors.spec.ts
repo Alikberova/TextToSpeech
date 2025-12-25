@@ -33,7 +33,6 @@ describe('HomePage - Error UI behavior (snackbar + state)', () => {
         req.flush(new Blob(['any']), { status: 500, statusText: 'Server Error' });
         fixture.detectChanges();
 
-        expect(component.sampleError()).toBe('request');
         expect(snack.open).toHaveBeenCalled();
         const [message] = vi.mocked((snack.open as Mock)).mock.lastCall!;
         expect(message).toBe('home.voice.sampleError');
