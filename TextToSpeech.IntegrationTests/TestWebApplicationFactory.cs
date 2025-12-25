@@ -1,26 +1,25 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Moq;
 using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using TextToSpeech.Infra.Config;
-using TextToSpeech.Infra.Interfaces;
 
 namespace TextToSpeech.IntegrationTests;
 
 public class TestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
 {
-    private const string DbConnectionEnv = "ConnectionStrings__DefaultConnection";
-
+    private readonly RedisContainer _cacheContainer;
     private readonly PostgreSqlContainer _dbContainer;
 
     public HttpClient HttpClient { get; private set; } = null!;
 
     public TestWebApplicationFactory()
     {
+        _cacheContainer = new RedisBuilder()
+            .WithCleanUp(true)
+            .Build();
+
         _dbContainer = new PostgreSqlBuilder()
             .WithCleanUp(true)
             .Build();
@@ -28,6 +27,7 @@ public class TestWebApplicationFactory<TProgram>
 
     public async Task InitializeAsync()
     {
+        await _cacheContainer.StartAsync();
         await _dbContainer.StartAsync();
 
         HttpClient = CreateClient();
@@ -35,6 +35,7 @@ public class TestWebApplicationFactory<TProgram>
 
     public new async Task DisposeAsync()
     {
+        await _cacheContainer.DisposeAsync();
         await _dbContainer.DisposeAsync();
 
         HttpClient.Dispose();
@@ -42,17 +43,8 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
-        {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
-        }
-
         Environment.SetEnvironmentVariable(ConfigConstants.IsTestMode, "true");
-        Environment.SetEnvironmentVariable(DbConnectionEnv, _dbContainer.GetConnectionString());
-
-        builder.ConfigureTestServices(services =>
-        {
-            services.AddScoped(_ => Mock.Of<IRedisCacheProvider>());
-        });
+        Environment.SetEnvironmentVariable(ConfigConstants.DbConnectionEnv, _dbContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());
     }
 }

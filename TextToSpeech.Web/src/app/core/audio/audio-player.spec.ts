@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
-import { SampleAudioPlayer } from '../home.sample-audio';
+import { AudioPlayer } from './audio-player';
 
-describe('SampleAudioPlayer', () => {
+describe('AudioPlayer', () => {
     const noop = () => undefined;
     let originalAudio: unknown;
     interface AudioStub {
@@ -51,7 +51,7 @@ describe('SampleAudioPlayer', () => {
     });
 
     it('creates audio and plays it', async () => {
-        const player = new SampleAudioPlayer(noop, noop);
+        const player = new AudioPlayer(noop, noop);
         const blob = new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/mpeg' });
         player.setBlob(blob);
         expect(URL.createObjectURL).toHaveBeenCalled();
@@ -61,7 +61,7 @@ describe('SampleAudioPlayer', () => {
     });
 
     it('pause/resume delegates to underlying audio', async () => {
-        const player = new SampleAudioPlayer(noop, noop);
+        const player = new AudioPlayer(noop, noop);
         player.setBlob(new Blob([new Uint8Array([1])]));
 
         player.pause();
@@ -72,7 +72,7 @@ describe('SampleAudioPlayer', () => {
     });
 
     it('stop pauses, clears source, loads, and revokes URL', () => {
-        const player = new SampleAudioPlayer(noop, noop);
+        const player = new AudioPlayer(noop, noop);
         player.setBlob(new Blob([new Uint8Array([1])]));
         player.stop();
 
@@ -86,7 +86,7 @@ describe('SampleAudioPlayer', () => {
     });
 
     it('replaces existing URL on setBlob and revokes previous', () => {
-        const player = new SampleAudioPlayer(noop, noop);
+        const player = new AudioPlayer(noop, noop);
         player.setBlob(new Blob([new Uint8Array([1])]));
         expect(createdUrls.length).toBe(1);
         expect(revokeCalls).toBe(0);

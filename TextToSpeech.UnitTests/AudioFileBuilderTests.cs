@@ -38,7 +38,7 @@ public class AudioFileBuilderTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var hash = AudioFileBuilder.GenerateHash(InputText, TtsRequest);
+        var hash = AudioFileBuilder.GenerateHash(InputText, TtsRequest, Type);
 
         // Act
         var audioFile = AudioFileBuilder.Create(Bytes, Type, InputText, TtsRequest, OwnerId,
@@ -90,6 +90,16 @@ public class AudioFileBuilderTests
 
         Assert.False(audioFile1 == audioFile3);
         Assert.NotEqual(audioFile1, audioFile3);
+    }
+
+    [Fact]
+    public void Create_WhenTypeDiffers_AffectsEquality()
+    {
+        var audioFile1 = AudioFileBuilder.Create(Bytes, AudioType.Sample, InputText, TtsRequest, OwnerId);
+        var audioFile2 = AudioFileBuilder.Create(Bytes, AudioType.Full, InputText, TtsRequest, OwnerId);
+
+        Assert.False(audioFile1 == audioFile2);
+        Assert.NotEqual(audioFile1, audioFile2);
     }
 
     [Fact]

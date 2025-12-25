@@ -13,4 +13,10 @@ public static class ConfigConstants
     public const string OpenAiApiKey = "OPENAI_API_KEY";
     public const string ElevenLabsApiKey = "ELEVENLABS_API_KEY";
     public const string IsTestMode = "IsTestMode";
+
+    public const string CacheConnectionEnv = "ConnectionStrings__Redis";
+    public static string DbConnectionEnv => $"ConnectionStrings__{DbConnection}";
+    public static string DbConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
+        ? "DbTestConnection"
+        : "DefaultConnection";
 }

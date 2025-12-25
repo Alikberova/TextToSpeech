@@ -20,6 +20,14 @@ export const SAMPLE_STATUS = {
 
 export type SampleStatus = typeof SAMPLE_STATUS[keyof typeof SAMPLE_STATUS];
 
+// Material icon names
+export const SAMPLE_PLAYBACK_ICON = {
+  Pause: 'pause_circle',
+  Play: 'play_circle',
+} as const;
+
+export type SamplePlaybackIcon = typeof SAMPLE_PLAYBACK_ICON[keyof typeof SAMPLE_PLAYBACK_ICON];
+
 export interface SelectOption {
   key: string;
   label: string;
@@ -30,3 +38,7 @@ export interface LangSelectOption extends SelectOption {
 }
 
 export type FieldKey = 'provider' | 'model' | 'language' | 'voice' | 'file';
+
+export type SampleValidationResult =
+  | { ok: true }
+  | { ok: false };
