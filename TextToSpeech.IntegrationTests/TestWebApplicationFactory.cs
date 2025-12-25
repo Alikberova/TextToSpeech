@@ -44,6 +44,7 @@ public class TestWebApplicationFactory<TProgram>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        // local, no docker
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == null)
         {
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Environments.Development);
