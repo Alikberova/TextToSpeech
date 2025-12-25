@@ -1,7 +1,7 @@
-// A lightweight audio player wrapper for sample playback logic.
+// A lightweight audio player wrapper for playback logic.
 // Manages object URL lifetime and provides simple controls.
 
-export class SampleAudioPlayer {
+export class AudioPlayer {
   private audio?: HTMLAudioElement;
   private url?: string;
 
@@ -25,8 +25,8 @@ export class SampleAudioPlayer {
   pause(): void {
     try {
       this.audio?.pause();
-    } catch {
-      // no-op
+    } catch (error) {
+      console.error('Failed to pause audio playback', error);
     }
   }
 
@@ -37,8 +37,8 @@ export class SampleAudioPlayer {
   stop(): void {
     try {
       this.audio?.pause();
-    } catch {
-      // no-op
+    } catch (error) {
+      console.error('Failed to stop audio playback', error);
     }
     if (this.audio) {
       this.audio.src = '';

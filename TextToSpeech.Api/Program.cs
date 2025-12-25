@@ -81,7 +81,7 @@ builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(Section
 builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(SectionNames.JwtConfig));
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString(DbConnection);
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
 
 builder.Services.AddHealthChecks();
@@ -111,6 +111,9 @@ app.MapHub<AudioHub>(Shared.AudioHubEndpoint);
 using var scope = app.Services.CreateScope();
 
 await scope.ServiceProvider.GetRequiredService<IDbInitializer>().Initialize();
+
+scope.ServiceProvider.GetRequiredService<ILogger<Program>>()
+    .LogInformation("Is test mode: {IsTestMode}", HostingEnvironment.IsTestMode());
 
 await app.RunAsync();
 

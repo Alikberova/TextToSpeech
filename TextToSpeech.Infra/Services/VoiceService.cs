@@ -34,7 +34,7 @@ public sealed class VoiceService : IVoiceService
 
         if (voices is not null)
         {
-            await _redisCacheProvider.SetCachedData(cacheKey, voices, TimeSpan.FromDays(7));
+            await _redisCacheProvider.SetCachedData(cacheKey, voices);
         }
 
         return voices;
