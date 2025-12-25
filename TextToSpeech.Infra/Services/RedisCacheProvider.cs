@@ -6,6 +6,8 @@ namespace TextToSpeech.Infra.Services;
 
 public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) : IRedisCacheProvider
 {
+    private static readonly TimeSpan DefaultExpiry = TimeSpan.FromDays(7);
+
     public async Task<byte[]?> GetBytes(string key)
     {
         var db = redisConnection.GetDatabase();
@@ -32,17 +34,17 @@ public sealed class RedisCacheProvider(IConnectionMultiplexer redisConnection) :
         return default;
     }
 
-    public Task SetBytes(string key, byte[] data, TimeSpan expiry)
+    public Task SetBytes(string key, byte[] data, TimeSpan? expiry = null)
     {
         var db = redisConnection.GetDatabase();
-        return db.StringSetAsync(key, data, expiry);
+        return db.StringSetAsync(key, data, expiry ?? DefaultExpiry);
     }
 
-    public Task SetCachedData<T>(string key, T data, TimeSpan expiry)
+    public Task SetCachedData<T>(string key, T data, TimeSpan? expiry = null)
     {
         var db = redisConnection.GetDatabase();
         var serializedData = JsonSerializer.Serialize(data);
 
-        return db.StringSetAsync(key, serializedData, expiry);
+        return db.StringSetAsync(key, serializedData, expiry ?? DefaultExpiry);
     }
 }

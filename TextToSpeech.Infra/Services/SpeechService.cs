@@ -131,7 +131,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
             audioFile.Status = finalStatus;
             audioFile.SetDataOnce(bytes);
 
-            await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id, TimeSpan.FromDays(365));
+            await _redisCacheProvider.SetCachedData(audioFile.Hash, audioFile.Id);
             await _audioFileRepository.AddAudioFileAsync(audioFile);
         }
         catch (OperationCanceledException)
@@ -166,7 +166,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         if (audioFile is not null)
         {
-            await _redisCacheProvider.SetBytes(hash, audioFile.Data, TimeSpan.FromDays(7));
+            await _redisCacheProvider.SetBytes(hash, audioFile.Data);
             return new MemoryStream(audioFile.Data);
         }
 
@@ -182,7 +182,7 @@ public sealed class SpeechService(ITextProcessingService _textFileService,
 
         audioFile.Status = Status.Completed;
 
-        await _redisCacheProvider.SetBytes(hash, audioFile.Data, TimeSpan.FromDays(365));
+        await _redisCacheProvider.SetBytes(hash, audioFile.Data);
         await _audioFileRepository.AddAudioFileAsync(audioFile);
 
         return new MemoryStream(audioFile.Data);
