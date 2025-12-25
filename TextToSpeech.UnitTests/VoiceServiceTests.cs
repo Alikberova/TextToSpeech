@@ -19,7 +19,7 @@ public sealed class VoiceServiceTests
         var cacheKey = CacheKeys.Voices(provider);
 
         var cache = new Mock<IRedisCacheProvider>();
-        cache.Setup(c => c.GetCachedData<List<Voice>>(cacheKey)).ReturnsAsync(cached);
+        cache.Setup(c => c.Get<List<Voice>>(cacheKey)).ReturnsAsync(cached);
 
         var factory = new Mock<ITtsServiceFactory>(MockBehavior.Strict);
 
@@ -31,7 +31,7 @@ public sealed class VoiceServiceTests
         // Assert
         Assert.Same(cached, result);
         factory.Verify(f => f.Get(It.IsAny<string>()), Times.Never);
-        cache.Verify(c => c.SetCachedData(It.IsAny<string>(), It.IsAny<List<Voice>>(), It.IsAny<TimeSpan>()), Times.Never);
+        cache.Verify(c => c.Set(It.IsAny<string>(), It.IsAny<List<Voice>>(), It.IsAny<TimeSpan>()), Times.Never);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public sealed class VoiceServiceTests
         var cacheKey = CacheKeys.Voices(provider);
 
         var cache = new Mock<IRedisCacheProvider>();
-        cache.Setup(c => c.GetCachedData<List<Voice>>(cacheKey)).ReturnsAsync((List<Voice>?)null);
+        cache.Setup(c => c.Get<List<Voice>>(cacheKey)).ReturnsAsync((List<Voice>?)null);
 
         var ttsService = new Mock<ITtsService>();
         ttsService.Setup(s => s.GetVoices()).ReturnsAsync(providerVoices);
@@ -60,7 +60,7 @@ public sealed class VoiceServiceTests
         Assert.Same(providerVoices, result);
         factory.Verify(f => f.Get(provider), Times.Once);
         ttsService.Verify(s => s.GetVoices(), Times.Once);
-        cache.Verify(c => c.SetCachedData(cacheKey, providerVoices),
+        cache.Verify(c => c.Set(cacheKey, providerVoices),
             Times.Once);
     }
 }

@@ -19,7 +19,7 @@ public sealed class SpeechController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateSpeech([FromForm] SpeechRequest request)
+    public async Task<IActionResult> CreateSpeech([FromForm] TtsRequest request)
     {
         if (request.File is null)
         {
@@ -41,7 +41,7 @@ public sealed class SpeechController : ControllerBase
     }
 
     [HttpPost("sample")]
-    public async Task<IActionResult> GetSpeechSample([FromBody] SpeechRequest request)
+    public async Task<IActionResult> GetSpeechSample([FromBody] TtsRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Input))
         {

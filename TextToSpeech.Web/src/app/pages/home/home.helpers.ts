@@ -1,14 +1,6 @@
 import type { Voice } from '../../dto/voice';
 import { AUDIO_STATUS, LangSelectOption, type AudioStatus, type SelectOption } from './home.types';
 
-// Capitalize only the first letter, leave the rest intact
-export function capitalizeFirstLetter(text: string): string {
-  if (!text) {
-    return text;
-  }
-  return text[0].toUpperCase() + text.slice(1);
-}
-
 // Build language select options from voices that include language metadata
 export function getLanguagesFromVoices(voices: readonly Voice[]): LangSelectOption[] {
   const map = new Map<string, string>();
@@ -59,4 +51,11 @@ export function buildDownloadFilename(originalName: string, extension: string): 
   const dotIndex = originalName.lastIndexOf('.');
   const baseName = dotIndex > -1 ? originalName.substring(0, dotIndex) : originalName;
   return `${baseName}.${extension}`;
+}
+
+function capitalizeFirstLetter(text: string): string {
+  if (!text) {
+    return text;
+  }
+  return text[0].toUpperCase() + text.slice(1);
 }

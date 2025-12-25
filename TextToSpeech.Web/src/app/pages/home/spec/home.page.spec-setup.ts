@@ -27,16 +27,6 @@ export const SELECTOR_SAMPLE_PLAY_BUTTON = 'button[data-testid="samplePlayButton
 export const ATTR_ARIA_DISABLED = 'aria-disabled';
 export const ATTR_ARIA_INVALID = 'aria-invalid';
 
-export function getBaseProviders(): unknown[] {
-  return [
-    provideZonelessChangeDetection(),
-    provideHttpClient(),
-    provideHttpClientTesting(),
-    { provide: API_URL, useValue: 'https://fake-localhost:1234/api' },
-    { provide: SERVER_URL, useValue: 'https://fake-localhost:1234' },
-  ];
-}
-
 export async function createHomeFixture(extraProviders: unknown[] = []) {
   await TestBed.resetTestingModule().configureTestingModule({
     imports: [
@@ -102,23 +92,6 @@ export function getOverlayOptionTexts(overlayContainer: OverlayContainer): strin
     .filter(Boolean);
 }
 
-export function selectMatOptionByText(
-  fixture: ComponentFixture<HomePage>,
-  overlayContainer: OverlayContainer,
-  selector: string,
-  optionText: string
-): void {
-  openMatSelect(fixture, selector);
-  const container: HTMLElement = overlayContainer.getContainerElement();
-  const option = Array.from(container.querySelectorAll(SELECTOR_MAT_OPTION))
-    .find(el => (el.textContent || '').trim() === optionText);
-  if (!option) {
-    throw new Error(`Option "${optionText}" not found`);
-  }
-  (option as HTMLElement).click();
-  fixture.detectChanges();
-}
-
 export function expectOneEndsWith(http: HttpTestingController, suffix: string): TestRequest {
   return http.expectOne(request => request.url.endsWith(suffix));
 }
@@ -150,4 +123,14 @@ export function setProviderElevenLabs(
   component.onProviderChange(elevenLabsKey);
   flushVoice(http, voices);
   fixture.detectChanges();
+}
+
+function getBaseProviders(): unknown[] {
+  return [
+    provideZonelessChangeDetection(),
+    provideHttpClient(),
+    provideHttpClientTesting(),
+    { provide: API_URL, useValue: 'https://fake-localhost:1234/api' },
+    { provide: SERVER_URL, useValue: 'https://fake-localhost:1234' },
+  ];
 }
