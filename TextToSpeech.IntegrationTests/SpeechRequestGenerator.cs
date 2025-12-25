@@ -13,7 +13,7 @@ internal static class SpeechRequestGenerator
 {
     private static readonly Faker faker = new ();
 
-    public static SpeechRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
+    public static TtsRequest GenerateFakeSpeechRequest(string ttsApi, bool addFile = false)
     {
         var ttsOptions = new TtsRequestOptions
         {
@@ -23,7 +23,7 @@ internal static class SpeechRequestGenerator
             ResponseFormat = SpeechResponseFormat.Mp3
         };
 
-        var speechRequest = new SpeechRequest
+        var speechRequest = new TtsRequest
         {
             TtsApi = ttsApi,
             LanguageCode = "en",

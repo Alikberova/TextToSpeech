@@ -2,7 +2,7 @@
 
 namespace TextToSpeech.Api;
 
-public sealed record SpeechRequest
+public sealed record TtsRequest
 {
     public required string TtsApi { get; init; }
     public string? LanguageCode { get; init; }
