@@ -27,7 +27,7 @@ public sealed class AudioController : ControllerBase
             return BadRequest("Invalid file ID.");
         }
 
-        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(Guid.Parse(fileId));
+        var dbAudioFile = await _audioFileRepository.GetAudioFileAsync(parsedFileId);
 
         if (dbAudioFile is null)
         {
