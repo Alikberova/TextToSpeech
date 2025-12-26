@@ -12,14 +12,14 @@ public sealed class ParallelExecutionService : IParallelExecutionService
         _logger = logger;
     }
 
-    public async Task RunTasksFromItems<T>(IReadOnlyList<T> items, int parallelSlots, Func<T, int, Task> action,
+    public async Task RunTasksFromItems<T>(IReadOnlyList<T> items, int maxParallel, Func<T, int, Task> action,
         CancellationToken cancellationToken)
     {
-        using var gate = new SemaphoreSlim(parallelSlots);
+        using var gate = new SemaphoreSlim(maxParallel);
 
         _logger.LogInformation(
             "Initialized SemaphoreSlim with max parallel chunk limit {Limit}",
-            parallelSlots);
+            maxParallel);
 
         var tasks = items.Select((item, index) =>
         {
