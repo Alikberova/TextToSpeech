@@ -6,7 +6,8 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "IsTestMode": "true"
+        "IsTestMode": "true",
+        "API_BASE_URL": "http://localhost:7058"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:7058"

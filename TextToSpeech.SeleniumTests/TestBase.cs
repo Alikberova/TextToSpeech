@@ -1,24 +1,15 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using StackExchange.Redis;
-using Testcontainers.Redis;
 using TextToSpeech.Core;
 using TextToSpeech.Infra;
-using TextToSpeech.Infra.Config;
-using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Services;
 using Xunit.Abstractions;
-using static TextToSpeech.Infra.TestData;
 
 namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IAsyncLifetime
 {
     private readonly string _testId = Guid.NewGuid().ToString("N");
-    private readonly RedisContainer? _cacheContainer;
-    private readonly bool _hasExternalCacheContainer =
-        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv));
 
     protected string TestDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"TtsTest_{_testId}");
@@ -31,27 +22,13 @@ public class TestBase : IAsyncLifetime
     public TestBase(ITestOutputHelper? testOutputHelper = null)
     {
         TestOutputHelper = testOutputHelper;
-
-        if (!_hasExternalCacheContainer)
-        {
-            _cacheContainer = new RedisBuilder()
-                .WithCleanUp(true)
-                .Build();
-        }
     }
 
     public async Task InitializeAsync()
     {
-        if (!_hasExternalCacheContainer)
-        {
-            await _cacheContainer!.StartAsync();
-
-            Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());
-        }
-
-        await SeedCache();
-
         VerifyTestDirectory();
+
+        await SeedTestData();
 
         var options = new ChromeOptions();
 
@@ -80,11 +57,6 @@ public class TestBase : IAsyncLifetime
         Driver?.Quit();
         Driver?.Dispose();
         DeleteTestDirectory();
-
-        if (_cacheContainer is not null)
-        {
-            await _cacheContainer.DisposeAsync();
-        }
     }
 
     private static WebDriverWait GetWait(IWebDriver driver)
@@ -117,16 +89,18 @@ public class TestBase : IAsyncLifetime
         }
     }
 
-    private static async Task SeedCache()
+    private static async Task SeedTestData()
     {
-        var mux = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv)!);
+        var baseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ??
+            throw new InvalidOperationException("API_BASE_URL is not set");
 
-        var cacheProvider = new RedisCacheProvider(mux);
+        using var httpClient = new HttpClient
+        {
+            BaseAddress = new Uri(baseUrl)
+        };
 
-        await cacheProvider.Set(CacheKeys.Voices(Shared.OpenAI.Key),
-            OpenAiVoices.All, TimeSpan.FromDays(1));
+        var response = await httpClient.PostAsync("/test/seed", content: null);
 
-        await cacheProvider.Set(CacheKeys.Voices(Shared.Narakeet.Key),
-            NarakeetVoices.All, TimeSpan.FromDays(1));
+        response.EnsureSuccessStatusCode();
     }
 }
