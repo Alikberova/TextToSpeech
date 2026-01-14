@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '0 1 * * *' # Runs day at 1 am
 
+permissions:
+  contents: read
+  issues: write
+
 env:
   environment: Staging
 
