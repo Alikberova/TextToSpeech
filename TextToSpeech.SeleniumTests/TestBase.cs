@@ -1,6 +1,9 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.Extensions.Configuration;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using TextToSpeech.Core;
 using TextToSpeech.Infra;
 using Xunit.Abstractions;
@@ -91,15 +94,38 @@ public class TestBase : IAsyncLifetime
 
     private static async Task SeedTestData()
     {
-        var baseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ??
-            throw new InvalidOperationException("API_BASE_URL is not set");
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false)
+            .Build();
 
-        using var httpClient = new HttpClient
+        var baseUrl = config["ApiBaseUrl"] ??
+            throw new InvalidOperationException("ApiBaseUrl is not set");
+
+        using var client = new HttpClient
         {
             BaseAddress = new Uri(baseUrl)
         };
 
-        var response = await httpClient.PostAsync("/test/seed", content: null);
+        var authResponse = await client.PostAsync("/api/auth/guest", new StringContent(string.Empty));
+
+        authResponse.EnsureSuccessStatusCode();
+
+        var json = await authResponse.Content.ReadAsStringAsync();
+
+        var token = JsonDocument.Parse(json)
+            .RootElement
+            .GetProperty("accessToken")
+            .GetString();
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new InvalidDataException("Guest token is missing in auth response.");
+        }
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.PostAsync("/test/seed", content: null);
 
         response.EnsureSuccessStatusCode();
     }
