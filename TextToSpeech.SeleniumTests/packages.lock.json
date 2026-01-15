@@ -45,15 +45,6 @@
         "resolved": "142.0.7444.17500",
         "contentHash": "TrBmZ8zGrEK2LEwK37Bi3Xo61B3Sx5h7TehV6bBjMiUj/rXaARcIjmrO4ErLG7XuDzrod5oMH+8sFxX6SlcQAA=="
       },
-      "Testcontainers.Redis": {
-        "type": "Direct",
-        "requested": "[4.9.0, )",
-        "resolved": "4.9.0",
-        "contentHash": "QHPWkpJeigaw7/4PvWxYk2SKKl6yBSgFLLgsF5UsR9mnZuOLX2zW2SmeyR1TSluJS+4PibZrBU8hOuJ69ds3Rg==",
-        "dependencies": {
-          "Testcontainers": "4.9.0"
-        }
-      },
       "xunit": {
         "type": "Direct",
         "requested": "[2.9.3, )",
@@ -73,24 +64,8 @@
       },
       "BouncyCastle.Cryptography": {
         "type": "Transitive",
-        "resolved": "2.6.2",
-        "contentHash": "7oWOcvnntmMKNzDLsdxAYqApt+AjpRpP2CShjMfIa3umZ42UQMvH0tl1qAliYPNYO6vTdcGMqnRrCPmsfzTI1w=="
-      },
-      "Docker.DotNet.Enhanced": {
-        "type": "Transitive",
-        "resolved": "3.130.0",
-        "contentHash": "LQpn/tmB4TPInO9ILgFg98ivcr5QsLBm6sUltqOjgU/FKDU4SW3mbR9QdmYgBJlE6PtKmSffDdSyVYMyUYyEjA==",
-        "dependencies": {
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.3"
-        }
-      },
-      "Docker.DotNet.Enhanced.X509": {
-        "type": "Transitive",
-        "resolved": "3.130.0",
-        "contentHash": "stAlaM/h5u8bIqqXQVR4tgJgsN8CDC0ynjmCYZFy4alXs2VJdIoRZwJJmgmmYYrAdMwWJC8lWWe0ilxPqc8Wkg==",
-        "dependencies": {
-          "Docker.DotNet.Enhanced": "3.130.0"
-        }
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
       },
       "ElevenLabs-DotNet": {
         "type": "Transitive",
@@ -448,20 +423,6 @@
         "resolved": "2.2.8",
         "contentHash": "zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ=="
       },
-      "SharpZipLib": {
-        "type": "Transitive",
-        "resolved": "1.4.2",
-        "contentHash": "yjj+3zgz8zgXpiiC3ZdF/iyTBbz2fFvMxZFEBPUcwZjIvXOf37Ylm+K58hqMfIBt5JgU/Z2uoUS67JmTLe973A=="
-      },
-      "SSH.NET": {
-        "type": "Transitive",
-        "resolved": "2025.1.0",
-        "contentHash": "jrnbtf0ItVaXAe6jE8X/kSLa6uC+0C+7W1vepcnRQB/rD88qy4IxG7Lf1FIbWmkoc4iVXv0pKrz+Wc6J4ngmHw==",
-        "dependencies": {
-          "BouncyCastle.Cryptography": "2.6.2",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.3"
-        }
-      },
       "StackExchange.Redis": {
         "type": "Transitive",
         "resolved": "2.10.1",
@@ -500,18 +461,6 @@
         "type": "Transitive",
         "resolved": "2.1.0",
         "contentHash": "w45LreEPpV/vOfgpYBI1cNqiLvj8yQ8f7kJaMYtzTAsg26ZdHWnh5vPuy2/F9tCKhmgNB0s+zOBwdcEb4qk3Tg=="
-      },
-      "Testcontainers": {
-        "type": "Transitive",
-        "resolved": "4.9.0",
-        "contentHash": "OmU6x91OozhCRVOt7ISQDdaHACaKQImrN6fWDJJnvMAwMv/iJ95Q4cr7K1FU+nAYLDDIMDbSS8SOCzKkERsoIw==",
-        "dependencies": {
-          "Docker.DotNet.Enhanced": "3.130.0",
-          "Docker.DotNet.Enhanced.X509": "3.130.0",
-          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
-          "SSH.NET": "2025.1.0",
-          "SharpZipLib": "1.4.2"
-        }
       },
       "xunit.abstractions": {
         "type": "Transitive",

@@ -8,7 +8,7 @@ public sealed class AudioFileRepository(AppDbContext context) : IAudioFileReposi
 {
     private readonly AppDbContext _context = context;
 
-    public async Task AddAudioFileAsync(AudioFile audioFile)
+    public async Task Add(AudioFile audioFile)
     {
         if (string.IsNullOrWhiteSpace(audioFile.Hash))
         {
@@ -19,28 +19,33 @@ public sealed class AudioFileRepository(AppDbContext context) : IAudioFileReposi
         await _context.SaveChangesAsync();
     }
 
-    public async Task<AudioFile?> GetAudioFileAsync(Guid id)
+    public async Task<AudioFile?> GetById(Guid id)
     {
         return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Id == id);
     }
 
-    public async Task<AudioFile?> GetAudioFileByHashAsync(string hash)
+    public async Task<AudioFile?> GetByIdAsNoTracking(Guid id)
+    {
+        return await _context.AudioFiles.AsNoTracking().FirstOrDefaultAsync(f => f.Id == id);
+    }
+
+    public async Task<AudioFile?> GetByHash(string hash)
     {
         return await _context.AudioFiles.FirstOrDefaultAsync(f => f.Hash == hash);
     }
 
-    public async Task<List<AudioFile>> GetAllAudioFilesAsync()
+    public async Task<List<AudioFile>> GetAll()
     {
         return await _context.AudioFiles.ToListAsync();
     }
 
-    public async Task UpdateAudioFileAsync(AudioFile audioFile)
+    public async Task Update(AudioFile audioFile)
     {
         _context.AudioFiles.Update(audioFile);
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAudioFileAsync(Guid id)
+    public async Task Delete(Guid id)
     {
         var audioFile = await _context.AudioFiles.FindAsync(id);
         if (audioFile is not null)

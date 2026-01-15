@@ -51,8 +51,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
     networks:
@@ -62,8 +60,6 @@ services:
   db:
     image: postgres:18-alpine
     container_name: db
-    ports:
-      - "${POSTGRES_EXPOSED_PORT}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:

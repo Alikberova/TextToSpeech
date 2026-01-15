@@ -49,7 +49,7 @@ jobs:
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "APP_DATA_PATH=${{ vars.APP_DATA_PATH }}" >> .env
         echo "CERTS_PATH=${{ vars.CERTS_PATH }}" >> .env
-        echo "CONNECTIONSTRINGS__REDIS=${{ vars.CONNECTIONSTRINGS__REDIS }}" >> .env
+        echo "ConnectionStrings__RedisConnection=${{ vars.ConnectionStrings__RedisConnection }}" >> .env
         echo "NARAKEETCONFIG__APIURL=${{ vars.NARAKEETCONFIG__APIURL }}" >> .env
         echo "ANGULAR_PORT=${{ vars.ANGULAR_PORT }}" >> .env
         echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" >> .env

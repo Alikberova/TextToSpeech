@@ -1,24 +1,18 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.Extensions.Configuration;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using StackExchange.Redis;
-using Testcontainers.Redis;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using TextToSpeech.Core;
 using TextToSpeech.Infra;
-using TextToSpeech.Infra.Config;
-using TextToSpeech.Infra.Constants;
-using TextToSpeech.Infra.Services;
 using Xunit.Abstractions;
-using static TextToSpeech.Infra.TestData;
 
 namespace TextToSpeech.SeleniumTests;
 
 public class TestBase : IAsyncLifetime
 {
     private readonly string _testId = Guid.NewGuid().ToString("N");
-    private readonly RedisContainer? _cacheContainer;
-    private readonly bool _hasExternalCacheContainer =
-        !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv));
 
     protected string TestDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"TtsTest_{_testId}");
@@ -31,27 +25,13 @@ public class TestBase : IAsyncLifetime
     public TestBase(ITestOutputHelper? testOutputHelper = null)
     {
         TestOutputHelper = testOutputHelper;
-
-        if (!_hasExternalCacheContainer)
-        {
-            _cacheContainer = new RedisBuilder()
-                .WithCleanUp(true)
-                .Build();
-        }
     }
 
     public async Task InitializeAsync()
     {
-        if (!_hasExternalCacheContainer)
-        {
-            await _cacheContainer!.StartAsync();
-
-            Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());
-        }
-
-        await SeedCache();
-
         VerifyTestDirectory();
+
+        await SeedTestData();
 
         var options = new ChromeOptions();
 
@@ -80,11 +60,6 @@ public class TestBase : IAsyncLifetime
         Driver?.Quit();
         Driver?.Dispose();
         DeleteTestDirectory();
-
-        if (_cacheContainer is not null)
-        {
-            await _cacheContainer.DisposeAsync();
-        }
     }
 
     private static WebDriverWait GetWait(IWebDriver driver)
@@ -117,16 +92,41 @@ public class TestBase : IAsyncLifetime
         }
     }
 
-    private static async Task SeedCache()
+    private static async Task SeedTestData()
     {
-        var mux = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable(ConfigConstants.CacheConnectionEnv)!);
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false)
+            .Build();
 
-        var cacheProvider = new RedisCacheProvider(mux);
+        var baseUrl = config["ApiBaseUrl"] ??
+            throw new InvalidOperationException("ApiBaseUrl is not set");
 
-        await cacheProvider.Set(CacheKeys.Voices(Shared.OpenAI.Key),
-            OpenAiVoices.All, TimeSpan.FromDays(1));
+        using var client = new HttpClient
+        {
+            BaseAddress = new Uri(baseUrl)
+        };
 
-        await cacheProvider.Set(CacheKeys.Voices(Shared.Narakeet.Key),
-            NarakeetVoices.All, TimeSpan.FromDays(1));
+        var authResponse = await client.PostAsync("/api/auth/guest", new StringContent(string.Empty));
+
+        authResponse.EnsureSuccessStatusCode();
+
+        var json = await authResponse.Content.ReadAsStringAsync();
+
+        var token = JsonDocument.Parse(json)
+            .RootElement
+            .GetProperty("accessToken")
+            .GetString();
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            throw new InvalidDataException("Guest token is missing in auth response.");
+        }
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.PostAsync("/test/seed", content: null);
+
+        response.EnsureSuccessStatusCode();
     }
 }

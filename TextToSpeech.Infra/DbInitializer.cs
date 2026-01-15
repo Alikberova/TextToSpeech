@@ -30,33 +30,6 @@ public sealed class DbInitializer(AppDbContext dbContext) : IDbInitializer
             }
         }
 
-        if (!HostingEnvironment.IsTestMode())
-        {
-            await dbContext.SaveChangesAsync();
-            return;
-        }
-
-        var audios = new List<AudioFile>()
-        {
-            TestData.CreateAudioSampleAlloy(),
-            TestData.CreateAudioFullFable()
-        };
-
-        foreach (var audio in audios)
-        {
-            var existing = await dbContext.AudioFiles.AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == audio.Id);
-
-            if (existing is null)
-            {
-                await dbContext.AudioFiles.AddAsync(audio);
-            }
-            else if (existing.Hash != audio.Hash)
-            {
-                dbContext.AudioFiles.Update(audio);
-            }
-        }
-
         await dbContext.SaveChangesAsync();
     }
 }

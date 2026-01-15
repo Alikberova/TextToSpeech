@@ -81,7 +81,7 @@ builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection(Section
 builder.Services.Configure<NarakeetConfig>(builder.Configuration.GetSection(SectionNames.NarakeetConfig));
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(SectionNames.JwtConfig));
 
-var connectionString = builder.Configuration.GetConnectionString(DbConnection);
+var connectionString = builder.Configuration.GetConnectionString(ConnectionStrings.DbConnection);
 builder.Services.AddDbContext<AppDbContext>(b => b.UseNpgsql(connectionString));
 
 builder.Services.AddHealthChecks();

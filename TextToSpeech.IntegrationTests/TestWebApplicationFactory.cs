@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using TextToSpeech.Infra.Config;
+using static TextToSpeech.Infra.Config.ConfigConstants;
 
 namespace TextToSpeech.IntegrationTests;
 
@@ -12,6 +13,9 @@ public class TestWebApplicationFactory<TProgram>
 {
     private readonly RedisContainer _cacheContainer;
     private readonly PostgreSqlContainer _dbContainer;
+
+    public static string CacheConnectionEnv => $"ConnectionStrings__{ConnectionStrings.CacheConnection}";
+    public static string DbConnectionEnv => $"ConnectionStrings__{ConnectionStrings.DbConnection}";
 
     public HttpClient HttpClient { get; private set; } = null!;
 
@@ -51,7 +55,7 @@ public class TestWebApplicationFactory<TProgram>
         }
 
         Environment.SetEnvironmentVariable(ConfigConstants.IsTestMode, "true");
-        Environment.SetEnvironmentVariable(ConfigConstants.DbConnectionEnv, _dbContainer.GetConnectionString());
-        Environment.SetEnvironmentVariable(ConfigConstants.CacheConnectionEnv, _cacheContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable(DbConnectionEnv, _dbContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable(CacheConnectionEnv, _cacheContainer.GetConnectionString());
     }
 }

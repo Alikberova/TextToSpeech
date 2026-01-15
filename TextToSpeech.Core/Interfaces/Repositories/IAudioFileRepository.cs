@@ -4,10 +4,11 @@ namespace TextToSpeech.Core.Interfaces.Repositories;
 
 public interface IAudioFileRepository
 {
-    Task AddAudioFileAsync(AudioFile audioFile);
-    Task DeleteAudioFileAsync(Guid id);
-    Task<List<AudioFile>> GetAllAudioFilesAsync();
-    Task<AudioFile?> GetAudioFileAsync(Guid id);
-    Task<AudioFile?> GetAudioFileByHashAsync(string hash);
-    Task UpdateAudioFileAsync(AudioFile audioFile);
+    Task Add(AudioFile audioFile);
+    Task Delete(Guid id);
+    Task<List<AudioFile>> GetAll();
+    Task<AudioFile?> GetById(Guid id);
+    Task<AudioFile?> GetByIdAsNoTracking(Guid id);
+    Task<AudioFile?> GetByHash(string hash);
+    Task Update(AudioFile audioFile);
 }

@@ -9,14 +9,18 @@ public static class ConfigConstants
         public const string JwtConfig = "JwtConfig";
     }
 
+    public static class ConnectionStrings
+    {
+        public static string CacheConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
+            ? "RedisTestConnection"
+            : "RedisConnection";
+        public static string DbConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
+            ? "DbTestConnection"
+            : "DefaultConnection";
+    }
+
     public const string AppDataPath = "AppDataPath";
     public const string OpenAiApiKey = "OPENAI_API_KEY";
     public const string ElevenLabsApiKey = "ELEVENLABS_API_KEY";
     public const string IsTestMode = "IsTestMode";
-
-    public const string CacheConnectionEnv = "ConnectionStrings__Redis";
-    public static string DbConnectionEnv => $"ConnectionStrings__{DbConnection}";
-    public static string DbConnection => HostingEnvironment.IsTestMode() && HostingEnvironment.IsWindows()
-        ? "DbTestConnection"
-        : "DefaultConnection";
 }
