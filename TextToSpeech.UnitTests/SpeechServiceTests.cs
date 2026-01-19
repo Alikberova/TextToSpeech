@@ -62,7 +62,7 @@ public sealed class SpeechServiceTests
             Times.Never);
 
         repo.Verify(
-            r => r.AddAudioFileAsync(It.IsAny<AudioFile>()),
+            r => r.Add(It.IsAny<AudioFile>()),
             Times.Never);
     }
 
