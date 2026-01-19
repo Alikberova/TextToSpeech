@@ -33,6 +33,7 @@ internal static class ServicesDiExtension
         services.AddScoped<ISmtpClient, SmtpClient>();
         services.AddScoped<IVoiceService, VoiceService>();
         services.AddScoped<IParallelExecutionService, ParallelExecutionService>();
+        services.AddScoped<ITestSeedService, TestSeedService>();
 
         services.AddSingleton<ITextProcessingService, TextProcessingService>();
         services.AddSingleton<IPathService, PathService>();
