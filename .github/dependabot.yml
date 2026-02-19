@@ -12,13 +12,27 @@ updates:
     target-branch: "dev"
     versioning-strategy: increase
     groups:
-      angular:
+      angular-core:
         applies-to: version-updates
         patterns:
-          - "@angular*"
+          - "@angular/core"
+          - "@angular/cli"
+          - "@angular/common"
+          - "@angular/compiler"
+          - "@angular/compiler-cli"
+          - "@angular/forms"
+          - "@angular/platform-browser"
+          - "@angular/router"
+          - "@angular/animations"
         update-types:
           - "minor"
           - "patch"
+
+      eslint:
+        patterns:
+          - "eslint"
+          - "@angular-eslint/*"
+
       vitest:
         applies-to: version-updates
         patterns:
