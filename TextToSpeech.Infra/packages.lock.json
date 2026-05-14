@@ -132,6 +132,15 @@
           "System.IO.Hashing": "9.0.10"
         }
       },
+      "System.Security.Cryptography.Xml": {
+        "type": "Direct",
+        "requested": "[9.0.15, )",
+        "resolved": "9.0.15",
+        "contentHash": "/DqMTgJ0lcxaLGNc5pHls1dCqQVbPRQwweTp79bwqw8T8+2V1NodLfAr8RlS8Q4W0qs5HzA6dcW2jHIQf1n95g==",
+        "dependencies": {
+          "System.Security.Cryptography.Pkcs": "9.0.15"
+        }
+      },
       "taglib-sharp-netstandard2.0": {
         "type": "Direct",
         "requested": "[2.1.0, )",
@@ -599,21 +608,13 @@
       },
       "System.Security.Cryptography.Pkcs": {
         "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "8tluJF8w9si+2yoHeL8rgVJS6lKvWomTDC8px65Z8MCzzdME5eaPtEQf4OfVGrAxB5fW93ncucy1+221O9EQaw=="
+        "resolved": "9.0.15",
+        "contentHash": "ZqPer8QiXxMHnXbgaJkWlD6kit8biD09lWmYP2NM+pfoaGwLneVCa4WnOVUJnAoZQrNKO/zryC68H2+G8xQbNA=="
       },
       "System.Security.Cryptography.ProtectedData": {
         "type": "Transitive",
         "resolved": "9.0.0",
         "contentHash": "CJW+x/F6fmRQ7N6K8paasTw9PDZp4t7G76UjGNlSDgoHPF0h08vTzLYbLZpOLEJSg35d5wy2jCXGo84EN05DpQ=="
-      },
-      "System.Security.Cryptography.Xml": {
-        "type": "Transitive",
-        "resolved": "9.0.0",
-        "contentHash": "GQZn5wFd+pyOfwWaCbqxG7trQ5ox01oR8kYgWflgtux4HiUNihGEgG2TktRWyH+9bw7NoEju1D41H/upwQeFQw==",
-        "dependencies": {
-          "System.Security.Cryptography.Pkcs": "9.0.0"
-        }
       },
       "System.Security.Permissions": {
         "type": "Transitive",
